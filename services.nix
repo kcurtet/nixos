@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   services.syncthing = {
     enable = true;
     user = "kx";
@@ -7,4 +7,9 @@
 
   services.tailscale.enable = true;
   services.tailscale.extraUpFlags = ["--ssh"];
+
+  virtualisation.docker = {
+    enable = true;
+    extraPackages = with pkgs; [lazydocker dive];
+  };
 }

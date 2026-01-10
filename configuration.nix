@@ -102,7 +102,7 @@
 
   users.users.kx = {
     isNormalUser = true;
-    extraGroups = ["wheel" "networkmanager"]; # Enable ‘sudo’ for the user.
+    extraGroups = ["wheel" "networkmanager" "docker"]; # Enable ‘sudo’ for the user.
     initialPassword = "secret";
   };
 

@@ -198,6 +198,8 @@
 
     opencode
 
+    gnome-tweaks
+
     # term
     ghostty
     kitty

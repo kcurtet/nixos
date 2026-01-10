@@ -218,6 +218,8 @@
     neovim
     emacs
     vscode-fhs
+    code-cursor-fhs
+    zed-editor-fhs
     obsidian
 
     # utils
@@ -235,6 +237,7 @@
     git
 
     # code
+    nil
     nixd
     alejandra
 

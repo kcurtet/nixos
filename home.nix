@@ -10,13 +10,8 @@
       extensions = with pkgs.gnomeExtensions; [
         {
           package = appindicator;
-          id = appindicator.extensionUuid;
         }
-        {package = gsconnect;}
         {package = caffeine;}
-        {package = pano;}
-        {package = gemini-ai;}
-        {package = dash-to-panel;}
         {
           id = "user-theme@gnome-shell-extensions.gcampax.github.com";
           package = pkgs.gnome-shell-extensions;
@@ -62,6 +57,15 @@
     bat = {
       enable = true;
       config = {theme = "Nord";};
+    };
+
+    git = {
+      enable = true;
+      settings = {
+        user.name = "Kevin Curtet";
+        user.email = "kcurtet@gmail.com";
+        user.signingKey = "kcurtet@gmail.com";
+      };
     };
 
     lazygit = {
@@ -173,6 +177,7 @@
   home.shellAliases = {
     e = "nvim";
     g = "git";
+    gs = "git status";
     gc = "git commit";
     wip = "git commit -am wip";
 
@@ -219,7 +224,6 @@
     emacs
     vscode-fhs
     code-cursor-fhs
-    zed-editor-fhs
     obsidian
 
     # utils

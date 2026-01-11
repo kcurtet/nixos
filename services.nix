@@ -8,6 +8,11 @@
   services.tailscale.enable = true;
   services.tailscale.extraUpFlags = ["--ssh"];
 
+  services.tor = {
+    enable = true;
+    enableGeoIP = false;
+  };
+
   virtualisation.docker = {
     enable = true;
     extraPackages = with pkgs; [lazydocker dive];

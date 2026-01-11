@@ -200,6 +200,8 @@
     '')
 
     netcat-openbsd
+    lynx
+    tor-browser
 
     opencode
 

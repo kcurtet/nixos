@@ -3,184 +3,159 @@
   pkgs,
   lib,
   ...
-}: {
-  programs = {
-    gnome-shell = {
-      enable = true;
-      extensions = with pkgs.gnomeExtensions; [
-        {
-          package = appindicator;
-        }
-        {package = caffeine;}
-        {
-          id = "user-theme@gnome-shell-extensions.gcampax.github.com";
-          package = pkgs.gnome-shell-extensions;
-        }
-        {package = gamemode-shell-extension;}
-      ];
-      theme = {
-        name = "Nordic";
-        package = pkgs.nordic;
-      };
-    };
-    ghostty = {
-      enable = true;
-      settings = {
-        theme = "Nord";
-        font-size = 14;
-        keybind = [
-          "ctrl+alt+h=goto_split:left"
-          "ctrl+alt+l=goto_split:right"
-        ];
-      };
-    };
+}: let
+  # ============================================================================
+  # LazyGit Nord Theme Configuration
+  # Based on https://www.nordtheme.com/
+  # ============================================================================
+  lazygitNordTheme = {
+    # Window borders
+    activeBorderColor = ["#88c0d0" "bold"]; # nord8 - bright blue
+    inactiveBorderColor = ["#4c566a"]; # nord3 - bright gray
+    searchingActiveBorderColor = ["#81a1c1" "bold"]; # nord9 - dark blue
 
-    bash = {
-      enable = true;
-      enableCompletion = true;
-    };
+    # Selection colors
+    selectedLineBgColor = ["#3b4252"]; # nord1 - lighter gray
+    selectedRangeBgColor = ["#434c5e"]; # nord2
 
-    autojump.enable = true;
+    # Commit colors
+    cherryPickedCommitBgColor = ["#434c5e"];
+    cherryPickedCommitFgColor = ["#88c0d0"];
+    markedBaseCommitBgColor = ["#b48ead"]; # nord15 - purple
+    markedBaseCommitFgColor = ["#2e3440"];
 
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
+    # Text colors
+    optionsTextColor = ["#88c0d0"]; # nord8
+    defaultFgColor = ["#d8dee9"]; # nord4 - snow white
 
-    zellij = {
-      enable = true;
-      settings = {
-        theme = "nord";
-      };
-    };
+    # Git status colors
+    unstagedChangesColor = ["#bf616a"]; # nord11 - red
+    stagedChangesColor = ["#a3be8c"]; # nord14 - green
+    untrackedChangesColor = ["#ebcb8b"]; # nord13 - yellow
+    conflictedChangesColor = ["#bf616a"]; # nord11 - red
 
-    bat = {
-      enable = true;
-      config = {theme = "Nord";};
-    };
+    # Branch and tag colors
+    remoteBranchColor = ["#b48ead"]; # nord15 - purple
+    localBranchColor = ["#a3be8c"]; # nord14 - green
+    tagColor = ["#ebcb8b"]; # nord13 - yellow
+    upstreamColor = ["#5e81ac"]; # nord10 - dark blue
 
-    git = {
-      enable = true;
-      settings = {
-        user.name = "Kevin Curtet";
-        user.email = "kcurtet@gmail.com";
-        user.signingKey = "kcurtet@gmail.com";
-      };
-    };
-
-    lazygit = {
-      enable = true;
-      settings = {
-        gui = {
-          # Tema Nord para Lazygit
-          # Basado en https://www.nordtheme.com/
-          theme = {
-            # Color del borde de la ventana activa (nord8 - azul brillante)
-            activeBorderColor = [
-              "#88c0d0"
-              "bold"
-            ];
-
-            # Color del borde de ventanas inactivas (nord3 - gris brillante)
-            inactiveBorderColor = [
-              "#4c566a"
-            ];
-
-            # Color del borde cuando se está buscando (nord9 - azul oscuro)
-            searchingActiveBorderColor = [
-              "#81a1c1"
-              "bold"
-            ];
-
-            # Color de fondo de la línea seleccionada (nord1 - gris más claro que el fondo)
-            selectedLineBgColor = [
-              "#3b4252"
-            ];
-
-            # Color de la línea seleccionada en rango (nord2)
-            selectedRangeBgColor = [
-              "#434c5e"
-            ];
-
-            # Colores para commits cherry-picked
-            cherryPickedCommitBgColor = [
-              "#434c5e"
-            ];
-            cherryPickedCommitFgColor = [
-              "#88c0d0"
-            ];
-
-            # Color para commits marcados (nord15 - púrpura)
-            markedBaseCommitBgColor = [
-              "#b48ead"
-            ];
-            markedBaseCommitFgColor = [
-              "#2e3440"
-            ];
-            # Color del texto de opciones (nord8)
-            optionsTextColor = [
-              "#88c0d0"
-            ];
-
-            # Color por defecto del texto (nord4 - blanco nieve)
-            defaultFgColor = [
-              "#d8dee9"
-            ];
-
-            # Colores para cambios sin stagear (nord11 - rojo)
-            unstagedChangesColor = [
-              "#bf616a"
-            ];
-
-            # Colores de estado de Git
-            # Cambios en staging (nord14 - verde)
-            stagedChangesColor = ["#a3be8c"];
-
-            # Archivos no rastreados (nord13 - amarillo)
-            untrackedChangesColor = ["#ebcb8b"];
-
-            # Commits remotos (nord15 - púrpura)
-            remoteBranchColor = ["#b48ead"];
-
-            # Commits locales (nord14 - verde)
-            localBranchColor = ["#a3be8c"];
-
-            # Tags (nord13 - amarillo)
-            tagColor = ["#ebcb8b"];
-
-            # Archivos modificados en reflog (nord12 - naranja)
-            reflogCommitColor = ["#d08770"];
-
-            # Commits en conflicto (nord11 - rojo)
-            conflictedChangesColor = ["#bf616a"];
-
-            # Color del autor por defecto (nord7 - cyan)
-            authorColor = ["#8fbcbb"];
-
-            # Color del commit hash (nord9 - azul)
-            commitHashColor = ["#81a1c1"];
-
-            # Color de las ramas upstream (nord10 - azul oscuro)
-            upstreamColor = ["#5e81ac"];
-          };
-        };
-        # Colores personalizados para autores específicos (opcional)
-        # authorColors:
-        #   'Tu Nombre': '#88c0d0'
-        #   'Otro Colaborador': '#a3be8c'
-      };
+    # Commit metadata colors
+    reflogCommitColor = ["#d08770"]; # nord12 - orange
+    authorColor = ["#8fbcbb"]; # nord7 - cyan
+    commitHashColor = ["#81a1c1"]; # nord9 - blue
+  };
+in {
+  # ============================================================================
+  # Desktop Environment
+  # ============================================================================
+  programs.gnome-shell = {
+    enable = true;
+    extensions = with pkgs.gnomeExtensions; [
+      {package = appindicator;}
+      {package = caffeine;}
+      {
+        id = "user-theme@gnome-shell-extensions.gcampax.github.com";
+        package = pkgs.gnome-shell-extensions;
+      }
+      {package = gamemode-shell-extension;}
+    ];
+    theme = {
+      name = "Nordic";
+      package = pkgs.nordic;
     };
   };
 
+  # ============================================================================
+  # Terminal Programs
+  # ============================================================================
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      theme = "Nord";
+      font-size = 14;
+      keybind = [
+        "ctrl+alt+h=goto_split:left"
+        "ctrl+alt+l=goto_split:right"
+      ];
+    };
+  };
+
+  programs.zellij = {
+    enable = true;
+    settings = {
+      theme = "nord";
+    };
+  };
+
+  programs.tmux = {
+    enable = true;
+    prefix = "C-a";
+    plugins = with pkgs.tmuxPlugins; [
+      nord
+    ];
+  };
+
+  # ============================================================================
+  # Shell Configuration
+  # ============================================================================
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+  };
+
+  programs.autojump.enable = true;
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # ============================================================================
+  # Development Tools
+  # ============================================================================
+  programs.bat = {
+    enable = true;
+    config = {
+      theme = "Nord";
+    };
+  };
+
+  programs.git = {
+    enable = true;
+    settings = {
+      user.name = "Kevin Curtet";
+      user.email = "kcurtet@gmail.com";
+      user.signingKey = "kcurtet@gmail.com";
+    };
+  };
+
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      gui.theme = lazygitNordTheme;
+    };
+  };
+
+  # ============================================================================
+  # Services
+  # ============================================================================
   services.tailscale-systray.enable = true;
 
+  # ============================================================================
+  # Shell Aliases
+  # ============================================================================
   home.shellAliases = {
+    # Editor
     e = "nvim";
+
+    # Git shortcuts
     g = "git";
     gs = "git status";
     gc = "git commit";
     wip = "git commit -am wip";
 
+    # File listing (using exa/eza)
     ls = "exa";
     l = "exa -l";
     ll = "exa -la";
@@ -188,75 +163,90 @@
     t = "exa -T";
     tl = "exa -T -L";
 
+    # Navigation
     "..." = "cd ../..";
   };
 
+  # ============================================================================
+  # System Packages
+  # ============================================================================
   home.packages = with pkgs; [
-    (pkgs.writeShellScriptBin "nswitch" ''
+    # NixOS rebuild shortcuts
+    (writeShellScriptBin "nswitch" ''
       sudo nixos-rebuild switch --flake /home/kx/.config/nixos
     '')
-    (pkgs.writeShellScriptBin "nboot" ''
+    (writeShellScriptBin "nboot" ''
       sudo nixos-rebuild boot --flake /home/kx/.config/nixos
     '')
 
+    hmcl
+    mgba
+
+    # Network tools
     netcat-openbsd
     lynx
     tor-browser
 
+    # Desktop utilities
     opencode
-
     gnome-tweaks
 
-    # term
+    # Terminal emulators
     ghostty
     kitty
 
-    # term utils
+    # Terminal utilities
     eza
     ripgrep
     fd
     btop
+    p7zip
 
-    # browsers
+    # Browsers
     brave
     librewolf
 
-    # editors
+    # Editors
     neovim
     emacs
     vscode-fhs
     code-cursor-fhs
     obsidian
-
-    # utils
     obsidian-export
 
-    # chat
+    # Communication
     telegram-desktop
     discord
     discordo
 
-    # music
+    # Media
     spotifywm
 
-    # version control
+    # Version control
     git
 
-    # code
+    # Tools
+    hcloud
+
+    # Nix development tools
     nil
     nixd
     alejandra
 
+    # JavaScript/TypeScript development
     nodejs
+    pnpm
     typescript
     typescript-language-server
     prettier
     eslint
 
+    # Python development
     python3
     pylint
     black
 
+    # Lua development
     lua
     luaPackages.fennel
     stylua
@@ -264,5 +254,8 @@
     fennel-ls
   ];
 
+  # ============================================================================
+  # Home Manager State
+  # ============================================================================
   home.stateVersion = "26.05";
 }

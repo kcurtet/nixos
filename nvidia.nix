@@ -3,56 +3,59 @@
   lib,
   ...
 }: {
-  # Load nvidia driver for Xorg and Wayland
+  # ============================================================================
+  # NVIDIA Driver Configuration
+  # ============================================================================
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
-    # Modesetting is required.
+    # Modesetting is required for proper functionality
     modesetting.enable = true;
 
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
-    # of just the bare essentials.
+    # Power management (experimental - can cause sleep/suspend issues)
+    # Enable if experiencing graphical corruption or crashes after wake
     powerManagement.enable = false;
+    powerManagement.finegrained = false; # Only works on Turing+ GPUs
 
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of
-    # supported GPUs is at:
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
-    # Only available from driver 515.43.04+
+    # Open source kernel module (not nouveau)
+    # Limited to Turing+ architectures
+    # See: https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
+    # Available from driver 515.43.04+
     open = false;
 
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
+    # NVIDIA settings GUI
     nvidiaSettings = true;
 
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    # Driver package selection
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
+  # ============================================================================
+  # NVIDIA Prime Configuration
+  # ============================================================================
   hardware.nvidia.prime = {
-    sync.enable = true;
-
-    # Make sure to use the correct Bus ID values for your system!
+    offload.enable = true;
+    offload.enableOffloadCmd = true;
+    # Update Bus IDs to match your system's PCI configuration
     intelBusId = "PCI:0:2:0";
     nvidiaBusId = "PCI:1:0:0";
   };
 
+  # ============================================================================
+  # System Specialisations
+  # ============================================================================
   specialisation = {
+    # On-the-go: Use GPU offloading for better battery life
     on-the-go.configuration = {
       system.nixos.tags = ["on-the-go"];
       hardware.nvidia = {
-        prime.offload.enable = lib.mkForce true;
-        prime.offload.enableOffloadCmd = lib.mkForce true;
-        prime.sync.enable = lib.mkForce false;
+        prime.offload.enable = lib.mkForce false;
+        prime.offload.enableOffloadCmd = lib.mkForce false;
+        prime.sync.enable = lib.mkForce true;
       };
     };
+
+    # Disable NVIDIA: Completely disable NVIDIA hardware
     disable-nvidia.configuration = {
       boot.extraModprobeConfig = ''
         blacklist nouveau
@@ -60,16 +63,22 @@
       '';
 
       services.udev.extraRules = ''
-        # Remove NVIDIA USB xHCI Host Controller devices, if present
+        # Remove NVIDIA USB xHCI Host Controller devices
         ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
-        # Remove NVIDIA USB Type-C UCSI devices, if present
+        # Remove NVIDIA USB Type-C UCSI devices
         ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
-        # Remove NVIDIA Audio devices, if present
+        # Remove NVIDIA Audio devices
         ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto", ATTR{remove}="1"
         # Remove NVIDIA VGA/3D controller devices
         ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
       '';
-      boot.blacklistedKernelModules = ["nouveau" "nvidia" "nvidia_drm" "nvidia_modeset"];
+
+      boot.blacklistedKernelModules = [
+        "nouveau"
+        "nvidia"
+        "nvidia_drm"
+        "nvidia_modeset"
+      ];
     };
   };
 }

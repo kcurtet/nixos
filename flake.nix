@@ -1,8 +1,15 @@
+# ============================================================================
+# NixOS Flake Configuration
+# ============================================================================
 {
+  description = "NixOS configuration with modular structure";
+
   # ============================================================================
-  # Flake Configuration
+  # Flake Settings
   # ============================================================================
   nixConfig = {
+    allowUnfree = true;
+    extra-trusted-users = ["kx"];
     experimental-features = "nix-command flakes";
     extra-substituters = [
       "https://nix-community.cachix.org"
@@ -17,29 +24,58 @@
   # ============================================================================
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Neovim configuration
     nixvim.url = "github:kcurtet/nixvim";
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Home Manager
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # ============================================================================
   # Flake Outputs
   # ============================================================================
   outputs = {
+    self,
     nixpkgs,
     home-manager,
     ...
   } @ inputs: let
     system = "x86_64-linux";
-  in {
-    nixosConfigurations.panther = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = {
-        inherit inputs;
+
+    # Helper function to create NixOS configurations
+    mkHost = name:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/${name}
+          home-manager.nixosModules.home-manager
+        ];
       };
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
+  in {
+    # ============================================================================
+    # NixOS Configurations
+    # ============================================================================
+    nixosConfigurations = {
+      panther = mkHost "panther";
+      # Add more hosts here:
+      # lynx = mkHost "lynx";
+    };
+
+    # ============================================================================
+    # Development Shells
+    # ============================================================================
+    devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
+      packages = with nixpkgs.legacyPackages.${system}; [
+        nil
+        nixd
+        alejandra
+        statix
+        deadnix
       ];
     };
   };

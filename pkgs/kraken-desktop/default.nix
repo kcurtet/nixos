@@ -19,6 +19,14 @@
   alsa-lib,
   dbus,
   gcc,
+  libdrm,
+  mesa,
+  libgbm,
+  nss,
+  nspr,
+  cups,
+  at-spi2-atk,
+  at-spi2-core,
 }:
 stdenv.mkDerivation rec {
   pname = "kraken-desktop";
@@ -46,6 +54,14 @@ stdenv.mkDerivation rec {
     alsa-lib
     dbus
     gcc.cc
+    libdrm
+    mesa
+    libgbm
+    nss
+    nspr
+    cups
+    at-spi2-atk
+    at-spi2-core
   ];
 
   unpackPhase = ''
@@ -54,7 +70,16 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/bin $out/share/applications
-    cp kraken_desktop $out/bin/kraken-desktop
+    cp kraken_desktop $out/bin/.kraken-desktop-wrapped
+
+    wrapProgram $out/bin/.kraken-desktop-wrapped \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
+        openssl libGL fontconfig freetype expat libx11 libxcursor
+        libxrandr libxi wayland libxkbcommon alsa-lib dbus gcc.cc
+        libdrm mesa libgbm nss nspr cups at-spi2-atk at-spi2-core
+      ]}
+
+    ln -s $out/bin/.kraken-desktop-wrapped $out/bin/kraken-desktop
 
     cat > $out/share/applications/kraken-desktop.desktop << EOF
     [Desktop Entry]

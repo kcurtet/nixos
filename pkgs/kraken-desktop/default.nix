@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/bin $out/share/applications
-    cp kraken $out/bin/kraken-desktop
+    cp kraken_desktop $out/bin/kraken-desktop
 
     cat > $out/share/applications/kraken-desktop.desktop << EOF
     [Desktop Entry]

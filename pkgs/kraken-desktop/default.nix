@@ -1,23 +1,41 @@
-{ lib, stdenv, fetchurl, autoPatchelfHook, makeWrapper
-, openssl, libGL, fontconfig, freetype, expat
-, xorg, wayland, libxkbcommon
+{
+  lib,
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+  makeWrapper,
+  openssl,
+  libGL,
+  fontconfig,
+  freetype,
+  expat,
+  xorg,
+  wayland,
+  libxkbcommon,
 }:
-
 stdenv.mkDerivation rec {
   pname = "kraken-desktop";
   version = "latest";
 
   src = fetchurl {
     url = "https://desktop-downloads.kraken.com/latest/kraken-x86_64-unknown-linux-gnu.zip";
-    hash = "sha256-1jh0jj0ai3j821l1bd9azjs390g13gr5dvv1pjx8b2zahnlfb30j";
+    hash = "sha256-EozlqIXqi4W6vGHvVvIb4YE0tPwqtRVoEEiOqICUAMo=";
   };
 
-  nativeBuildInputs = [ autoPatchelfHook makeWrapper ];
+  nativeBuildInputs = [autoPatchelfHook makeWrapper];
 
   buildInputs = [
-    openssl libGL fontconfig freetype expat
-    xorg.libX11 xorg.libXcursor xorg.libXrandr xorg.libXi
-    wayland libxkbcommon
+    openssl
+    libGL
+    fontconfig
+    freetype
+    expat
+    xorg.libX11
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXi
+    wayland
+    libxkbcommon
   ];
 
   unpackPhase = ''
@@ -41,6 +59,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Kraken crypto exchange desktop app";
     homepage = "https://www.kraken.com/desktop";
-    platforms = [ "x86_64-linux" ];
+    platforms = ["x86_64-linux"];
   };
 }

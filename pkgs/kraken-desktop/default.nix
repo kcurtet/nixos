@@ -4,12 +4,16 @@
   fetchurl,
   autoPatchelfHook,
   makeWrapper,
+  unzip,
   openssl,
   libGL,
   fontconfig,
   freetype,
   expat,
-  xorg,
+  libx11,
+  libxcursor,
+  libxrandr,
+  libxi,
   wayland,
   libxkbcommon,
 }:
@@ -22,7 +26,7 @@ stdenv.mkDerivation rec {
     hash = "sha256-EozlqIXqi4W6vGHvVvIb4YE0tPwqtRVoEEiOqICUAMo=";
   };
 
-  nativeBuildInputs = [autoPatchelfHook makeWrapper];
+  nativeBuildInputs = [autoPatchelfHook makeWrapper unzip];
 
   buildInputs = [
     openssl
@@ -30,10 +34,10 @@ stdenv.mkDerivation rec {
     fontconfig
     freetype
     expat
-    xorg.libX11
-    xorg.libXcursor
-    xorg.libXrandr
-    xorg.libXi
+    libx11
+    libxcursor
+    libxrandr
+    libxi
     wayland
     libxkbcommon
   ];

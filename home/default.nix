@@ -22,7 +22,7 @@
   ];
 
   # User settings (can be overridden per-host)
-  programs.git.extraConfig = {
+  programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";
     user.email = lib.mkDefault "kcurtet@gmail.com";
     user.signingKey = lib.mkDefault "kcurtet@gmail.com";

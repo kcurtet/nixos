@@ -77,7 +77,9 @@ stdenv.mkDerivation rec {
         openssl libGL fontconfig freetype expat libx11 libxcursor
         libxrandr libxi wayland libxkbcommon alsa-lib dbus gcc.cc
         libdrm mesa libgbm nss nspr cups at-spi2-atk at-spi2-core
-      ]}
+      ]} \
+      --prefix XDG_DATA_DIRS : "/run/current-system/sw/share:/nix/var/nix/profiles/default/share:$XDG_DATA_DIRS" \
+      --prefix PATH : "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
 
     ln -s $out/bin/.kraken-desktop-wrapped $out/bin/kraken-desktop
 

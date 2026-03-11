@@ -16,6 +16,9 @@
   libxi,
   wayland,
   libxkbcommon,
+  alsa-lib,
+  dbus,
+  gcc,
 }:
 stdenv.mkDerivation rec {
   pname = "kraken-desktop";
@@ -40,6 +43,9 @@ stdenv.mkDerivation rec {
     libxi
     wayland
     libxkbcommon
+    alsa-lib
+    dbus
+    gcc.cc
   ];
 
   unpackPhase = ''

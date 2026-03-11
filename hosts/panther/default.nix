@@ -24,14 +24,12 @@ in
   ];
 
   # ============================================================================
-  # Host Metadata
-  # ============================================================================
-  my.username = "kx";
-
-  # ============================================================================
   # Nix Configuration
   # ============================================================================
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings = {
+    experimental-features = ["nix-command" "flakes"];
+    trusted-users = ["@wheel"];
+  };
   nixpkgs.config.allowUnfree = true;
 
   # ============================================================================
@@ -149,9 +147,9 @@ in
   my.services = {
     syncthing.enable = true;
     tailscale.enable = true;
-    tor.enable = true;
-    flatpak.enable = true;
-    ollama.enable = true;
+    tor = true;
+    flatpak = true;
+    ollama = true;
   };
 
   # ============================================================================
@@ -183,6 +181,13 @@ in
     enable = true;
     enableSSHSupport = true;
   };
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    glibc
+    zlib
+    # add more if needed, e.g. libX11, libXcursor, libXrandr, alsa-lib, pulseaudio, etc.
+  ];
 
   # ============================================================================
   # Environment Variables

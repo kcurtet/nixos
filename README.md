@@ -33,10 +33,9 @@ nixos/
 
 | Command | Description |
 |---------|-------------|
-| `nswitch` | Apply configuration changes immediately |
-| `nboot`   | Apply changes on next boot |
-| `nupdate` | Update flake inputs and rebuild |
-
+| `nix-apply` | Commit changes and apply configuration immediately |
+| `nboot`    | Apply changes on next boot |
+| `nix-up`   | Update flake inputs (nixpkgs, home-manager, etc.) |
 ## Adding a New Host
 
 1. Create a new directory under `hosts/`:
@@ -118,13 +117,12 @@ my.services = {
 ## Rebuilding
 
 ```bash
-# Apply changes immediately
-sudo nixos-rebuild switch --flake .#panther
+# Commit changes and apply immediately
+nix-apply
 
-# Or use the shortcut
-nswitch
+# Or manually:
+# sudo nixos-rebuild switch --flake .#panther
 ```
-
 ## Development Shell
 
 ```bash

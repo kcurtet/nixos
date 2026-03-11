@@ -4,6 +4,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  myLib = import ../../lib { inherit lib; };
   cfg = config.virtualization;
 in
 {
@@ -49,7 +50,7 @@ in
     ]);
 
     # Add user to libvirtd group
-    users.users.${config.my.username or "kx"}.extraGroups =
+    users.users.${myLib.username}.extraGroups =
       lib.optional cfg.libvirtd.enable "libvirtd";
   };
 }

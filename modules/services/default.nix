@@ -4,6 +4,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  myLib = import ../../lib { inherit lib; };
   cfg = config.my.services;
 in
 {
@@ -12,7 +13,7 @@ in
       enable = lib.mkEnableOption "Syncthing file synchronization";
       dataDir = lib.mkOption {
         type = lib.types.str;
-        default = "/home/${config.my.username or "kx"}/syncthing";
+        default = "/home/${myLib.username}/syncthing";
         description = "Syncthing data directory";
       };
     };
@@ -38,7 +39,7 @@ in
   config = {
     services.syncthing = lib.mkIf cfg.syncthing.enable {
       enable = true;
-      user = config.my.username or "kx";
+      user = myLib.username;
       dataDir = cfg.syncthing.dataDir;
     };
 
@@ -47,7 +48,7 @@ in
       extraUpFlags = lib.optional cfg.tailscale.ssh "--ssh";
     };
 
-    services.tor = lib.mkIf cfg.tor.enable {
+    services.tor = lib.mkIf cfg.tor {
       enable = true;
       enableGeoIP = false;
     };

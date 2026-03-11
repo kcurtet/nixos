@@ -1,10 +1,11 @@
 # ============================================================================
 # Development Tools
 # ============================================================================
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
+    # build tools
+    just
+
     # Editors
     neovim
     emacs
@@ -13,6 +14,7 @@
     opencode
     claude-code
     copilot-cli
+    crush
 
     # Cloud tools
     hcloud

@@ -22,6 +22,7 @@
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/.bun/bin"
+    "$HOME/.npm-global/bin"
   ];
 
   home.sessionVariables = {EDITOR = "nvim";};

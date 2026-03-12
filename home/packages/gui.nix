@@ -1,9 +1,7 @@
 # ============================================================================
 # GUI Applications
 # ============================================================================
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     # Desktop utilities
     gnome-tweaks
@@ -26,6 +24,9 @@
     # Gaming
     hmcl
     mgba
+
+    # Internet
+    google-chrome
 
     # Privacy
     tor-browser

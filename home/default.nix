@@ -1,9 +1,12 @@
 # ============================================================================
 # Home Manager Configuration
 # ============================================================================
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     ./themes/nord.nix
     ./programs
@@ -20,6 +23,8 @@
     "$HOME/.local/bin"
     "$HOME/.bun/bin"
   ];
+
+  home.sessionVariables = {EDITOR = "nvim";};
 
   # User settings (can be overridden per-host)
   programs.git.settings = {

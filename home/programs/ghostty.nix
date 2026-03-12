@@ -1,9 +1,7 @@
 # ============================================================================
 # Ghostty Terminal Configuration
 # ============================================================================
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   programs.ghostty = {
     enable = true;
     settings = {
@@ -12,6 +10,8 @@
       keybind = [
         "ctrl+alt+h=goto_split:left"
         "ctrl+alt+l=goto_split:right"
+        "alt+backspace=text:\x1b\x7f"
+        "shift+enter=text:\n"
       ];
     };
   };

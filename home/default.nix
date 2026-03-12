@@ -18,8 +18,6 @@
   # Autojump for directory navigation
   programs.autojump.enable = true;
 
-  environment.homeBinInPath = true;
-
   # PATH additions
   home.sessionPath = [
     "$HOME/.local/bin"

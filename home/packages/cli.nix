@@ -3,6 +3,7 @@
 # ============================================================================
 {pkgs, ...}: {
   home.packages = with pkgs; [
+    libsecret # for cookie extraction in browsers
     yt-dlp
     ffmpeg
     # System utilities

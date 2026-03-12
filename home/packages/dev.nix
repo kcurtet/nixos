@@ -9,6 +9,7 @@
     # Editors
     neovim
     emacs
+    vscode-fhs
 
     # AI assistants
     opencode

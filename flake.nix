@@ -84,6 +84,7 @@
         statix
         deadnix
         neovim
+        sops
       ];
     };
   };

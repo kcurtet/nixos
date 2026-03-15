@@ -29,3 +29,7 @@ result-*
 # IDE
 .idea/
 .vscode/
+
+# direnv cache
+.direnv/
+.envrc

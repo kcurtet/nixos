@@ -37,6 +37,6 @@
 
     # Nix tools
     nixd
-    nixfmt-rfc-style
+    nixfmt
   ];
 }

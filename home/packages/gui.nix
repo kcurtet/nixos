@@ -34,7 +34,5 @@
     # Note taking
     obsidian
 
-    # Finance
-    pkgs.custom.kraken-desktop
   ];
 }

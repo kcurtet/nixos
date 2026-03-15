@@ -4,5 +4,4 @@
 { pkgs }:
 
 {
-  kraken-desktop = pkgs.callPackage ./kraken-desktop { };
 }

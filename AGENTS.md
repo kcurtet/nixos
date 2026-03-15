@@ -16,7 +16,7 @@ nboot                       # Apply changes on next boot
 
 ```bash
 nix develop                # Enter dev shell with linting tools
-# Provides: nixd, nixfmt-rfc-style, statix, deadnix
+# Provides: nixd, nixfmt, statix, deadnix
 ```
 
 ### Linting & Formatting

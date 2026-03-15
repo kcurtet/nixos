@@ -204,6 +204,35 @@ in
   };
 
   # ============================================================================
+  # SOPS Secrets Management
+  # ============================================================================
+  sops.defaultSopsFile = ../../secrets/secrets.yaml;
+  sops.age.keyFile = "/home/kx/.config/sops/age/keys.txt";
+
+  sops.secrets = {
+    zai_api_key = {
+      owner = "kx";
+      mode = "0600";
+    };
+    brave_api_key = {
+      owner = "kx";
+      mode = "0600";
+    };
+    okx_api_key = {
+      owner = "kx";
+      mode = "0600";
+    };
+    okx_secret_key = {
+      owner = "kx";
+      mode = "0600";
+    };
+    okx_passphrase = {
+      owner = "kx";
+      mode = "0600";
+    };
+  };
+
+  # ============================================================================
   # System State
   # ============================================================================
   system.stateVersion = "26.05";

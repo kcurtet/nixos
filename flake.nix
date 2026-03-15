@@ -42,6 +42,7 @@
     self,
     nixpkgs,
     home-manager,
+    sops-nix,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -54,6 +55,7 @@
         modules = [
           ./hosts/${name}
           home-manager.nixosModules.home-manager
+          sops-nix.nixosModules.sops
         ];
       };
   in {
@@ -69,7 +71,7 @@
     # ============================================================================
     # Formatter (for `nix fmt`)
     # ============================================================================
-    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt;
 
     # ============================================================================
     # Development Shells
@@ -77,7 +79,7 @@
     devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
       packages = with nixpkgs.legacyPackages.${system}; [
         nixd
-        nixfmt-rfc-style
+        nixfmt
         statix
         deadnix
       ];

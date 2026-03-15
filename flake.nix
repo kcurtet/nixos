@@ -67,13 +67,17 @@
     };
 
     # ============================================================================
+    # Formatter (for `nix fmt`)
+    # ============================================================================
+    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+
+    # ============================================================================
     # Development Shells
     # ============================================================================
     devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
       packages = with nixpkgs.legacyPackages.${system}; [
-        nil
         nixd
-        alejandra
+        nixfmt-rfc-style
         statix
         deadnix
       ];

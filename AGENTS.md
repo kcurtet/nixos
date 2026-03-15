@@ -16,17 +16,16 @@ nboot                       # Apply changes on next boot
 
 ```bash
 nix develop                # Enter dev shell with linting tools
-# Provides: nil, nixd, alejandra, statix, deadnix
+# Provides: nixd, nixfmt-rfc-style, statix, deadnix
 ```
 
 ### Linting & Formatting
 
 ```bash
-alejandra .                # Format Nix files
+nixfmt .                   # Format Nix files
 statix check .             # Lint for Nix anti-patterns
 deadnix -e .               # Find dead code in Nix files
-nil                        # Nix language server
-nixd                       # Nix language server alternative
+nixd                       # Nix language server
 ```
 
 ## Project Structure

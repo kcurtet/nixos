@@ -22,7 +22,7 @@
   # Update flake inputs (nixpkgs, home-manager, etc.)
   nix-up = pkgs.writeShellScriptBin "nix-up" ''
     echo "Updating flake inputs..."
-    nix flake update ${flakePath}
+    nix flake update --flake ${flakePath}
     echo "Done! Run 'nix-apply' to rebuild with the new inputs."
   '';
 }

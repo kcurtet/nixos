@@ -5,7 +5,7 @@
 { inputs, pkgs, lib, ... }:
 
 let
-  scripts = import ../../scripts { inherit pkgs; flakePath = "/home/kx/.config/nixos"; };
+  scripts = import ../../scripts { inherit pkgs; flakePath = "/home/kx/system/nixos-config"; };
 in
 {
   imports = [

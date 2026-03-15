@@ -3,6 +3,9 @@
 # ============================================================================
 {pkgs, ...}: {
   home.packages = with pkgs; [
+    # Cloud tools
+    hcloud
+
     # build tools
     just
 
@@ -17,14 +20,10 @@
     copilot-cli
     crush
 
-    # Cloud tools
-    hcloud
-
     # JavaScript/TypeScript development
     nodejs
     pnpm
     bun
-    typescript
     typescript-language-server
     prettier
     eslint
@@ -36,9 +35,11 @@
 
     # Lua development
     lua
-    luaPackages.fennel
     stylua
     lua-language-server
+
+    # Fennel development
+    luaPackages.fennel
     fennel-ls
   ];
 }

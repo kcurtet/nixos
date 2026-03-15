@@ -36,8 +36,7 @@
     git
 
     # Nix tools
-    nil
     nixd
-    alejandra
+    nixfmt-rfc-style
   ];
 }

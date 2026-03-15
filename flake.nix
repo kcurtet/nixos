@@ -83,8 +83,8 @@
         nixfmt
         statix
         deadnix
-        neovim
         sops
+	nixvim.packages.${system}.default
       ];
     };
   };

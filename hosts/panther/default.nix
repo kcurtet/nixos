@@ -2,10 +2,18 @@
 # Panther Host Configuration
 # Main laptop with Intel + NVIDIA hybrid graphics
 # ============================================================================
-{ inputs, pkgs, lib, ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
-  scripts = import ../../scripts { inherit pkgs; flakePath = "/home/kx/system/nixos-config"; };
+  scripts = import ../../scripts {
+    inherit pkgs;
+    flakePath = "/home/kx/system/nixos-config";
+  };
 in
 {
   imports = [
@@ -27,10 +35,13 @@ in
   # Nix Configuration
   # ============================================================================
   nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
-    trusted-users = ["@wheel"];
-    max-jobs = 1;        # Máximo 2 compilaciones en paralelo
-    cores = 1;           # Hasta 4 núcleos por compilación
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [ "@wheel" ];
+    max-jobs = 4; # Máximo 2 compilaciones en paralelo
+    cores = 4; # Hasta 4 núcleos por compilación
   };
   nixpkgs.config.allowUnfree = true;
 
@@ -71,10 +82,10 @@ in
     fontconfig = {
       enable = true;
       defaultFonts = {
-        emoji = ["Noto Color Emoji"];
-        monospace = ["JetBrainsMono Nerd Font"];
-        sansSerif = ["Adwaita Sans"];
-        serif = ["Adwaita Serif"];
+        emoji = [ "Noto Color Emoji" ];
+        monospace = [ "JetBrainsMono Nerd Font" ];
+        sansSerif = [ "Adwaita Sans" ];
+        serif = [ "Adwaita Serif" ];
       };
     };
   };
@@ -102,7 +113,7 @@ in
   services.keyd = {
     enable = true;
     keyboards.default = {
-      ids = ["*"];
+      ids = [ "*" ];
       settings.main = {
         capslock = "overload(control, esc)";
         esc = "capslock";
@@ -115,7 +126,11 @@ in
   # ============================================================================
   users.users.kx = {
     isNormalUser = true;
-    extraGroups = ["wheel" "networkmanager" "docker"];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "docker"
+    ];
     initialPassword = "secret";
   };
 
@@ -144,7 +159,10 @@ in
   virtualization = {
     docker = {
       enable = true;
-      extraPackages = with pkgs; [ lazydocker dive ];
+      extraPackages = with pkgs; [
+        lazydocker
+        dive
+      ];
     };
     libvirtd.enable = true;
   };
@@ -173,13 +191,16 @@ in
   # ============================================================================
   # System Packages
   # ============================================================================
-  environment.systemPackages = with pkgs; [
-    wl-clipboard
-    proton-vpn-cli
-    neovim
-    wine-staging
-    winetricks
-  ] ++ builtins.attrValues scripts;
+  environment.systemPackages =
+    with pkgs;
+    [
+      wl-clipboard
+      proton-vpn-cli
+      neovim
+      wine-staging
+      winetricks
+    ]
+    ++ builtins.attrValues scripts;
 
   # ============================================================================
   # Programs

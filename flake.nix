@@ -43,6 +43,7 @@
     nixpkgs,
     home-manager,
     sops-nix,
+    nixvim,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -82,6 +83,7 @@
         nixfmt
         statix
         deadnix
+        neovim
       ];
     };
   };

@@ -29,6 +29,9 @@ in
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["@wheel"];
+    max-jobs = 2;        # Máximo 2 compilaciones en paralelo
+    cores = 4;           # Hasta 4 núcleos por compilación
+    max-memory-size = 8192; # Límite de RAM por compilación (opcional)
   };
   nixpkgs.config.allowUnfree = true;
 

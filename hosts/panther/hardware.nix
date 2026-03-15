@@ -40,6 +40,9 @@
     {device = "/dev/disk/by-uuid/90a16834-fa20-4d5a-8469-106d97667b6f";}
   ];
 
+  zramSwap.enable = true;
+  zramSwap.memoryPercent = 50; # Hasta 8 GB comprimidos si es necesario
+
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   hardware.enableRedistributableFirmware = true;

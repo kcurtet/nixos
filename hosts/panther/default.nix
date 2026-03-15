@@ -35,6 +35,12 @@ in
   };
   nixpkgs.config.allowUnfree = true;
 
+  # Nix daemon service - use idle scheduling to reduce system impact
+  systemd.services.nix-daemon.serviceConfig = {
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
+  };
+
   # ============================================================================
   # Boot Configuration
   # ============================================================================

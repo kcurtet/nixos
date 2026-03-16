@@ -1,8 +1,11 @@
 # ============================================================================
 # CLI Tools and Utilities
 # ============================================================================
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home.packages = with pkgs; [
+    tree
+    treemd
     libsecret # for cookie extraction in browsers
     yt-dlp
     ffmpeg

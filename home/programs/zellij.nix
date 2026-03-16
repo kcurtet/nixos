@@ -15,7 +15,97 @@
   programs.zellij = {
     enable = true;
     enableBashIntegration = true;
-
+    exitShellOnExit = true;
+    layouts = {
+      dev = {
+        layout = {
+          _children = [
+            {
+              default_tab_template = {
+                _children = [
+                  {
+                    pane = {
+                      size = 1;
+                      borderless = true;
+                      plugin = {
+                        location = "zellij:tab-bar";
+                      };
+                    };
+                  }
+                  { "children" = { }; }
+                  {
+                    pane = {
+                      size = 2;
+                      borderless = true;
+                      plugin = {
+                        location = "zellij:status-bar";
+                      };
+                    };
+                  }
+                ];
+              };
+            }
+            {
+              tab = {
+                _props = {
+                  name = "Project";
+                  focus = true;
+                };
+                _children = [
+                  {
+                    pane = {
+                      command = "nvim";
+                    };
+                  }
+                ];
+              };
+            }
+            {
+              tab = {
+                _props = {
+                  name = "Git";
+                };
+                _children = [
+                  {
+                    pane = {
+                      command = "lazygit";
+                    };
+                  }
+                ];
+              };
+            }
+            {
+              tab = {
+                _props = {
+                  name = "Files";
+                };
+                _children = [
+                  {
+                    pane = {
+                      command = "yazi";
+                    };
+                  }
+                ];
+              };
+            }
+            {
+              tab = {
+                _props = {
+                  name = "Shell";
+                };
+                _children = [
+                  {
+                    pane = {
+                      command = "zsh";
+                    };
+                  }
+                ];
+              };
+            }
+          ];
+        };
+      };
+    };
     settings = {
       theme = "nord";
       mouse_mode = true;
@@ -64,7 +154,7 @@
       };
 
       web_client = {
-        font = "Iosevka Term";
+        font = "monospace"; # "Iosevka Term";
         cursor_blink = true;
         cursor_style = "block";
         cursor_inactive_style = "outline";

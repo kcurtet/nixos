@@ -26,25 +26,41 @@
       show_startup_tips = false;
 
       keybinds = {
-        locked = {
-          unbind = [ "Ctrl g" ];
-          bind = {
-            "Ctrl s" = { SwitchToMode = "Normal"; };
-          };
-        };
-        scroll = {
-          bind = {
-            "Alt s" = { SwitchToMode = "Normal"; };
-          };
-        };
-        shared_except = {
-          "locked" = {
-            unbind = [ "Ctrl g" ];
+        locked._children = [
+          { unbind._args = [ "Ctrl g" ]; }
+          {
             bind = {
-              "Ctrl s" = { SwitchToMode = "Locked"; };
+              _args = [ "Ctrl s" ];
+              _children = [
+                { SwitchToMode._args = [ "Normal" ]; }
+              ];
             };
-          };
-        };
+          }
+        ];
+
+        scroll._children = [
+          {
+            bind = {
+              _args = [ "Alt s" ];
+              _children = [
+                { SwitchToMode._args = [ "Normal" ]; }
+              ];
+            };
+          }
+        ];
+
+        shared_except._args = [ "locked" ];
+        shared_except._children = [
+          { unbind._args = [ "Ctrl g" ]; }
+          {
+            bind = {
+              _args = [ "Ctrl s" ];
+              _children = [
+                { SwitchToMode._args = [ "Locked" ]; }
+              ];
+            };
+          }
+        ];
       };
 
       web_client = {

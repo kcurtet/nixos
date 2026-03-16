@@ -1,7 +1,8 @@
 # ============================================================================
 # Development Tools
 # ============================================================================
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home.packages = with pkgs; [
     # Cloud tools
     hcloud
@@ -19,6 +20,12 @@
     claude-code
     copilot-cli
     crush
+
+    # nix
+    nixd
+    nixfmt
+    deadnix
+    statix
 
     # JavaScript/TypeScript development
     nodejs

@@ -6,7 +6,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   imports = [
     ./themes/nord.nix
     ./programs
@@ -18,6 +19,11 @@
   # Autojump for directory navigation
   programs.autojump.enable = true;
 
+  home.file.".npmrc".text = ''
+    //registry.npmjs.org/:_authToken=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
+    prefix=${config.home.homeDirectory}/.npm-global
+  '';
+
   # PATH additions
   home.sessionPath = [
     "$HOME/.local/bin"
@@ -25,7 +31,9 @@
     "$HOME/.npm-global/bin"
   ];
 
-  home.sessionVariables = {EDITOR = "nvim";};
+  home.sessionVariables = {
+    EDITOR = "nvim";
+  };
 
   # User settings (can be overridden per-host)
   programs.git.settings = {

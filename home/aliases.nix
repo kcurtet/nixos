@@ -9,6 +9,8 @@
     e = "nvim";
     v = "nvim";
 
+    t = "tmux";
+
     # Git shortcuts
     g = "git";
     gs = "git status";
@@ -24,8 +26,7 @@
     ll = "exa -la";
     la = "exa -a";
     tree = "exa -T";
-    t = "exa -T";
-    tl = "exa -T -L";
+    L = "exa -T -L";
 
     # Navigation
     c = "jump";

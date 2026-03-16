@@ -12,36 +12,47 @@
 { ... }:
 
 {
-  programs.zellij.enable = true;
+  programs.zellij = {
+    enable = true;
+    enableBashIntegration = true;
 
-  xdg.configFile."zellij/config.kdl".text = ''
-    keybinds {
-        locked {
-            unbind "Ctrl g"
-            bind "Ctrl s" { SwitchToMode "Normal"; }
-        }
-        scroll {
-            bind "Alt s" { SwitchToMode "Normal"; }
-        }
-        shared_except "locked" {
-            unbind "Ctrl g"
-            bind "Ctrl s" { SwitchToMode "Locked"; }
-        }
-    }
+    settings = {
+      theme = "nord";
+      mouse_mode = true;
+      copy_command = "wl-copy";
+      default_mode = "locked";
+      copy_clipboard = "primary";
+      scrollback_editor = "\$EDITOR";
+      show_startup_tips = false;
 
-    web_client {
-      font "Iosevka Term" // default is "monospace" - deferring this decision to the browser/os
-      cursor_blink true // default is false
-      cursor_style "block" // possibilities: "block", "bar", "underline"
-      cursor_inactive_style "outline" // possibilities: "outline", "block", "bar", "underline"
-    }
+      keybinds = {
+        locked = {
+          unbind = [ "Ctrl g" ];
+          bind = {
+            "Ctrl s" = { SwitchToMode = "Normal"; };
+          };
+        };
+        scroll = {
+          bind = {
+            "Alt s" = { SwitchToMode = "Normal"; };
+          };
+        };
+        shared_except = {
+          "locked" = {
+            unbind = [ "Ctrl g" ];
+            bind = {
+              "Ctrl s" = { SwitchToMode = "Locked"; };
+            };
+          };
+        };
+      };
 
-    theme "nord"
-    mouse_mode true
-    copy_command "wl-copy"
-    default_mode "locked"
-    copy_clipboard "primary"
-    scrollback_editor "$EDITOR"
-    show_startup_tips false
-  '';
+      web_client = {
+        font = "Iosevka Term";
+        cursor_blink = true;
+        cursor_style = "block";
+        cursor_inactive_style = "outline";
+      };
+    };
+  };
 }

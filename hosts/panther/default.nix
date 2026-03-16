@@ -247,18 +247,6 @@ in
       owner = "kx";
       mode = "0600";
     };
-    okx_api_key = {
-      owner = "kx";
-      mode = "0600";
-    };
-    okx_secret_key = {
-      owner = "kx";
-      mode = "0600";
-    };
-    okx_passphrase = {
-      owner = "kx";
-      mode = "0600";
-    };
   };
 
   # ============================================================================

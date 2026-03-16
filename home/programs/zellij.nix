@@ -9,7 +9,7 @@
 #
 # URLs are clickable by default via zellij:link plugin
 # ============================================================================
-{ pkgs, ... }:
+{ ... }:
 
 {
   programs.zellij.enable = true;
@@ -17,14 +17,14 @@
   xdg.configFile."zellij/config.kdl".text = ''
     keybinds {
         locked {
-            bind "Ctrl g" { Unbind; }
+            unbind "Ctrl g"
             bind "Ctrl s" { SwitchToMode "Normal"; }
         }
         scroll {
             bind "Alt s" { SwitchToMode "Normal"; }
         }
         shared_except "locked" {
-            bind "Ctrl g" { Unbind; }
+            unbind "Ctrl g"
             bind "Ctrl s" { SwitchToMode "Locked"; }
         }
     }

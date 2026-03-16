@@ -9,7 +9,7 @@
     e = "nvim";
     v = "nvim";
 
-    t = "tmux";
+    z = "zellij";
 
     # Git shortcuts
     g = "git";
@@ -25,7 +25,7 @@
     l = "exa -l";
     ll = "exa -la";
     la = "exa -a";
-    tree = "exa -T";
+    t = "exa -T";
     L = "exa -T -L";
 
     # Navigation

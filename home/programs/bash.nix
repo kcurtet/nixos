@@ -20,7 +20,7 @@
         export BRAVE_API_KEY="$(cat /run/secrets/brave_api_key)"
       fi
 
-      if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fik
+      if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
     '';
   };
 }

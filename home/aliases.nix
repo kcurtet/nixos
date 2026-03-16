@@ -7,6 +7,7 @@
   home.shellAliases = {
     # Editor
     e = "nvim";
+    v = "nvim";
 
     # Git shortcuts
     g = "git";
@@ -27,6 +28,6 @@
     tl = "exa -T -L";
 
     # Navigation
-    "..." = "cd ../..";
+    c = "jump";
   };
 }

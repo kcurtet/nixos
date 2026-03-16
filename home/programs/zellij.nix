@@ -9,36 +9,25 @@
 #
 # URLs are clickable by default via zellij:link plugin
 # ============================================================================
-{ ... }:
+{ pkgs, ... }:
 
 {
-  programs.zellij = {
-    enable = true;
-    settings = {
-      theme = "nord";
-      keybinds = {
-        # Override global Ctrl+g binding (was SwitchToMode "Locked")
-        shared_except = {
-          _args = ["locked"];
-          bind = [
-            { "ctrl g" = { Unbind = []; }; }
-            { "ctrl s" = { SwitchToMode = "Locked"; }; }
-          ];
-        };
-        # Locked mode: Ctrl+s exits to normal
-        locked = {
-          bind = [
-            { "ctrl g" = { Unbind = []; }; }
-            { "ctrl s" = { SwitchToMode = "Normal"; }; }
-          ];
-        };
-        # Scroll mode: Alt+s exits (since Ctrl+s is now locked mode)
-        scroll = {
-          bind = [
-            { "alt s" = { SwitchToMode = "Normal"; }; }
-          ];
-        };
-      };
-    };
-  };
+  programs.zellij.enable = true;
+  
+  xdg.configFile."zellij/config.kdl".text = ''
+    keybinds {
+        locked {
+            bind "Ctrl g" { Unbind; }
+            bind "Ctrl s" { SwitchToMode "Normal"; }
+        }
+        scroll {
+            bind "Alt s" { SwitchToMode "Normal"; }
+        }
+        shared_except "locked" {
+            bind "Ctrl g" { Unbind; }
+            bind "Ctrl s" { SwitchToMode "Locked"; }
+        }
+    }
+    theme "nord"
+  '';
 }

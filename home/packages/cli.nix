@@ -4,32 +4,32 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    # File managers and tree viewers
+    eza
     tree
     treemd
-    libsecret # for cookie extraction in browsers
-    yt-dlp
-    ffmpeg
-    # System utilities
-    lsof
-    iftop
-    btop
-    lm_sensors
+    yazi
 
     # Archive tools
-    zip
-    unzip
     p7zip
+    unzip
+    zip
+
+    # System utilities
+    btop
+    iftop
+    lm_sensors
+    lsof
 
     # Terminal utilities
-    trash-cli
-    jq
-    eza
-    ripgrep
     fd
+    jq
+    ripgrep
+    trash-cli
 
     # Network tools
-    netcat-openbsd
     lynx
+    netcat-openbsd
 
     # Notifications
     notify-desktop
@@ -42,5 +42,12 @@
     # Nix tools
     nixd
     nixfmt
+
+    # Media tools
+    ffmpeg
+    yt-dlp
+
+    # Browser integration
+    libsecret # for cookie extraction in browsers
   ];
 }

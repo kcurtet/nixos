@@ -20,17 +20,17 @@
         # Override global Ctrl+g binding (was SwitchToMode "Locked")
         shared_except = {
           _args = ["locked"];
-          "ctrl g" = ["unbind"];
-          "ctrl s" = ["SwitchToMode" "Locked"];
+          "ctrl g" = { unbind = []; };
+          "ctrl s" = { SwitchToMode = "Locked"; };
         };
         # Locked mode: Ctrl+s exits to normal
         locked = {
-          "ctrl g" = ["unbind"];
-          "ctrl s" = ["SwitchToMode" "Normal"];
+          "ctrl g" = { unbind = []; };
+          "ctrl s" = { SwitchToMode = "Normal"; };
         };
         # Scroll mode: Alt+s exits (since Ctrl+s is now locked mode)
         scroll = {
-          "alt s" = ["SwitchToMode" "Normal"];
+          "alt s" = { SwitchToMode = "Normal"; };
         };
       };
     };

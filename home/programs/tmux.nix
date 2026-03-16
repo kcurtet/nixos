@@ -12,6 +12,7 @@
       set -g history-limit 10000
       set -g default-terminal "screen-256color"
       set -g extended-keys on
+      set -g extended-keys-format csi-u
     '';
     plugins = with pkgs.tmuxPlugins; [
       nord

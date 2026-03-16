@@ -37,6 +37,7 @@
     # Version control
     gh
     git
+    worktrunk
 
     # Nix tools
     nixd

@@ -8,7 +8,7 @@
     enable = true;
     enableCompletion = true;
 
-    initExtra = ''
+    initContent = ''
       # ============================================================================
       # SOPS Secrets Environment Variables
       # ============================================================================

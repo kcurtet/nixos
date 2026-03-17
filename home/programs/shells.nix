@@ -9,7 +9,7 @@
   # ============================================================================
   programs.fish = {
     enable = true;
-    interactiveShellInit = ''
+    initContent = ''
       # ============================================================================
       # SOPS Secrets Environment Variables
       # ============================================================================
@@ -39,7 +39,7 @@
     };
 
     functions = {
-      fish_greeting = "";  # Disable default greeting
+      fish_greeting = ""; # Disable default greeting
     };
   };
 
@@ -70,6 +70,5 @@
       if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
     '';
   };
-
 
 }

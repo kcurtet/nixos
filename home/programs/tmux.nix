@@ -5,9 +5,9 @@
 {
   programs.tmux = {
     enable = true;
-    shell = "${pkgs.zsh}/bin/zsh"; # Cambia a tu shell (bash, fish, etc.)
+    shell = "${pkgs.fish}/bin/fish"; # Cambia a tu shell (bash, fish, etc.)
     terminal = "tmux-256color";
-    prefix = "C-Space";
+    prefix = "C-a";
     mouse = true;
     baseIndex = 1;
     keyMode = "vi";

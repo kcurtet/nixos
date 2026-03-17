@@ -175,7 +175,7 @@ in
     syncthing.enable = true;
     tailscale.enable = true;
     tor = true;
-    flatpak = true;
+    flatpak = false;
     ollama = true;
   };
 

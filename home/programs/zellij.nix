@@ -120,28 +120,31 @@
           { unbind._args = [ "Ctrl g" ]; }
           {
             bind = {
-              _args = [ "Ctrl s" ];
-              _children = [
-                { SwitchToMode._args = [ "Normal" ]; }
-              ];
-            };
-          }
-        ];
-
-        scroll._children = [
-          {
-            bind = {
               _args = [ "Alt s" ];
               _children = [
                 { SwitchToMode._args = [ "Normal" ]; }
               ];
             };
           }
-        ];
+          {
+            bind = {
+              _args = [ "Alt t" ];
+              _children = [
+                { OpenTab._args = [ "bash" ]; }
+              ];
+            };
+          }
+          {
 
-        shared_except._args = [ "locked" ];
-        shared_except._children = [
-          { unbind._args = [ "Ctrl g" ]; }
+            bind = {
+              _args = [ "Alt p" ];
+              _children = [
+                { OpenPane._args = [ "bash" ]; }
+              ];
+            };
+          }
+        ];
+        normal._children = [
           {
             bind = {
               _args = [ "Ctrl s" ];

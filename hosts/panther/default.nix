@@ -126,6 +126,7 @@ in
   # ============================================================================
   users.users.kx = {
     isNormalUser = true;
+    shell = pkgs.fish;
     extraGroups = [
       "wheel"
       "networkmanager"
@@ -205,6 +206,7 @@ in
   # ============================================================================
   # Programs
   # ============================================================================
+  programs.fish.enable = true;
   programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;

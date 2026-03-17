@@ -71,18 +71,5 @@
     '';
   };
 
-  # ============================================================================
-  # Set Fish as Default Shell
-  # ============================================================================
-  home.sessionVariables = {
-    SHELL = "${pkgs.fish}/bin/fish";
-  };
 
-  # Make fish the default shell
-  programs.fish.shellInit = ''
-    # Ensure we're running fish
-  '';
-
-  # Configure shell as the default
-  home.preferredShell = pkgs.fish;
 }

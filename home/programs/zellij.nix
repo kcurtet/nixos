@@ -96,7 +96,7 @@
                 _children = [
                   {
                     pane = {
-                      command = "zsh";
+                      command = "bash";
                     };
                   }
                 ];

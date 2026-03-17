@@ -130,7 +130,7 @@
             bind = {
               _args = [ "Alt t" ];
               _children = [
-                { OpenTab._args = [ "bash" ]; }
+                { NewTab._args = [ ]; }
               ];
             };
           }
@@ -139,7 +139,15 @@
             bind = {
               _args = [ "Alt p" ];
               _children = [
-                { OpenPane._args = [ "bash" ]; }
+                { NewPane._args = [ "Right" ]; }
+              ];
+            };
+          }
+          {
+            bind = {
+              _args = [ "Alt Shift p" ];
+              _children = [
+                { NewPane._args = [ "Stacked" ]; }
               ];
             };
           }

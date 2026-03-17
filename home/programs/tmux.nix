@@ -7,7 +7,7 @@
     enable = true;
     shell = "${pkgs.fish}/bin/fish"; # Cambia a tu shell (bash, fish, etc.)
     terminal = "tmux-256color";
-    prefix = "C-a";
+    prefix = "M-a";
     mouse = true;
     baseIndex = 1;
     keyMode = "vi";
@@ -24,6 +24,11 @@
 
       # ─── Recargar config ─────────────────────────────────────
       bind r source-file ~/.config/tmux/tmux.conf \; display "Config recargada"
+
+      # ─── Sessiones ─────────────────
+      bind S choose-session
+      bind N new-session -c "#{pane_current_path}"
+      bind D detach
 
       # ─── Navegación entre paneles (vim hjkl) ─────────────────
       bind h select-pane -L

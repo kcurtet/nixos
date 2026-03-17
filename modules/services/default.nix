@@ -1,7 +1,12 @@
 # ============================================================================
 # System Services Configuration Module
 # ============================================================================
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   myLib = import ../../lib { inherit lib; };
@@ -56,5 +61,41 @@ in
     services.flatpak.enable = cfg.flatpak;
     services.openssh.enable = cfg.openssh;
     services.ollama.enable = cfg.ollama;
+
+    # Servidor DNS local con dnsmasq
+    services.dnsmasq = {
+      enable = true;
+      settings = {
+        # Resolver *.localhost a 127.0.0.1
+        address = [ "/.localhost/127.0.0.1" ];
+
+        # DNS upstream (puedes cambiarlos por los que prefieras)
+        server = [
+          "1.1.1.1"
+          "8.8.8.8"
+        ];
+
+        # Solo escuchar en loopback
+        listen-address = "127.0.0.1";
+        bind-interfaces = true;
+
+        # No leer /etc/hosts para evitar conflictos
+        no-hosts = false;
+
+        # Cache
+        cache-size = 1000;
+      };
+    };
+
+    # Decirle al sistema que use dnsmasq como DNS
+    networking.nameservers = [ "127.0.0.1" ];
+
+    # Si usas NetworkManager, que no gestione el DNS el solo
+    networking.networkmanager.dns = "none";
+
+    # Asegurarse de que resolv.conf apunta a dnsmasq
+    environment.etc."resolv.conf".text = ''
+      nameserver 127.0.0.1
+    '';
   };
 }

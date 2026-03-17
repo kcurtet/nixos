@@ -143,14 +143,6 @@
               ];
             };
           }
-          {
-            bind = {
-              _args = [ "Alt Shift p" ];
-              _children = [
-                { NewPane._args = [ "Stacked" ]; }
-              ];
-            };
-          }
         ];
         normal._children = [
           {

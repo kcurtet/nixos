@@ -126,7 +126,7 @@ in
   # ============================================================================
   users.users.kx = {
     isNormalUser = true;
-    shell = pkgs.fish;
+    shell = pkgs.bash;
     extraGroups = [
       "wheel"
       "networkmanager"

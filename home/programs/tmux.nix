@@ -5,7 +5,7 @@
 {
   programs.tmux = {
     enable = true;
-    shell = "${pkgs.fish}/bin/fish"; # Cambia a tu shell (bash, fish, etc.)
+    shell = "${pkgs.bash}/bin/bash"; # Cambia a tu shell (bash, fish, etc.)
     terminal = "tmux-256color";
     prefix = "M-a";
     mouse = true;

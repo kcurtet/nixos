@@ -35,6 +35,9 @@
     EDITOR = "nvim";
   };
 
+  # Set Fish as the default shell
+  home.shell = pkgs.fish;
+
   # User settings (can be overridden per-host)
   programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";

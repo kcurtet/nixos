@@ -14,6 +14,23 @@
     escapeTime = 0;
     historyLimit = 50000;
 
+    plugins = with pkgs; [
+      tmuxPlugins.tmux-which-key
+      tmuxPlugins.vim-tmux-navigator
+      tmuxPlugins.cpu
+      {
+        plugin = tmuxPlugins.resurrect;
+        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+      }
+      {
+        plugin = tmuxPlugins.continuum;
+        extraConfig = ''
+          set -g @continuum-restore 'on'
+          set -g @continuum-save-interval '60' # minutes
+        '';
+      }
+    ];
+
     extraConfig = ''
       # ─── General ──────────────────────────────────────────────
       set -ag terminal-overrides ",xterm-256color:RGB"
@@ -64,26 +81,26 @@
       bind -n M-L resize-pane -R 2
 
       # ─── Navegación entre ventanas ───────────────────────────
-      bind -n M-p previous-window
-      bind -n M-n next-window
-      bind -n M-1 select-window -t 1
-      bind -n M-2 select-window -t 2
-      bind -n M-3 select-window -t 3
-      bind -n M-4 select-window -t 4
-      bind -n M-5 select-window -t 5
-      bind -n M-6 select-window -t 6
-      bind -n M-7 select-window -t 7
-      bind -n M-8 select-window -t 8
-      bind -n M-9 select-window -t 9
+      bind -n -r M-p previous-window
+      bind -n -r M-n next-window
+      bind -n -r M-1 select-window -t 1
+      bind -n -r M-2 select-window -t 2
+      bind -n -r M-3 select-window -t 3
+      bind -n -r M-4 select-window -t 4
+      bind -n -r M-5 select-window -t 5
+      bind -n -r M-6 select-window -t 6
+      bind -n -r M-7 select-window -t 7
+      bind -n -r M-8 select-window -t 8
+      bind -n -r M-9 select-window -t 9
 
-      bind -r '<' swap-window -d -t -1
-      bind -r '>' swap-window -d -t +1
+      bind -r '<' select-window -p
+      bind -r '>' select-window -n
 
       # ─── Gestión de paneles ──────────────────────────────────
       bind x   kill-pane
       bind X   kill-window
       bind z   resize-pane -Z
-      bind Space next-layout
+      bind 0   next-layout
 
       bind -r '{' swap-pane -U
       bind -r '}' swap-pane -D

@@ -9,9 +9,7 @@
 #
 # URLs are clickable by default via zellij:link plugin
 # ============================================================================
-{ ... }:
-
-{
+_: {
   programs.zellij = {
     enable = true;
     enableBashIntegration = true;
@@ -143,11 +141,43 @@
               ];
             };
           }
+          {
+            bind = {
+              _args = [ "Alt k" ];
+              _children = [
+                { MoveFocus._args = [ "Up" ]; }
+              ];
+            };
+          }
+          {
+            bind = {
+              _args = [ "Alt j" ];
+              _children = [
+                { MoveFocus._args = [ "Down" ]; }
+              ];
+            };
+          }
+          {
+            bind = {
+              _args = [ "Alt h" ];
+              _children = [
+                { MoveFocus._args = [ "Left" ]; }
+              ];
+            };
+          }
+          {
+            bind = {
+              _args = [ "Alt l" ];
+              _children = [
+                { MoveFocus._args = [ "Right" ]; }
+              ];
+            };
+          }
         ];
         normal._children = [
           {
             bind = {
-              _args = [ "Ctrl s" ];
+              _args = [ "Alt s" ];
               _children = [
                 { SwitchToMode._args = [ "Locked" ]; }
               ];

@@ -47,17 +47,17 @@
       bind -n M-k select-pane -U
       bind -n M-l select-pane -R
 
-      # move panes with vim splits keybinds
-      bind -n C-h swap-pane -L
-      bind -n C-j swap-pane -D
-      bind -n C-k swap-pane -U
-      bind -n C-l swap-pane -R
+      # move/swap panes with ctrl+vim keys
+      bind -n C-M-h swap-pane -s '{left-of}'
+      bind -n C-M-j swap-pane -s '{down-of}'
+      bind -n C-M-k swap-pane -s '{up-of}'
+      bind -n C-M-l swap-pane -s '{right-of}'
 
-      # resize keybinds for vim splits
-      bind -n S-h select-pane -L
-      bind -n S-j select-pane -D
-      bind -n S-k select-pane -U
-      bind -n S-l select-pane -R
+      # resize panes with prefix + vim keys (held)
+      bind -r h resize-pane -L 5
+      bind -r j resize-pane -D 5
+      bind -r k resize-pane -U 5
+      bind -r l resize-pane -R 5
     '';
   };
 }

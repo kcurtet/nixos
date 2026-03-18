@@ -13,11 +13,17 @@
     keyMode = "vi";
     escapeTime = 0;
     historyLimit = 50000;
+    disableConfirmationPrompt = true;
+    focusEvents = true;
+    aggressiveResize = true;
+    clock24 = true;
+    newSession = true;
 
     plugins = with pkgs; [
       tmuxPlugins.tmux-which-key
       tmuxPlugins.vim-tmux-navigator
       tmuxPlugins.cpu
+      tmuxPlugins.copy-toolkit
       {
         plugin = tmuxPlugins.resurrect;
         extraConfig = "set -g @resurrect-strategy-nvim 'session'";
@@ -34,18 +40,15 @@
     extraConfig = ''
       # ─── General ──────────────────────────────────────────────
       set -ag terminal-overrides ",xterm-256color:RGB"
-      setw -g pane-base-index 1
-      set  -g renumber-windows on
-      set  -g focus-events on
-      set  -g set-clipboard on
+      set  -g extended-keys
+      set -g extended-keys-format csi-u
 
       # ─── Recargar config ─────────────────────────────────────
       bind r source-file ~/.config/tmux/tmux.conf \; display "Config recargada"
 
       # ─── Sessiones ─────────────────
-      bind S choose-session
+      bind 0 choose-session
       bind N new-session -c "#{pane_current_path}"
-      bind D detach
 
       # ─── Navegación entre paneles (vim hjkl) ─────────────────
       bind h select-pane -L
@@ -81,26 +84,28 @@
       bind -n M-L resize-pane -R 2
 
       # ─── Navegación entre ventanas ───────────────────────────
-      bind -n -r M-p previous-window
-      bind -n -r M-n next-window
-      bind -n -r M-1 select-window -t 1
-      bind -n -r M-2 select-window -t 2
-      bind -n -r M-3 select-window -t 3
-      bind -n -r M-4 select-window -t 4
-      bind -n -r M-5 select-window -t 5
-      bind -n -r M-6 select-window -t 6
-      bind -n -r M-7 select-window -t 7
-      bind -n -r M-8 select-window -t 8
-      bind -n -r M-9 select-window -t 9
+      bind -r 1 select-window -t 1
+      bind -r 2 select-window -t 2
+      bind -r 3 select-window -t 3
+      bind -r 4 select-window -t 4
+      bind -r 5 select-window -t 5
+      bind -r 6 select-window -t 6
+      bind -r 7 select-window -t 7
+      bind -r 8 select-window -t 8
+      bind -r 9 select-window -t 9
 
       bind -r '<' select-window -p
       bind -r '>' select-window -n
+      bind -n -r M-p previous-window
+      bind -n -r M-n next-window
+      bind 0 choose-window
+
 
       # ─── Gestión de paneles ──────────────────────────────────
       bind x   kill-pane
       bind X   kill-window
       bind z   resize-pane -Z
-      bind 0   next-layout
+      bind Space   next-layout
 
       bind -r '{' swap-pane -U
       bind -r '}' swap-pane -D
@@ -117,7 +122,7 @@
       bind -T copy-mode-vi '?'    command-prompt -i -p "(buscar arriba)" "send -X search-backward-incremental \"%%%\""
 
       bind p paste-buffer
-      bind P choose-buffer
+      bind b choose-buffer
 
       # ─── Barra de estado ────────────────────────────────────
       set -g status-position top

@@ -49,5 +49,10 @@
 
     # Browser integration
     libsecret # for cookie extraction in browsers
+
+    # Added packages
+    ast-grep
+    google-cloud-sdk
+    tesseract
   ];
 }

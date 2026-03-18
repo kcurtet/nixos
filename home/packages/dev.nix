@@ -4,6 +4,9 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    # Code metrics
+    tokei
+
     # Cloud tools
     hcloud
 

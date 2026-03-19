@@ -20,7 +20,13 @@
     newSession = true;
 
     plugins = with pkgs; [
-      tmuxPlugins.tmux-which-key
+      {
+        plugin = tmuxPlugins.tmux-which-key;
+        extraConfig = ''
+          # Must be set before plugin loads to prevent writing to Nix store
+          set -g @tmux-which-key-disable-autobuild 1
+        '';
+      }
       tmuxPlugins.vim-tmux-navigator
       tmuxPlugins.cpu
       tmuxPlugins.copy-toolkit
@@ -38,9 +44,6 @@
     ];
 
     extraConfig = ''
-      # ─── tmux-which-key: deshabilitar autoconstrucción
-      set -g @tmux-which-key-disable-autobuild 1
-
       # ─── General ──────────────────────────────────────────────
       set -ag terminal-overrides ",xterm-256color:RGB"
       set  -g extended-keys

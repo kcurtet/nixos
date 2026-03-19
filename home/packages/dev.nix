@@ -4,6 +4,10 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    playwright-driver
+    playwright.browsers
+    playwright
+
     # Code metrics
     tokei
 

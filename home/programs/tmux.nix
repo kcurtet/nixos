@@ -38,6 +38,9 @@
     ];
 
     extraConfig = ''
+      # ─── tmux-which-key: deshabilitar autoconstrucción
+      set -g @tmux-which-key-disable-autobuild 1
+
       # ─── General ──────────────────────────────────────────────
       set -ag terminal-overrides ",xterm-256color:RGB"
       set  -g extended-keys
@@ -141,6 +144,7 @@
       set -g status-right-length 50
       set -g status-right "#[fg=#f9e2af,bg=#1e1e2e] 󰥔 %H:%M #[fg=#1e1e2e,bg=#f9e2af,bold] #H "
 
+      set -g pane-border-lines heavy
       set -g pane-border-style        "fg=#313244"
       set -g pane-active-border-style "fg=#89b4fa"
 

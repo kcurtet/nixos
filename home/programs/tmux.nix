@@ -48,6 +48,8 @@
       set -ag terminal-overrides ",xterm-256color:RGB"
       set  -g extended-keys
       set -g extended-keys-format csi-u
+      set-option -g allow-passthrough on
+
 
       # ─── Recargar config ─────────────────────────────────────
       bind r source-file ~/.config/tmux/tmux.conf \; display "Config recargada"

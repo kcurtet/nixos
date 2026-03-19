@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -141,16 +157,17 @@
     },
     "nixvim": {
       "inputs": {
+        "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim_2"
       },
       "locked": {
-        "lastModified": 1773927060,
-        "narHash": "sha256-8DanWtagBxwqYJVIcWkRdjGPlkzEiUvs8Bh4cCzLYGY=",
+        "lastModified": 1773941500,
+        "narHash": "sha256-DLHfJJD5sL/4HlPV/BSymZjodqz+CKQmwXTEIVteN0Q=",
         "owner": "kcurtet",
         "repo": "nixvim",
-        "rev": "f87375745cb74f756419a1ddde61906e4de409fa",
+        "rev": "bb67fcbd6501e4a8aadd1843d10b6d53fef3f406",
         "type": "github"
       },
       "original": {

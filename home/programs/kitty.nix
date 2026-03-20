@@ -1,11 +1,11 @@
 # ============================================================================
 # Kitty Terminal Configuration
 # ============================================================================
-{ ... }:
+{ pkgs, ... }:
 {
   programs.kitty = {
     enable = true;
-    theme = "Nord";
+    themeFile = "${pkgs.kitty-themes}/share/kitty-themes/themes/Nord.conf";
     font = {
       name = "JetBrainsMono Nerd Font";
       size = 14;

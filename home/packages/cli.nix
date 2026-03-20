@@ -53,6 +53,9 @@
     # Browsers
     nyxt # Keyboard-driven Emacs/Vim-style browser
 
+    # Kitty themes
+    kitty-themes
+
     # Added packages
     ast-grep
     google-cloud-sdk

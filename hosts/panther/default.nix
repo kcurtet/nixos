@@ -24,6 +24,7 @@ in
     ../../modules/gaming
     ../../modules/virtualization
     ../../modules/desktop/gnome
+    ../../modules/desktop/hyprland
     ../../modules/services
     ../../modules/laptop
   ];
@@ -88,9 +89,16 @@ in
   };
 
   # ============================================================================
-  # Desktop Environment - GNOME
+  # Desktop Environments - GNOME + Hyprland
   # ============================================================================
   desktop.gnome = {
+    enable = true;
+    gdm = true; # GDM is shared with Hyprland
+    xkb.layout = "es";
+    xkb.variant = "cat";
+  };
+
+  desktop.hyprland = {
     enable = true;
     xkb.layout = "es";
     xkb.variant = "cat";

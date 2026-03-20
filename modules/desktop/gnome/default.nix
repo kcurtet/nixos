@@ -18,7 +18,7 @@ in
     gdm = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Enable GDM display manager";
+      description = "Enable GDM display manager (shared with other desktops)";
     };
 
     keyring = lib.mkOption {
@@ -46,10 +46,10 @@ in
       enable = true;
       xkb.layout = cfg.xkb.layout;
       xkb.variant = cfg.xkb.variant;
+      desktopManager.gnome.enable = true;
     };
 
     services.displayManager.gdm.enable = cfg.gdm;
-    services.desktopManager.gnome.enable = true;
     services.gnome.gnome-keyring.enable = cfg.keyring;
 
     # Required for GNOME on Wayland

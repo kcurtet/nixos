@@ -10,6 +10,7 @@
 {
   imports = [
     ./themes/nord.nix
+    ./programs/hyprland.nix
     ./programs
     ./packages
     ./services
@@ -36,6 +37,9 @@
   home.sessionVariables = {
     EDITOR = "nvim";
   };
+
+  # Hyprland user configuration
+  programs.hyprland.enable = true;
 
   # User settings (can be overridden per-host)
   programs.git.settings = {

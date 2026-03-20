@@ -27,54 +27,78 @@ in
         description = "Keyboard variant";
       };
     };
-
-    extraPackages = lib.mkOption {
-      type = lib.types.listOf lib.types.package;
-      default = with pkgs; [
-        wl-clipboard
-        waybar
-        rofi-wayland
-        swaybg
-        swaylock-effects
-        wlogout
-        kanshi
-        hyprpicker
-        grim
-        slurp
-      ];
-      description = "Extra packages to install with Hyprland";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    # Enable Wayland compositor
+    # Wayland session for Hyprland
     programs.hyprland = {
       enable = true;
       xwayland.enable = true;
     };
 
-    # XDG portal for Wayland
-    xdg.portal = {
+    # Keyboard settings for Hyprland
+    services.xserver = {
       enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-hyprland
-        xdg-desktop-portal-gtk
-      ];
-    };
-
-    # Keyboard settings
-    services.xserver.xkb = {
-      inherit (cfg.xkb) layout variant;
+      xkb.layout = cfg.xkb.layout;
+      xkb.variant = cfg.xkb.variant;
     };
 
     # Required for Wayland compositors
-    security.polkit.enable = true;
     services.dbus.enable = true;
+    hardware.graphics.enable = true;
 
-    # Install packages
-    environment.systemPackages = cfg.extraPackages;
+    # Portal settings for Wayland
+    xdg.portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-hyprland
+      ];
+    };
 
-    # Dconf for settings
-    programs.dconf.enable = true;
+    # System packages for Hyprland ecosystem
+    environment.systemPackages = with pkgs; [
+      # Status bar
+      waybar
+
+      # Terminal
+      foot
+
+      # Wallpaper
+      swww
+
+      # Application launcher
+      rofi
+
+      # Notifications
+      dunst
+      libnotify
+
+      # File manager
+      thunar
+      xfce.thunar-volman
+
+      # Clipboard manager
+      wl-clipboard
+      cliphist
+
+      # Volume/brightness controls
+      pamixer
+      brightnessctl
+
+      # Screen locking
+      swaylock-effects
+
+      # Screenshot tool
+      grim
+      slurp
+
+      # Screen sharing
+      v4l-utils
+
+      # Other utilities
+      xdg-utils
+      xdg-user-dirs
+    ];
   };
 }

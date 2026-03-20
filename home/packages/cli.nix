@@ -41,7 +41,7 @@
 
     # Nix tools
     nixd
-    nixfmt
+    nixfmt-tree
 
     # Media tools
     ffmpeg

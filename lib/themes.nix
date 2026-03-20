@@ -16,9 +16,9 @@
     n6 = "#eceff4";
 
     # Frost
-    n7 = "#8fbcbb";  # cyan
-    n8 = "#88c0d0";  # bright cyan
-    n9 = "#81a1c1";  # blue
+    n7 = "#8fbcbb"; # cyan
+    n8 = "#88c0d0"; # bright cyan
+    n9 = "#81a1c1"; # blue
     n10 = "#5e81ac"; # dark blue
 
     # Aurora
@@ -42,39 +42,45 @@
   # LazyGit theme generator
   lazygit = colors: {
     # Window borders
-    activeBorderColor = [colors.n8 "bold"];
-    inactiveBorderColor = [colors.n3];
-    searchingActiveBorderColor = [colors.n9 "bold"];
+    activeBorderColor = [
+      colors.n8
+      "bold"
+    ];
+    inactiveBorderColor = [ colors.n3 ];
+    searchingActiveBorderColor = [
+      colors.n9
+      "bold"
+    ];
 
     # Selection colors
-    selectedLineBgColor = [colors.n1];
-    selectedRangeBgColor = [colors.n2];
+    selectedLineBgColor = [ colors.n1 ];
+    selectedRangeBgColor = [ colors.n2 ];
 
     # Commit colors
-    cherryPickedCommitBgColor = [colors.n2];
-    cherryPickedCommitFgColor = [colors.n8];
-    markedBaseCommitBgColor = [colors.n15];
-    markedBaseCommitFgColor = [colors.n0];
+    cherryPickedCommitBgColor = [ colors.n2 ];
+    cherryPickedCommitFgColor = [ colors.n8 ];
+    markedBaseCommitBgColor = [ colors.n15 ];
+    markedBaseCommitFgColor = [ colors.n0 ];
 
     # Text colors
-    optionsTextColor = [colors.n8];
-    defaultFgColor = [colors.n4];
+    optionsTextColor = [ colors.n8 ];
+    defaultFgColor = [ colors.n4 ];
 
     # Git status colors
-    unstagedChangesColor = [colors.n11];
-    stagedChangesColor = [colors.n14];
-    untrackedChangesColor = [colors.n13];
-    conflictedChangesColor = [colors.n11];
+    unstagedChangesColor = [ colors.n11 ];
+    stagedChangesColor = [ colors.n14 ];
+    untrackedChangesColor = [ colors.n13 ];
+    conflictedChangesColor = [ colors.n11 ];
 
     # Branch and tag colors
-    remoteBranchColor = [colors.n15];
-    localBranchColor = [colors.n14];
-    tagColor = [colors.n13];
-    upstreamColor = [colors.n10];
+    remoteBranchColor = [ colors.n15 ];
+    localBranchColor = [ colors.n14 ];
+    tagColor = [ colors.n13 ];
+    upstreamColor = [ colors.n10 ];
 
     # Commit metadata colors
-    reflogCommitColor = [colors.n12];
-    authorColor = [colors.n7];
-    commitHashColor = [colors.n9];
+    reflogCommitColor = [ colors.n12 ];
+    authorColor = [ colors.n7 ];
+    commitHashColor = [ colors.n9 ];
   };
 }

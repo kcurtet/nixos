@@ -1,18 +1,19 @@
 # ============================================================================
 # GNOME Shell Configuration
 # ============================================================================
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   programs.gnome-shell = {
     enable = true;
     extensions = with pkgs.gnomeExtensions; [
-      {package = appindicator;}
-      {package = caffeine;}
+      { package = appindicator; }
+      { package = caffeine; }
       {
         id = "user-theme@gnome-shell-extensions.gcampax.github.com";
         package = pkgs.gnome-shell-extensions;
       }
-      {package = gamemode-shell-extension;}
-      {package = colorblind-filters-advanced;}
+      { package = gamemode-shell-extension; }
+      { package = colorblind-filters-advanced; }
     ];
     theme = {
       name = "Nordic";

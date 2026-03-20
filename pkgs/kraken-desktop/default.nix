@@ -37,7 +37,11 @@ stdenv.mkDerivation rec {
     hash = "sha256-EozlqIXqi4W6vGHvVvIb4YE0tPwqtRVoEEiOqICUAMo=";
   };
 
-  nativeBuildInputs = [autoPatchelfHook makeWrapper unzip];
+  nativeBuildInputs = [
+    autoPatchelfHook
+    makeWrapper
+    unzip
+  ];
 
   buildInputs = [
     openssl
@@ -73,11 +77,32 @@ stdenv.mkDerivation rec {
     cp kraken_desktop $out/bin/.kraken-desktop-wrapped
 
     wrapProgram $out/bin/.kraken-desktop-wrapped \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
-        openssl libGL fontconfig freetype expat libx11 libxcursor
-        libxrandr libxi wayland libxkbcommon alsa-lib dbus gcc.cc
-        libdrm mesa libgbm nss nspr cups at-spi2-atk at-spi2-core
-      ]} \
+      --prefix LD_LIBRARY_PATH : ${
+        lib.makeLibraryPath [
+          openssl
+          libGL
+          fontconfig
+          freetype
+          expat
+          libx11
+          libxcursor
+          libxrandr
+          libxi
+          wayland
+          libxkbcommon
+          alsa-lib
+          dbus
+          gcc.cc
+          libdrm
+          mesa
+          libgbm
+          nss
+          nspr
+          cups
+          at-spi2-atk
+          at-spi2-core
+        ]
+      } \
       --prefix XDG_DATA_DIRS : "/run/current-system/sw/share:/nix/var/nix/profiles/default/share:$XDG_DATA_DIRS" \
       --prefix PATH : "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
 
@@ -96,6 +121,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Kraken crypto exchange desktop app";
     homepage = "https://www.kraken.com/desktop";
-    platforms = ["x86_64-linux"];
+    platforms = [ "x86_64-linux" ];
   };
 }

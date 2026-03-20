@@ -32,13 +32,50 @@ in
       };
     };
 
-    tor = lib.mkEnableOption "Tor service";
+    tor = {
+      enable = lib.mkEnableOption "Tor service";
+      enableGeoIP = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Tor GeoIP";
+      };
+    };
 
-    flatpak = lib.mkEnableOption "Flatpak support";
+    flatpak = {
+      enable = lib.mkEnableOption "Flatpak support";
+    };
 
-    openssh = lib.mkEnableOption "OpenSSH server";
+    openssh = {
+      enable = lib.mkEnableOption "OpenSSH server";
+    };
 
-    ollama = lib.mkEnableOption "Ollama local AI";
+    ollama = {
+      enable = lib.mkEnableOption "Ollama local AI";
+      port = lib.mkOption {
+        type = lib.types.port;
+        default = 11434;
+        description = "Ollama server port";
+      };
+    };
+
+    dnsmasq = {
+      enable = lib.mkEnableOption "Local DNS via dnsmasq";
+
+      upstreamServers = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [
+          "1.1.1.1"
+          "8.8.8.8"
+        ];
+        description = "DNS upstream servers";
+      };
+
+      cacheSize = lib.mkOption {
+        type = lib.types.int;
+        default = 1000;
+        description = "DNS cache size";
+      };
+    };
   };
 
   config = {
@@ -53,48 +90,45 @@ in
       extraUpFlags = lib.optional cfg.tailscale.ssh "--ssh";
     };
 
-    services.tor = lib.mkIf cfg.tor {
+    services.tor = lib.mkIf cfg.tor.enable {
       enable = true;
-      enableGeoIP = false;
+      enableGeoIP = cfg.tor.enableGeoIP;
     };
 
-    services.flatpak.enable = cfg.flatpak;
-    services.openssh.enable = cfg.openssh;
-    services.ollama.enable = cfg.ollama;
+    services.flatpak.enable = cfg.flatpak.enable;
+    services.openssh.enable = cfg.openssh.enable;
+    services.ollama = lib.mkIf cfg.ollama.enable {
+      enable = true;
+      host = "127.0.0.1";
+      port = cfg.ollama.port;
+    };
 
-    # Servidor DNS local con dnsmasq
-    services.dnsmasq = {
+    # Local DNS server with dnsmasq
+    services.dnsmasq = lib.mkIf cfg.dnsmasq.enable {
       enable = true;
       settings = {
-        # Resolver *.localhost a 127.0.0.1
+        # Resolve *.localhost to 127.0.0.1
         address = [ "/.localhost/127.0.0.1" ];
 
-        # DNS upstream (puedes cambiarlos por los que prefieras)
-        server = [
-          "1.1.1.1"
-          "8.8.8.8"
-        ];
+        # DNS upstream servers
+        server = cfg.dnsmasq.upstreamServers;
 
-        # Solo escuchar en loopback
+        # Only listen on loopback
         listen-address = "127.0.0.1";
         bind-interfaces = true;
 
-        # No leer /etc/hosts para evitar conflictos
+        # Don't read /etc/hosts to avoid conflicts
         no-hosts = false;
 
         # Cache
-        cache-size = 1000;
+        cache-size = cfg.dnsmasq.cacheSize;
       };
     };
 
-    # Decirle al sistema que use dnsmasq como DNS
-    networking.nameservers = [ "127.0.0.1" ];
-
-    # Si usas NetworkManager, que no gestione el DNS el solo
-    networking.networkmanager.dns = "none";
-
-    # Asegurarse de que resolv.conf apunta a dnsmasq
-    environment.etc."resolv.conf".text = ''
+    # Use dnsmasq as system DNS when enabled
+    networking.nameservers = lib.mkIf cfg.dnsmasq.enable [ "127.0.0.1" ];
+    networking.networkmanager.dns = lib.mkIf cfg.dnsmasq.enable "none";
+    environment.etc."resolv.conf".text = lib.mkIf cfg.dnsmasq.enable ''
       nameserver 127.0.0.1
     '';
   };

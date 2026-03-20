@@ -2,7 +2,12 @@
 # NVIDIA Specialisations
 # Provides boot profiles for different GPU configurations
 # ============================================================================
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.hardware.nvidiaConfig;
@@ -12,7 +17,7 @@ in
     specialisation = {
       # On-the-go: Use GPU sync for better performance
       on-the-go.configuration = {
-        system.nixos.tags = ["on-the-go"];
+        system.nixos.tags = [ "on-the-go" ];
         hardware.nvidia = {
           prime.offload.enable = lib.mkForce false;
           prime.offload.enableOffloadCmd = lib.mkForce false;
@@ -22,7 +27,7 @@ in
 
       # Disable Intel: Use only NVIDIA GPU
       disable-intel.configuration = {
-        system.nixos.tags = ["disable-intel"];
+        system.nixos.tags = [ "disable-intel" ];
         hardware.nvidia = {
           prime.offload.enable = lib.mkForce false;
           prime.offload.enableOffloadCmd = lib.mkForce false;
@@ -35,7 +40,7 @@ in
 
       # Disable NVIDIA: Completely disable NVIDIA hardware for battery saving
       disable-nvidia.configuration = {
-        system.nixos.tags = ["disable-nvidia"];
+        system.nixos.tags = [ "disable-nvidia" ];
         boot.extraModprobeConfig = ''
           blacklist nouveau
           options nouveau modeset=0

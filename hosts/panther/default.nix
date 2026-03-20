@@ -10,10 +10,7 @@
 }:
 
 let
-  scripts = import ../../scripts {
-    inherit pkgs;
-    flakePath = "/home/kx/system/nixos-config";
-  };
+  scripts = import ../../scripts { inherit pkgs; };
 in
 {
   imports = [
@@ -40,8 +37,8 @@ in
       "flakes"
     ];
     trusted-users = [ "@wheel" ];
-    max-jobs = 4; # Máximo 2 compilaciones en paralelo
-    cores = 4; # Hasta 4 núcleos por compilación
+    max-jobs = 4; # Max parallel compilations
+    cores = 4; # Max cores per compilation
   };
   nixpkgs.config.allowUnfree = true;
 
@@ -132,6 +129,9 @@ in
       "networkmanager"
       "docker"
     ];
+    # SECURITY WARNING: Initial password is "secret" - change immediately on first boot:
+    #   $ passwd
+    # Consider moving to SOPS secrets for production deployments
     initialPassword = "secret";
   };
 
@@ -174,9 +174,24 @@ in
   my.services = {
     syncthing.enable = true;
     tailscale.enable = true;
-    tor = true;
-    flatpak = false;
-    ollama = true;
+    tor = {
+      enable = true;
+      enableGeoIP = false;
+    };
+    flatpak.enable = false;
+    openssh.enable = false;
+    ollama = {
+      enable = true;
+      port = 11434;
+    };
+    dnsmasq = {
+      enable = true;
+      upstreamServers = [
+        "1.1.1.1"
+        "8.8.8.8"
+      ];
+      cacheSize = 1000;
+    };
   };
 
   # ============================================================================
@@ -200,6 +215,7 @@ in
       neovim
       wine-staging
       winetricks
+      nixfmt-tree
     ]
     ++ builtins.attrValues scripts;
 
@@ -249,10 +265,36 @@ in
       owner = "kx";
       mode = "0600";
     };
+    "npm-token" = {
+      owner = "kx";
+      mode = "0600";
+    };
   };
 
   # ============================================================================
   # System State
   # ============================================================================
   system.stateVersion = "26.05";
+
+  # ============================================================================
+  # NPM Token Setup (from SOPS secret)
+  # ============================================================================
+  systemd.services."setup-npm-token-for-kx" = {
+    description = "Generate .npmrc with SOPS-managed token";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "sops-nix.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "kx";
+      ExecStart = pkgs.writeShellScript "setup-npm-token" ''
+        if [ -f /run/secrets/npm-token ]; then
+          TOKEN=$(cat /run/secrets/npm-token)
+          echo "//registry.npmjs.org/:_authToken=$TOKEN" > /home/kx/.npmrc
+          echo "prefix=/home/kx/.npm-global" >> /home/kx/.npmrc
+          chmod 600 /home/kx/.npmrc
+        fi
+      '';
+      RemainAfterExit = true;
+    };
+  };
 }

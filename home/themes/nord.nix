@@ -35,28 +35,34 @@ in
 
   # LazyGit Theme
   programs.lazygit.settings.gui.theme = {
-    activeBorderColor = [colors.n8 "bold"];
-    inactiveBorderColor = [colors.n3];
-    searchingActiveBorderColor = [colors.n9 "bold"];
-    selectedLineBgColor = [colors.n1];
-    selectedRangeBgColor = [colors.n2];
-    cherryPickedCommitBgColor = [colors.n2];
-    cherryPickedCommitFgColor = [colors.n8];
-    markedBaseCommitBgColor = [colors.n15];
-    markedBaseCommitFgColor = [colors.n0];
-    optionsTextColor = [colors.n8];
-    defaultFgColor = [colors.n4];
-    unstagedChangesColor = [colors.n11];
-    stagedChangesColor = [colors.n14];
-    untrackedChangesColor = [colors.n13];
-    conflictedChangesColor = [colors.n11];
-    remoteBranchColor = [colors.n15];
-    localBranchColor = [colors.n14];
-    tagColor = [colors.n13];
-    upstreamColor = [colors.n10];
-    reflogCommitColor = [colors.n12];
-    authorColor = [colors.n7];
-    commitHashColor = [colors.n9];
+    activeBorderColor = [
+      colors.n8
+      "bold"
+    ];
+    inactiveBorderColor = [ colors.n3 ];
+    searchingActiveBorderColor = [
+      colors.n9
+      "bold"
+    ];
+    selectedLineBgColor = [ colors.n1 ];
+    selectedRangeBgColor = [ colors.n2 ];
+    cherryPickedCommitBgColor = [ colors.n2 ];
+    cherryPickedCommitFgColor = [ colors.n8 ];
+    markedBaseCommitBgColor = [ colors.n15 ];
+    markedBaseCommitFgColor = [ colors.n0 ];
+    optionsTextColor = [ colors.n8 ];
+    defaultFgColor = [ colors.n4 ];
+    unstagedChangesColor = [ colors.n11 ];
+    stagedChangesColor = [ colors.n14 ];
+    untrackedChangesColor = [ colors.n13 ];
+    conflictedChangesColor = [ colors.n11 ];
+    remoteBranchColor = [ colors.n15 ];
+    localBranchColor = [ colors.n14 ];
+    tagColor = [ colors.n13 ];
+    upstreamColor = [ colors.n10 ];
+    reflogCommitColor = [ colors.n12 ];
+    authorColor = [ colors.n7 ];
+    commitHashColor = [ colors.n9 ];
   };
 
   # Bat Theme

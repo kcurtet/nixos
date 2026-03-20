@@ -1,7 +1,12 @@
 # ============================================================================
 # Virtualization Configuration Module
 # ============================================================================
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   myLib = import ../../lib { inherit lib; };
@@ -13,7 +18,7 @@ in
       enable = lib.mkEnableOption "Docker container runtime";
       extraPackages = lib.mkOption {
         type = lib.types.listOf lib.types.package;
-        default = [];
+        default = [ ];
         description = "Additional Docker-related packages";
       };
     };
@@ -43,14 +48,16 @@ in
       };
     };
 
-    environment.systemPackages = lib.mkIf cfg.libvirtd.enable (with pkgs; [
-      virt-manager
-      virt-viewer
-      cloud-utils
-    ]);
+    environment.systemPackages = lib.mkIf cfg.libvirtd.enable (
+      with pkgs;
+      [
+        virt-manager
+        virt-viewer
+        cloud-utils
+      ]
+    );
 
     # Add user to libvirtd group
-    users.users.${myLib.username}.extraGroups =
-      lib.optional cfg.libvirtd.enable "libvirtd";
+    users.users.${myLib.username}.extraGroups = lib.optional cfg.libvirtd.enable "libvirtd";
   };
 }

@@ -19,7 +19,10 @@
     127.0.0.1 sabnzbd.arr.local
   '';
 
-  networking.nameservers = ["8.8.8.8" "1.1.1.1"];
+  networking.nameservers = [
+    "8.8.8.8"
+    "1.1.1.1"
+  ];
 
   # Firewall
   networking.firewall.enable = true;

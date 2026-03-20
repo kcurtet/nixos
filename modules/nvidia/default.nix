@@ -1,7 +1,12 @@
 # ============================================================================
 # NVIDIA Graphics Configuration Module
 # ============================================================================
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.hardware.nvidiaConfig;
@@ -48,7 +53,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.xserver.videoDrivers = ["nvidia"];
+    services.xserver.videoDrivers = [ "nvidia" ];
 
     hardware.graphics = {
       enable = true;
@@ -62,7 +67,8 @@ in
       open = cfg.open;
       nvidiaSettings = cfg.nvidiaSettings;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
-    } // lib.optionalAttrs cfg.prime.enable {
+    }
+    // lib.optionalAttrs cfg.prime.enable {
       prime = {
         offload.enable = true;
         offload.enableOffloadCmd = true;

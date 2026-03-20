@@ -24,7 +24,11 @@ in
     };
 
     performanceProfile = lib.mkOption {
-      type = lib.types.enum [ "balanced" "performance" "powersave" ];
+      type = lib.types.enum [
+        "balanced"
+        "performance"
+        "powersave"
+      ];
       default = "balanced";
       description = "Default performance profile";
     };
@@ -35,12 +39,14 @@ in
       enable = true;
       settings = {
         # CPU scaling governors
-        CPU_SCALING_GOVERNOR_ON_AC = if cfg.performanceProfile == "performance" then "performance" else "powersave";
+        CPU_SCALING_GOVERNOR_ON_AC =
+          if cfg.performanceProfile == "performance" then "performance" else "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
         # Energy performance policies
         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-        CPU_ENERGY_PERF_POLICY_ON_AC = if cfg.performanceProfile == "powersave" then "power" else "performance";
+        CPU_ENERGY_PERF_POLICY_ON_AC =
+          if cfg.performanceProfile == "powersave" then "power" else "performance";
 
         # CPU performance limits
         CPU_MIN_PERF_ON_AC = 0;

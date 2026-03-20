@@ -7,37 +7,58 @@
   pkgs,
   modulesPath,
   ...
-}: {
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"];
-  boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel"];
-  boot.extraModulePackages = [config.boot.kernelPackages.nvidiaPackages.stable];
-  boot.kernelParams = ["log-level=3" "quiet" "splash"];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "ahci"
+    "nvme"
+    "usbhid"
+    "usb_storage"
+    "sd_mod"
+    "rtsx_pci_sdmmc"
+  ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.nvidiaPackages.stable ];
+  boot.kernelParams = [
+    "log-level=3"
+    "quiet"
+    "splash"
+  ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/b24c6a41-8c65-49e8-a81f-be89581c9a6c";
     fsType = "ext4";
-    options = ["noatime" "discard"];
+    options = [
+      "noatime"
+      "discard"
+    ];
   };
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/9F20-571E";
     fsType = "vfat";
-    options = ["fmask=0077" "dmask=0077" "noatime" "discard"];
+    options = [
+      "fmask=0077"
+      "dmask=0077"
+      "noatime"
+      "discard"
+    ];
   };
 
   fileSystems."/data" = {
     device = "/dev/disk/by-uuid/72ebf933-1c64-4ee9-b35e-e04390569b44";
     fsType = "btrfs";
-    options = ["subvol=data"];
+    options = [ "subvol=data" ];
   };
 
   swapDevices = [
-    {device = "/dev/disk/by-uuid/90a16834-fa20-4d5a-8469-106d97667b6f";}
+    { device = "/dev/disk/by-uuid/90a16834-fa20-4d5a-8469-106d97667b6f"; }
   ];
 
   zramSwap.enable = true;

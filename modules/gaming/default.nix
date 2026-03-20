@@ -1,7 +1,12 @@
 # ============================================================================
 # Gaming Configuration Module
 # ============================================================================
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.gaming;
@@ -36,7 +41,7 @@ in
 
     extraPackages = lib.mkOption {
       type = lib.types.listOf lib.types.package;
-      default = [];
+      default = [ ];
       description = "Additional gaming packages to install";
     };
   };
@@ -50,7 +55,8 @@ in
       capSysNice = true;
     };
 
-    environment.systemPackages = with pkgs;
+    environment.systemPackages =
+      with pkgs;
       [ mangohud ]
       ++ lib.optional cfg.steam lutris
       ++ lib.optional cfg.wine wineWow64Packages.waylandFull

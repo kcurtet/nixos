@@ -9,7 +9,7 @@
   # ============================================================================
   nixConfig = {
     allowUnfree = true;
-    extra-trusted-users = ["kx"];
+    extra-trusted-users = [ "kx" ];
     experimental-features = "nix-command flakes";
     extra-substituters = [
       "https://nix-community.cachix.org"
@@ -33,59 +33,65 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Secrets management
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   # ============================================================================
   # Flake Outputs
   # ============================================================================
-  outputs = {
-    self,
-    nixpkgs,
-    home-manager,
-    sops-nix,
-    nixvim,
-    ...
-  } @ inputs: let
-    system = "x86_64-linux";
+  outputs =
+    {
+      nixpkgs,
+      home-manager,
+      sops-nix,
+      nixvim,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
 
-    # Helper function to create NixOS configurations
-    mkHost = name:
-      nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {inherit inputs;};
-        modules = [
-          ./hosts/${name}
-          home-manager.nixosModules.home-manager
-          sops-nix.nixosModules.sops
+      # Helper function to create NixOS configurations
+      mkHost =
+        name:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./hosts/${name}
+            home-manager.nixosModules.home-manager
+            sops-nix.nixosModules.sops
+          ];
+        };
+    in
+    {
+      # ============================================================================
+      # NixOS Configurations
+      # ============================================================================
+      nixosConfigurations = {
+        panther = mkHost "panther";
+        # Add more hosts here:
+        # lynx = mkHost "lynx";
+      };
+
+      # ============================================================================
+      # Formatter (for `nix fmt`)
+      # ============================================================================
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
+
+      # ============================================================================
+      # Development Shells
+      # ============================================================================
+      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
+        packages = with nixpkgs.legacyPackages.${system}; [
+          nixd
+          nixfmt-tree
+          statix
+          deadnix
+          sops
+          nixvim.packages.${system}.default
         ];
       };
-  in {
-    # ============================================================================
-    # NixOS Configurations
-    # ============================================================================
-    nixosConfigurations = {
-      panther = mkHost "panther";
-      # Add more hosts here:
-      # lynx = mkHost "lynx";
     };
-
-    # ============================================================================
-    # Formatter (for `nix fmt`)
-    # ============================================================================
-    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt;
-
-    # ============================================================================
-    # Development Shells
-    # ============================================================================
-    devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
-      packages = with nixpkgs.legacyPackages.${system}; [
-        nixd
-        nixfmt
-        statix
-        deadnix
-        sops
-	nixvim.packages.${system}.default
-      ];
-    };
-  };
 }

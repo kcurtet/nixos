@@ -30,7 +30,7 @@
 
     # nix
     nixd
-    nixfmt
+    nixfmt-tree
     deadnix
     statix
 

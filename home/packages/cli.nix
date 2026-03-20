@@ -50,6 +50,9 @@
     # Browser integration
     libsecret # for cookie extraction in browsers
 
+    # Browsers
+    nyxt # Keyboard-driven Emacs/Vim-style browser
+
     # Added packages
     ast-grep
     google-cloud-sdk

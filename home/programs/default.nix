@@ -8,7 +8,9 @@
     ./ghostty.nix
     ./git.nix
     ./gnome-shell.nix
+    ./kitty.nix
     ./lazygit.nix
+    ./nyxt-config.nix
     ./shells.nix
     ./ssh.nix
     ./tmux.nix

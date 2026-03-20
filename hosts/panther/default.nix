@@ -38,15 +38,34 @@ in
       "flakes"
     ];
     trusted-users = [ "@wheel" ];
-    max-jobs = 4; # Max parallel compilations
-    cores = 4; # Max cores per compilation
+    max-jobs = "auto"; # Usar todos los cores disponibles
+    cores = 0; # 0 = ilimitado
+    sandbox = true; # sandboxing más rápido que chroot
+
+    # Optimizar store automáticamente
+    auto-optimise-store = true;
+
+    # Evitar GC interrumpiendo builds
+    min-free = 5 * 1024 * 1024 * 1024; # 5GB
+    max-free = 10 * 1024 * 1024 * 1024; # 10GB
+
+    # Mantener derivaciones para evitar rebuilds
+    keep-outputs = true;
+    keep-derivations = true;
   };
   nixpkgs.config.allowUnfree = true;
 
-  # Nix daemon service - use idle scheduling to reduce system impact
+  # Garbage Collection automático para evitar que el store crezca sin control
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d"; # Borrar generaciones >30 días
+  };
+
+  # Nix daemon service - use batch scheduling for better build performance
   systemd.services.nix-daemon.serviceConfig = {
-    CPUSchedulingPolicy = lib.mkForce "idle";
-    IOSchedulingClass = lib.mkForce "idle";
+    CPUSchedulingPolicy = lib.mkForce "batch";
+    IOSchedulingClass = lib.mkForce "best-effort";
   };
 
   # ============================================================================

@@ -89,7 +89,7 @@ in
         # Keybinds
         bind = [
           # Terminal
-          "$mod, Return, exec, foot"
+          "$mod, Return, exec, ghostty"
 
           # App launcher
           "$mod, D, exec, rofi -show drun -show-icons"

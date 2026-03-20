@@ -65,7 +65,7 @@ in
 
       # File manager
       thunar
-      xfce.thunar-volman
+      thunar-volman
 
       # Screen sharing
       v4l-utils

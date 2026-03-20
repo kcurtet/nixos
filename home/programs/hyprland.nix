@@ -19,7 +19,7 @@ in
   config = lib.mkIf cfg.enable {
     # Hyprland configuration
     wayland.windowManager.hyprland = {
-      enable = true;
+      enable = false;
       systemd.variables = [ "--all" ];
       settings = {
         "$mod" = "SUPER";

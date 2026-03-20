@@ -30,5 +30,13 @@
 
     # Navigation
     c = "jump";
+
+    # pi-coding-agent shortcuts
+    haiku = "pi -p haiku --model";
+    sonnet = "pi -p sonnet --model";
+    opus = "pi -p claude-opus-4.6 --model";
+    gpt = "pi -p gpt-5.4 --model";
+    gpt-mini = "pi -p gpt-5.4-mini --model";
+    grok = "pi -p --model grok-code-fast-1";
   };
 }

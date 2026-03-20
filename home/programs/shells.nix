@@ -9,7 +9,13 @@
       enable = true;
       enableCompletion = true;
 
+      # Ensure hm-session-vars.sh is sourced in interactive non-login shells
+      # (Ghostty and most terminals open bash as non-login, skipping .profile)
       initExtra = ''
+        if [ -f "$HOME/.profile" ] && [ -z "$__HM_SESS_VARS_SOURCED" ]; then
+          . "$HOME/.profile"
+        fi
+
         # ============================================================================
         # SOPS Secrets Environment Variables
         # ============================================================================

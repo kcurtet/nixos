@@ -17,7 +17,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    hyprland.enable = true;
     # Hyprland configuration
     wayland.windowManager.hyprland = {
       enable = true;

@@ -117,7 +117,7 @@ in
     xkb.variant = "cat";
   };
 
-  desktop.hyprland = {
+  desktop.hyprland-wayland = {
     enable = true;
     xkb.layout = "es";
     xkb.variant = "cat";

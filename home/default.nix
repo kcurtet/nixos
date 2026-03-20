@@ -39,7 +39,7 @@
   };
 
   # Hyprland user configuration
-  programs.hyprland.enable = true;
+  programs.hyprland-config.enable = true;
 
   # User settings (can be overridden per-host)
   programs.git.settings = {

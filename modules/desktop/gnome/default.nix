@@ -42,17 +42,22 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.displayManager.gdm.enable = cfg.gdm;
+
     services.xserver = {
       enable = true;
       xkb.layout = cfg.xkb.layout;
       xkb.variant = cfg.xkb.variant;
-      desktopManager.gnome.enable = true;
     };
 
-    services.displayManager.gdm.enable = cfg.gdm;
     services.gnome.gnome-keyring.enable = cfg.keyring;
 
     # Required for GNOME on Wayland
     services.dbus.enable = true;
+
+    # GNOME desktop environment packages
+    environment.gnome.excludePackages = with pkgs; [
+      pkgs.gnome-tour
+    ];
   };
 }

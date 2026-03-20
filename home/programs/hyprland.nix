@@ -8,11 +8,11 @@
   ...
 }:
 let
-  cfg = config.programs.hyprland;
+  cfg = config.programs.hyprland-config;
   wallpaper = "${config.home.homeDirectory}/.config/wallpaper.jpg";
 in
 {
-  options.programs.hyprland = {
+  options.programs.hyprland-config = {
     enable = lib.mkEnableOption "Hyprland user configuration";
   };
 
@@ -20,7 +20,7 @@ in
     # Hyprland configuration
     wayland.windowManager.hyprland = {
       enable = true;
-      systemd.variables = ["--all"];
+      systemd.variables = [ "--all" ];
       settings = {
         "$mod" = "SUPER";
 
@@ -249,7 +249,10 @@ in
           layer = "top";
           position = "top";
           height = 36;
-          modules-left = [ "hyprland/workspaces" "hyprland/mode" ];
+          modules-left = [
+            "hyprland/workspaces"
+            "hyprland/mode"
+          ];
           modules-center = [ "hyprland/window" ];
           modules-right = [
             "pulseaudio"
@@ -297,7 +300,12 @@ in
           temperature = {
             critical-threshold = 80;
             format = "{icon} {temperatureC}°C";
-            format-icons = ["󱃃" "󰔏" "󰸁" "󱃂"];
+            format-icons = [
+              "󱃃"
+              "󰔏"
+              "󰸁"
+              "󱃂"
+            ];
             # Note: Uncomment and adjust hwmon-path if temperature doesn't show
             # hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
           };
@@ -314,7 +322,11 @@ in
             format = "{icon} {volume}%";
             format-muted = "󰝟";
             format-icons = {
-              default = ["󰕿" "󰖀" "󰕾"];
+              default = [
+                "󰕿"
+                "󰖀"
+                "󰕾"
+              ];
             };
             on-click = "pavucontrol";
           };

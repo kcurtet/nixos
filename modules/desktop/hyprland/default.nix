@@ -9,10 +9,10 @@
 }:
 
 let
-  cfg = config.desktop.hyprland;
+  cfg = config.desktop.hyprland-wayland;
 in
 {
-  options.desktop.hyprland = {
+  options.desktop.hyprland-wayland = {
     enable = lib.mkEnableOption "Hyprland Wayland compositor";
 
     xkb = {
@@ -42,6 +42,9 @@ in
       xkb.layout = cfg.xkb.layout;
       xkb.variant = cfg.xkb.variant;
     };
+
+    # Register Hyprland session in GDM (using mkBefore to avoid conflicts)
+    services.displayManager.sessionPackages = lib.mkBefore [ pkgs.hyprland ];
 
     # Required for Wayland compositors
     services.dbus.enable = true;

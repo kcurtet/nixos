@@ -88,40 +88,49 @@ in
 
         # Keybinds
         bind = [
-          # Terminal
-          "$mod, Return, exec, ghostty"
-
-          # App launcher
+          # ── Apps ──
+          "$mod, Return, exec, kitty"
           "$mod, D, exec, rofi -show drun -show-icons"
+          "$mod, E, exec, thunar"
+          "$mod, B, exec, brave"
 
-          # Close window
+          # ── Window management ──
           "$mod, Q, killactive"
-
-          # Fullscreen
-          "$mod, F, fullscreen"
-
-          # Toggle floating
+          "$mod SHIFT, Q, exec, hyprctl kill"
+          "$mod, F, fullscreen, 1"
+          "$mod SHIFT, F, fullscreen, 0"
           "$mod, Space, togglefloating"
-
-          # Toggle split
           "$mod, V, togglesplit"
+          "$mod, T, pseudo"
+          "$mod, G, togglegroup"
 
-          # Screen lock
+          # ── Screen lock ──
           "$mod ALT, L, exec, swaylock"
 
-          # Focus movement
+          # ── Color picker ──
+          "$mod, C, exec, hyprpicker -a"
+
+          # ── Focus (Super + hjkl / arrows) ──
+          "$mod, H, movefocus, l"
+          "$mod, J, movefocus, d"
+          "$mod, K, movefocus, u"
+          "$mod, L, movefocus, r"
           "$mod, left, movefocus, l"
           "$mod, right, movefocus, r"
           "$mod, up, movefocus, u"
           "$mod, down, movefocus, d"
 
-          # Move window
+          # ── Move window (Super+Shift + hjkl / arrows) ──
+          "$mod SHIFT, H, movewindow, l"
+          "$mod SHIFT, J, movewindow, d"
+          "$mod SHIFT, K, movewindow, u"
+          "$mod SHIFT, L, movewindow, r"
           "$mod SHIFT, left, movewindow, l"
           "$mod SHIFT, right, movewindow, r"
           "$mod SHIFT, up, movewindow, u"
           "$mod SHIFT, down, movewindow, d"
 
-          # Workspaces
+          # ── Workspaces ──
           "$mod, 1, workspace, 1"
           "$mod, 2, workspace, 2"
           "$mod, 3, workspace, 3"
@@ -133,7 +142,7 @@ in
           "$mod, 9, workspace, 9"
           "$mod, 0, workspace, 10"
 
-          # Move to workspace
+          # ── Move to workspace ──
           "$mod SHIFT, 1, movetoworkspace, 1"
           "$mod SHIFT, 2, movetoworkspace, 2"
           "$mod SHIFT, 3, movetoworkspace, 3"
@@ -145,25 +154,37 @@ in
           "$mod SHIFT, 9, movetoworkspace, 9"
           "$mod SHIFT, 0, movetoworkspace, 10"
 
-          # Scratchpad
+          # ── Workspace navigation ──
+          "$mod, Tab, workspace, e+1"
+          "$mod SHIFT, Tab, workspace, e-1"
+          "$mod, grave, workspace, previous"
+
+          # ── Scratchpad ──
           "$mod, S, togglespecialworkspace, magic"
           "$mod SHIFT, S, movetoworkspace, special:magic"
 
-          # Screenshot (region to clipboard)
-          "$mod CTRL, S, exec, grim -g \"$(slurp)\" - | wl-copy"
-          # Screenshot (full screen to file)
+          # ── Screenshots ──
+          # Region → clipboard
+          "$mod SHIFT, P, exec, grim -g \"$(slurp)\" - | wl-copy"
+          # Full screen → clipboard
+          "$mod, P, exec, grim - | wl-copy"
+          # Full screen → file
           ", Print, exec, grim ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"
 
-          # Exit Hyprland
-          "$mod SHIFT, E, exit"
+          # ── Exit Hyprland ──
+          "$mod SHIFT, E, exec, wlogout"
         ];
 
-        # Resize (repeat on hold)
+        # Resize (repeat on hold — Super+Alt + hjkl / arrows)
         binde = [
-          "$mod CTRL, left, resizeactive, -20 0"
-          "$mod CTRL, right, resizeactive, 20 0"
-          "$mod CTRL, up, resizeactive, 0 -20"
-          "$mod CTRL, down, resizeactive, 0 20"
+          "$mod ALT, H, resizeactive, -20 0"
+          "$mod ALT, L, resizeactive, 20 0"
+          "$mod ALT, K, resizeactive, 0 -20"
+          "$mod ALT, J, resizeactive, 0 20"
+          "$mod ALT, left, resizeactive, -20 0"
+          "$mod ALT, right, resizeactive, 20 0"
+          "$mod ALT, up, resizeactive, 0 -20"
+          "$mod ALT, down, resizeactive, 0 20"
         ];
 
         # Media keys (repeat on hold)
@@ -183,6 +204,7 @@ in
           ", XF86AudioPrev, exec, playerctl previous"
         ];
 
+        # Mouse binds
         bindm = [
           "$mod, mouse:272, movewindow"
           "$mod, mouse:273, resizewindow"
@@ -202,6 +224,7 @@ in
         exec-once = [
           "waybar"
           "dunst"
+          "nm-applet --indicator"
           "hyprctl setcursor Bibata-Modern-Classic 24"
         ];
       };
@@ -454,6 +477,9 @@ in
 
       # Screen locker
       swaylock-effects
+
+      # Color picker
+      hyprpicker
     ];
 
     # Ensure screenshot directory exists

@@ -57,46 +57,20 @@ in
     };
 
     # System packages for Hyprland ecosystem
+    # Note: User-specific packages (waybar, foot, rofi, dunst, grim, slurp, etc.)
+    # are managed by Home Manager in home/programs/hyprland.nix
     environment.systemPackages = with pkgs; [
-      # Status bar
-      waybar
-
-      # Terminal
-      foot
-
-      # Wallpaper
-      swww
-
-      # Application launcher
-      rofi
-
-      # Notifications
-      dunst
+      # Notifications (system integration)
       libnotify
 
       # File manager
       thunar
       xfce.thunar-volman
 
-      # Clipboard manager
-      wl-clipboard
-      cliphist
-
-      # Volume/brightness controls
-      pamixer
-      brightnessctl
-
-      # Screen locking
-      swaylock-effects
-
-      # Screenshot tool
-      grim
-      slurp
-
       # Screen sharing
       v4l-utils
 
-      # Other utilities
+      # XDG utilities
       xdg-utils
       xdg-user-dirs
     ];

@@ -2,163 +2,289 @@
 
 NixOS Configuration Repository - Agent Guidelines
 
+## Overview
+
+This is a personal NixOS configuration for a laptop named **panther**.
+
+**Key Facts:**
+- **User:** `kx` (defined in `lib/default.nix` as `username`)
+- **Hardware:** Laptop with NVIDIA RTX 3070 + Intel i7 (hybrid graphics via Prime)
+- **Desktops:** GNOME (default), Hyprland (Wayland)
+- **Flake URL:** `.#panther`
+
+**Available Specialisations:**
+- `panther` (default) - Full NVIDIA + Intel setup
+- `disable-nvidia` - Intel only (battery saving)
+- `on-the-go` - Portable mode
+- `disable-intel` - NVIDIA only
+
+## Skill References
+
+When working on this NixOS configuration, load these skills for authoritative guidance:
+
+| Skill | When to Use |
+|-------|-------------|
+| `nix-language` | Nix syntax, functions, patterns, lib operations |
+| `nix-flakes` | flake.nix, devShells, inputs/outputs |
+| `nix-system` | NixOS modules, Home Manager, disko, sops-nix |
+
+**Load before:** Writing new modules, modifying flake.nix, adding Home Manager configs.
+
 ## Build & Development Commands
 
 ### Rebuilding System
 
 ```bash
 nix-up                    # Update flake inputs and rebuild
-nix-apply                    # Apply configuration changes immediately
-nboot                       # Apply changes on next boot
+nix-apply                 # Apply configuration changes immediately
+nboot                     # Apply changes on next boot
+
+# Direct flake commands:
+sudo nixos-rebuild switch --flake .#panther           # Apply now
+sudo nixos-rebuild dry-build --flake .#panther        # Test build
+sudo nixos-rebuild switch --flake .#panther-disable-nvidia  # Use specialisation
 ```
 
 ### Development Shell
 
 ```bash
 nix develop                # Enter dev shell with linting tools
-# Provides: nixd, nixfmt, statix, deadnix
+# Provides: nixd, nixfmt, statix, deadnix, treefmt
 ```
 
 ### Linting & Formatting
 
 ```bash
-nixfmt .                   # Format Nix files
 statix check .             # Lint for Nix anti-patterns
-deadnix -e .               # Find dead code in Nix files
-nixd                       # Nix language server
+deadnix .                  # Find and remove dead code
+nixfmt-tree .              # Format all Nix files (preferred)
+treefmt                    # Alternative formatter
+
+# Verify single file syntax:
+nix-instantiate --parse <file>.nix > /dev/null
+```
+
+### Pre-Commit Workflow
+
+**MANDATORY before every commit:**
+
+```bash
+# Quick one-liner:
+statix check . && deadnix . && nixfmt-tree . && sudo nixos-rebuild dry-build --flake .#panther
 ```
 
 ## Project Structure
 
 ```
-nixos/
-├── flake.nix              # Flake entry point, host definitions
-├── hosts/                 # Per-machine configurations
-│   └── panther/           # Host-specific: default.nix, hardware.nix, networking.nix
+.
+├── flake.nix              # Flake entry point, host definitions, mkHost helper
+├── hosts/
+│   └── panther/           # Host-specific configuration
+│       ├── default.nix    # Main config, imports modules, specialisations
+│       ├── hardware.nix   # Filesystems, hardware scan
+│       └── networking.nix # Hostname, network manager
 ├── modules/               # Reusable NixOS modules (options + config)
-│   ├── desktop/gnome/     # GNOME desktop module
-│   ├── gaming/            # Gaming stack (Steam, Wine, etc.)
-│   ├── laptop/            # Power management
-│   ├── nvidia/            # NVIDIA graphics with Prime support
-│   ├── services/          # System services (Syncthing, Tailscale, etc.)
+│   ├── desktop/
+│   │   ├── gnome/         # GNOME desktop module
+│   │   └── hyprland/      # Hyprland Wayland compositor
+│   ├── gaming/            # Steam, Wine, gamescope
+│   ├── laptop/            # Power management, TLP
+│   ├── nvidia/            # NVIDIA + Prime (offload/sync modes)
+│   ├── services/          # Syncthing, Tailscale, Docker
 │   └── virtualization/    # Docker & libvirtd
 ├── home/                  # Home Manager configuration
-│   ├── programs/          # Per-program configs (git, ssh, tmux, etc.)
+│   ├── default.nix        # Entry point, imports all home configs
+│   ├── programs/          # Per-program configs (git, ssh, foot, hyprland)
 │   ├── packages/          # Package sets (dev, gui, cli)
-│   ├── themes/            # Theme configurations (Nord)
-│   ├── services/          # User services
-│   └── aliases.nix        # Shell aliases
-├── lib/                   # Helper functions & constants
-│   ├── default.nix        # Main library (username, email, helpers)
-│   └── themes.nix         # Nord theme definitions
-├── overlays/              # Nixpkgs overlays
-├── scripts/               # Custom shell scripts (nix-apply, nboot, nix-up)
-└── README.md              # User documentation
+│   ├── themes/            # Nord theme
+│   └── services/          # User-level systemd services
+├── lib/
+│   ├── default.nix        # username, email, helper functions
+│   └── themes.nix         # Nord color palette
+├── scripts/               # nix-apply, nboot, nix-up (added to PATH)
+└── secrets/               # sops-nix encrypted files
 ```
 
-## Code Style Guidelines
+## Key Architecture
 
-### File Organization
-
-- Use section headers with 79-character separator lines
-- Group related settings under logical sections (e.g., `# System Packages`)
-- Host configs in `hosts/{hostname}/`, modules in `modules/{feature}/`
-
-### Imports & Modules
+### lib/default.nix - The Source of Truth
 
 ```nix
-# Host configuration - import hardware, networking, and required modules
-imports = [
-  ./hardware.nix
-  ./networking.nix
-  ../../modules/nvidia
-  ../../modules/gaming
-  ../../modules/services
-];
-
-# Module definition pattern
-{ config, lib, pkgs, ... }:
-let
-  cfg = config.my.services;  # Destructure options
-in
+# lib/default.nix defines global constants used everywhere
 {
-  options.my.services = { ... };
-  config = lib.mkIf cfg.enable { ... };
+  username = "kx";
+  email = "user@example.com";
+  # ... helper functions
 }
 ```
 
-### Module Options
-
+**Importing lib from different locations:**
 ```nix
-options.my.service = {
-  enable = lib.mkEnableOption "My service description";
-  dataDir = lib.mkOption {
-    type = lib.types.str;
-    default = "/home/${lib.username}/data";  # lib imported from ../../lib
-    description = "Data directory path";
-  };
-};
+# From modules/*/default.nix:
+lib = import ../../lib;
+
+# From hosts/panther/default.nix:
+lib = import ../lib;
+
+# From home/programs/*.nix:
+lib = import ../../lib;
 ```
 
-### Configuration Activation
+### Flake Structure
+
+The flake uses `mkHost` helper to reduce boilerplate:
 
 ```nix
-config = lib.mkIf cfg.enable {
-  services.myService = {
-    enable = true;
-    user = lib.username;  # lib imported from ../../lib
+# flake.nix (simplified)
+{
+  outputs = { nixpkgs, home-manager, ... }@inputs: {
+    nixosConfigurations.panther = mkHost "panther";
   };
-};
+}
+```
+
+**What mkHost does:**
+1. Imports `hosts/panther/default.nix`
+2. Passes `inputs` via `specialArgs`
+3. Wires in Home Manager with user `kx`
+4. Applies overlays
+
+### Home Manager Integration
+
+Home Manager is wired into the NixOS configuration (standalone HM, not module):
+
+```nix
+# hosts/panther/default.nix
+home-manager.users.kx = import ../../home;
+```
+
+**Split:**
+- `modules/` → System-level (services, hardware, desktop)
+- `home/` → User-level (programs, packages, themes)
+
+## Code Style Guidelines
+
+### Module Pattern
+
+All modules follow this structure:
+
+```nix
+# modules/my-feature/default.nix
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.my.feature;
+  lib = import ../../lib;  # Import at top of let block
+in
+{
+  options.my.feature = {
+    enable = lib.mkEnableOption "My feature";
+    setting = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/${lib.username}/data";  # Use lib.username
+      description = "Description";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    # Actual configuration
+    services.myService.enable = true;
+  };
+}
 ```
 
 ### Naming Conventions
 
-- Modules: Use lowercase with hyphens (`gaming`, `nvidia`, `virtualization`)
-- Options: Namespace with `my.{category}` or `hardware.{category}`
-- Hosts: Use lowercase names matching directory structure
-- Variables: CamelCase for library functions, snake_case for local bindings
+| Type | Convention | Example |
+|------|------------|---------|
+| Modules | lowercase-hyphen | `gaming`, `nvidia`, `virtualization` |
+| Options | `my.{category}` | `my.services.syncthing.enable` |
+| Hosts | lowercase | `panther` |
+| Local vars | snake_case | `data_dir`, `config_file` |
+| Functions | camelCase | `mkHost`, `ifThenElse` |
 
-### Error Handling & Defaults
+### File Headers
 
-- Always provide defaults for module options
-- Use `lib.mkDefault` for user-configurable values
-- Import lib from ../../lib and use `lib.username` in modules
+```nix
+# ============================================================================
+# Section Name
+# ============================================================================
+```
 
-### Library Functions (lib/)
+79-character separator lines.
 
-- Place reusable helpers in `lib/default.nix`
-- Theme-related functions in `lib/themes.nix`
-- Export using `inherit (themes) colors gtk gtkPackage;`
+## Common Tasks
 
-## Adding New Hosts
+### Add a System Package
 
-1. Create `hosts/{hostname}/` with `default.nix`, `hardware.nix`, `networking.nix`
-2. Add to `flake.nix` `nixosConfigurations` using `mkHost "hostname"`
-3. Import required modules in host's `default.nix`
-4. Set `networking.hostName` and host-specific options
+```nix
+# modules/desktop/hyprland/default.nix
+environment.systemPackages = with pkgs; [
+  grim
+  slurp
+];
+```
 
-## Module Development Pattern
+### Add a User Package
 
-When creating modules:
+```nix
+# home/packages/cli.nix
+home.packages = with pkgs; [
+  ripgrep
+  fd
+];
+```
 
-1. Define `options` section with `enable` and necessary configuration options
-2. Use `lib.mkIf cfg.enable` in `config` to conditionally activate
-3. Reference global values via `config.my` (username is in lib/, not config.my)
-4. Keep modules single-purpose and composable
-5. Document options with clear descriptions
+### Add a New Module
 
-## Key Patterns
+1. Create `modules/my-module/default.nix` with options + config
+2. Import in `hosts/panther/default.nix`:
+   ```nix
+   imports = [ ../../modules/my-module ];
+   ```
+3. Enable via option or module default
 
-- **Flake inputs**: Passed via `specialArgs = {inherit inputs;}`
-- **Overlays**: Applied via `nixpkgs.overlays = import ../../overlays { inherit inputs pkgs; };`
-- **Home Manager integration**: Use `home-manager.users.{username} = import ../../home;`
-- **Helper scripts**: Created in `scripts/` using `pkgs.writeShellScriptBin`
-- **Theming**: Nord theme centralized in `lib/themes.nix`, imported across configs
+### Add a Home Manager Program Config
+
+1. Create `home/programs/myprogram.nix`
+2. Import in `home/default.nix`:
+   ```nix
+   imports = [ ./programs/myprogram.nix ];
+   ```
+
+### Enable/Disable a Module
+
+Most modules have `enable` options:
+
+```nix
+# hosts/panther/default.nix
+my.services.syncthing.enable = true;
+gaming.enable = true;
+```
+
+### Switch Desktop Environment
+
+```bash
+# Use specialisation
+sudo nixos-rebuild switch --flake .#panther  # GNOME (default)
+
+# Or enable Hyprland in host config and rebuild
+```
 
 ## Testing
 
-No automated test infrastructure. Validate configuration with:
+No automated tests. Validate with:
 
 ```bash
-sudo nixos-rebuild build --flake .#panther  # Dry-run build check
+sudo nixos-rebuild dry-build --flake .#panther
 ```
+
+## Key Patterns
+
+| Pattern | How It's Done |
+|---------|---------------|
+| Flake inputs | `specialArgs = { inherit inputs; }` |
+| Overlays | `nixpkgs.overlays = import ../../overlays { inherit inputs pkgs; }` |
+| Home Manager | `home-manager.users.kx = import ../../home;` |
+| Custom scripts | `scripts/` directory added to PATH via `environment.systemPackages` |
+| Theming | Nord theme in `lib/themes.nix`, imported where needed |
+| Secrets | sops-nix, key at `~/.config/sops/age/keys.txt` |

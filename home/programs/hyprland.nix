@@ -9,6 +9,7 @@
 }:
 let
   cfg = config.programs.hyprland;
+  wallpaper = "${config.home.homeDirectory}/.config/wallpaper.jpg";
 in
 {
   options.programs.hyprland = {
@@ -19,6 +20,7 @@ in
     # Hyprland configuration
     wayland.windowManager.hyprland = {
       enable = true;
+      systemd.variables = ["--all"];
       settings = {
         "$mod" = "SUPER";
 
@@ -46,6 +48,29 @@ in
           drop_shadow = true;
           shadow_range = 4;
           shadow_render_power = 3;
+        };
+
+        # Animations
+        animations = {
+          enabled = true;
+          bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+          animation = [
+            "windows, 1, 7, myBezier"
+            "windowsOut, 1, 7, default, popin 80%"
+            "borderangle, 1, 30, default, linear"
+            "fade, 1, 7, default"
+            "workspaces, 1, 6, default"
+          ];
+        };
+
+        # Layouts
+        dwindle = {
+          pseudotile = true;
+          preserve_split = true;
+        };
+
+        master = {
+          new_is_master = true;
         };
 
         # Input
@@ -78,6 +103,12 @@ in
           # Toggle floating
           "$mod, Space, togglefloating"
 
+          # Toggle split
+          "$mod, V, togglesplit"
+
+          # Screen lock
+          "$mod ALT, L, exec, swaylock"
+
           # Focus movement
           "$mod, left, movefocus, l"
           "$mod, right, movefocus, r"
@@ -89,12 +120,6 @@ in
           "$mod SHIFT, right, movewindow, r"
           "$mod SHIFT, up, movewindow, u"
           "$mod SHIFT, down, movewindow, d"
-
-          # Resize
-          "$mod CTRL, left, resizeactive, -20 0"
-          "$mod CTRL, right, resizeactive, 20 0"
-          "$mod CTRL, up, resizeactive, 0 -20"
-          "$mod CTRL, down, resizeactive, 0 20"
 
           # Workspaces
           "$mod, 1, workspace, 1"
@@ -120,26 +145,42 @@ in
           "$mod SHIFT, 9, movetoworkspace, 9"
           "$mod SHIFT, 0, movetoworkspace, 10"
 
-          # Volume
-          ", XF86AudioRaiseVolume, exec, pamixer --increase 5"
-          ", XF86AudioLowerVolume, exec, pamixer --decrease 5"
-          ", XF86AudioMute, exec, pamixer --toggle"
-          ", XF86AudioMicMute, exec, pamixer --default-source --toggle"
+          # Scratchpad
+          "$mod, S, togglespecialworkspace, magic"
+          "$mod SHIFT, S, movetoworkspace, special:magic"
 
-          # Brightness
-          ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
-          ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-
-          # Media
-          ", XF86AudioPlay, exec, playerctl play-pause"
-          ", XF86AudioNext, exec, playerctl next"
-          ", XF86AudioPrev, exec, playerctl previous"
-
-          # Screenshot
-          "$mod, S, exec, grim -g \"$(slurp)\" - | wl-copy"
+          # Screenshot (region to clipboard)
+          "$mod CTRL, S, exec, grim -g \"$(slurp)\" - | wl-copy"
+          # Screenshot (full screen to file)
+          ", Print, exec, grim ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"
 
           # Exit Hyprland
           "$mod SHIFT, E, exit"
+        ];
+
+        # Resize (repeat on hold)
+        binde = [
+          "$mod CTRL, left, resizeactive, -20 0"
+          "$mod CTRL, right, resizeactive, 20 0"
+          "$mod CTRL, up, resizeactive, 0 -20"
+          "$mod CTRL, down, resizeactive, 0 20"
+        ];
+
+        # Media keys (repeat on hold)
+        bindel = [
+          ", XF86AudioRaiseVolume, exec, pamixer --increase 5"
+          ", XF86AudioLowerVolume, exec, pamixer --decrease 5"
+          ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
+          ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+        ];
+
+        # Media keys (toggle, no repeat)
+        bindl = [
+          ", XF86AudioMute, exec, pamixer --toggle"
+          ", XF86AudioMicMute, exec, pamixer --default-source --toggle"
+          ", XF86AudioPlay, exec, playerctl play-pause"
+          ", XF86AudioNext, exec, playerctl next"
+          ", XF86AudioPrev, exec, playerctl previous"
         ];
 
         bindm = [
@@ -152,7 +193,8 @@ in
           "float, class:^(pavucontrol)$"
           "float, class:^(nm-connection-editor)$"
           "float, class:^(blueman-manager)$"
-          "size 50% 50%, class:^(pavucontrol)$"
+          "float, class:^(org.gnome.Calculator)$"
+          "size 800 600, class:^(pavucontrol)$"
           "center, class:^(pavucontrol)$"
         ];
 
@@ -160,15 +202,43 @@ in
         exec-once = [
           "waybar"
           "dunst"
-          "swww-daemon"
-          "hyprpaper"
+          "hyprctl setcursor Bibata-Modern-Classic 24"
         ];
       };
+    };
 
-      # Extra config for wallpaper
-      extraConfig = ''
-        $wallpaper = ~/.config/wallpaper.png
-      '';
+    # Hyprpaper wallpaper daemon
+    services.hyprpaper = {
+      enable = true;
+      settings = {
+        preload = [ wallpaper ];
+        wallpaper = [ ", ${wallpaper}" ];
+      };
+    };
+
+    # Cursor theme
+    home.pointerCursor = {
+      gtk.enable = true;
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 24;
+    };
+
+    # GTK theme (Nord)
+    gtk = {
+      enable = true;
+      theme = {
+        package = pkgs.nordic;
+        name = "Nordic";
+      };
+      iconTheme = {
+        package = pkgs.papirus-icon-theme;
+        name = "Papirus-Dark";
+      };
+      font = {
+        name = "Sans";
+        size = 11;
+      };
     };
 
     # Waybar configuration
@@ -228,6 +298,8 @@ in
             critical-threshold = 80;
             format = "{icon} {temperatureC}°C";
             format-icons = ["󱃃" "󰔏" "󰸁" "󱃂"];
+            # Note: Uncomment and adjust hwmon-path if temperature doesn't show
+            # hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
           };
 
           network = {
@@ -353,13 +425,28 @@ in
 
     # User packages
     home.packages = with pkgs; [
+      # Screenshots
       grim
       slurp
+
+      # Clipboard
       wl-clipboard
       cliphist
+
+      # Audio/Brightness
       pamixer
       brightnessctl
+
+      # Media control
       playerctl
+
+      # Screen locker
+      swaylock-effects
     ];
+
+    # Ensure screenshot directory exists
+    xdg.userDirs.extraConfig = {
+      XDG_SCREENSHOTS_DIR = "${config.home.homeDirectory}/Pictures/Screenshots";
+    };
   };
 }

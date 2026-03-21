@@ -5,6 +5,7 @@
   imports = [
     ./bat.nix
     ./direnv.nix
+    ./hyprland.nix
     ./ghostty.nix
     ./git.nix
     ./gnome-shell.nix

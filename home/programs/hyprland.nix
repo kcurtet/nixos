@@ -19,10 +19,18 @@ in
   config = lib.mkIf cfg.enable {
     # Hyprland configuration
     wayland.windowManager.hyprland = {
-      enable = false;
+      enable = true;
       systemd.variables = [ "--all" ];
       settings = {
         "$mod" = "SUPER";
+
+        env = [
+          "XCURSOR_SIZE,24"
+          "XCURSOR_THEME,Bibata-Modern-Classic"
+          "QT_QPA_PLATFORM,wayland;xcb"
+          "QT_AUTO_SCREEN_SCALE_FACTOR,1"
+          "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
+        ];
 
         # Monitor setup
         monitor = ",preferred,auto,1";

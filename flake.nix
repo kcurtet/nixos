@@ -87,6 +87,7 @@
       # ============================================================================
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
         packages = with nixpkgs.legacyPackages.${system}; [
+          bashInteractive
           nixd
           nixfmt-tree
           statix

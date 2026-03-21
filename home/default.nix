@@ -10,7 +10,6 @@
 {
   imports = [
     ./themes/nord.nix
-    ./programs/hyprland.nix
     ./programs
     ./packages
     ./services

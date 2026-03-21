@@ -6,7 +6,7 @@
 {
   programs = {
     # Autojump for directory navigation
-    programs.autojump.enable = true;
+    autojump.enable = true;
 
     bash = {
       enable = true;

@@ -5,9 +5,11 @@
 
 {
   programs = {
+    # Autojump for directory navigation
+    programs.autojump.enable = true;
+
     bash = {
       enable = true;
-      enableCompletion = true;
 
       initExtra = ''
         for p in "$HOME/.npm-global/bin" "$HOME/.local/bin" "$HOME/.bun/bin"; do

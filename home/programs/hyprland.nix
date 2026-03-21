@@ -439,7 +439,7 @@ in
         enable = true;
         stores = [ "password-store" ];
       };
-      theme = "Nord";
+      theme = "${config.home.homeDirectory}/.config/rofi/nord.rasi";
     };
 
     # Dunst notification configuration
@@ -488,6 +488,9 @@ in
 
       # Color picker
       hyprpicker
+
+      # Network manager GUI
+      networkmanagerapplet
     ];
 
     # Ensure screenshot directory exists

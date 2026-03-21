@@ -237,6 +237,7 @@ in
   environment.systemPackages =
     with pkgs;
     [
+      psmisc
       wl-clipboard
       proton-vpn-cli
       neovim

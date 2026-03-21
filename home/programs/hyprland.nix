@@ -1,6 +1,8 @@
 # ============================================================================
 # Hyprland Home Manager Configuration
 # ============================================================================
+# Hyprland window manager settings live in ~/.config/hypr/hyprland.conf (manual).
+# This file provides supporting programs, packages, and theming only.
 {
   config,
   lib,
@@ -9,7 +11,6 @@
 }:
 let
   cfg = config.programs.hyprland-config;
-  wallpaper = "${config.home.homeDirectory}/.config/wallpaper.jpg";
 in
 {
   options.programs.hyprland-config = {
@@ -17,235 +18,17 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Hyprland configuration
-    wayland.windowManager.hyprland = {
-      enable = true;
-      systemd.variables = [ "--all" ];
-      settings = {
-        "$mod" = "SUPER";
-
-        env = [
-          "XCURSOR_SIZE,24"
-          "XCURSOR_THEME,Bibata-Modern-Classic"
-          "QT_QPA_PLATFORM,wayland;xcb"
-          "QT_AUTO_SCREEN_SCALE_FACTOR,1"
-          "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
-        ];
-
-        # Monitor setup
-        monitor = ",preferred,auto,1";
-
-        # General settings
-        general = {
-          gaps_in = 5;
-          gaps_out = 10;
-          border_size = 2;
-          "col.active_border" = "rgba(81a1c1ee) rgba(88c0d0ee) 45deg";
-          "col.inactive_border" = "rgba(4c566a80)";
-          layout = "dwindle";
-        };
-
-        # Decoration
-        decoration = {
-          rounding = 8;
-          blur = {
-            enabled = true;
-            size = 3;
-            passes = 2;
-          };
-          drop_shadow = true;
-          shadow_range = 4;
-          shadow_render_power = 3;
-        };
-
-        # Animations
-        animations = {
-          enabled = true;
-          bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-          animation = [
-            "windows, 1, 7, myBezier"
-            "windowsOut, 1, 7, default, popin 80%"
-            "borderangle, 1, 30, default, linear"
-            "fade, 1, 7, default"
-            "workspaces, 1, 6, default"
-          ];
-        };
-
-        # Layouts
-        dwindle = {
-          pseudotile = true;
-          preserve_split = true;
-        };
-
-        master = {
-          new_is_master = true;
-        };
-
-        # Input
-        input = {
-          kb_layout = "es";
-          kb_variant = "cat";
-          follow_mouse = 1;
-          sensitivity = 0;
-          touchpad = {
-            natural_scroll = true;
-            disable_while_typing = true;
-            tap-to-click = true;
-          };
-        };
-
-        # Keybinds
-        bind = [
-          # ── Apps ──
-          "$mod, Return, exec, kitty"
-          "$mod, D, exec, rofi -show drun -show-icons"
-          "$mod, E, exec, thunar"
-          "$mod, B, exec, brave"
-
-          # ── Window management ──
-          "$mod, Q, killactive"
-          "$mod SHIFT, Q, exec, hyprctl kill"
-          "$mod, F, fullscreen, 1"
-          "$mod SHIFT, F, fullscreen, 0"
-          "$mod, Space, togglefloating"
-          "$mod, V, togglesplit"
-          "$mod, T, pseudo"
-          "$mod, G, togglegroup"
-
-          # ── Screen lock ──
-          "$mod ALT, L, exec, swaylock"
-
-          # ── Color picker ──
-          "$mod, C, exec, hyprpicker -a"
-
-          # ── Focus (Super + hjkl / arrows) ──
-          "$mod, H, movefocus, l"
-          "$mod, J, movefocus, d"
-          "$mod, K, movefocus, u"
-          "$mod, L, movefocus, r"
-          "$mod, left, movefocus, l"
-          "$mod, right, movefocus, r"
-          "$mod, up, movefocus, u"
-          "$mod, down, movefocus, d"
-
-          # ── Move window (Super+Shift + hjkl / arrows) ──
-          "$mod SHIFT, H, movewindow, l"
-          "$mod SHIFT, J, movewindow, d"
-          "$mod SHIFT, K, movewindow, u"
-          "$mod SHIFT, L, movewindow, r"
-          "$mod SHIFT, left, movewindow, l"
-          "$mod SHIFT, right, movewindow, r"
-          "$mod SHIFT, up, movewindow, u"
-          "$mod SHIFT, down, movewindow, d"
-
-          # ── Workspaces ──
-          "$mod, 1, workspace, 1"
-          "$mod, 2, workspace, 2"
-          "$mod, 3, workspace, 3"
-          "$mod, 4, workspace, 4"
-          "$mod, 5, workspace, 5"
-          "$mod, 6, workspace, 6"
-          "$mod, 7, workspace, 7"
-          "$mod, 8, workspace, 8"
-          "$mod, 9, workspace, 9"
-          "$mod, 0, workspace, 10"
-
-          # ── Move to workspace ──
-          "$mod SHIFT, 1, movetoworkspace, 1"
-          "$mod SHIFT, 2, movetoworkspace, 2"
-          "$mod SHIFT, 3, movetoworkspace, 3"
-          "$mod SHIFT, 4, movetoworkspace, 4"
-          "$mod SHIFT, 5, movetoworkspace, 5"
-          "$mod SHIFT, 6, movetoworkspace, 6"
-          "$mod SHIFT, 7, movetoworkspace, 7"
-          "$mod SHIFT, 8, movetoworkspace, 8"
-          "$mod SHIFT, 9, movetoworkspace, 9"
-          "$mod SHIFT, 0, movetoworkspace, 10"
-
-          # ── Workspace navigation ──
-          "$mod, Tab, workspace, e+1"
-          "$mod SHIFT, Tab, workspace, e-1"
-          "$mod, grave, workspace, previous"
-
-          # ── Scratchpad ──
-          "$mod, S, togglespecialworkspace, magic"
-          "$mod SHIFT, S, movetoworkspace, special:magic"
-
-          # ── Screenshots ──
-          # Region → clipboard
-          "$mod SHIFT, P, exec, grim -g \"$(slurp)\" - | wl-copy"
-          # Full screen → clipboard
-          "$mod, P, exec, grim - | wl-copy"
-          # Full screen → file
-          ", Print, exec, grim ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"
-
-          # ── Exit Hyprland ──
-          "$mod SHIFT, E, exec, wlogout"
-        ];
-
-        # Resize (repeat on hold — Super+Alt + hjkl / arrows)
-        binde = [
-          "$mod ALT, H, resizeactive, -20 0"
-          "$mod ALT, L, resizeactive, 20 0"
-          "$mod ALT, K, resizeactive, 0 -20"
-          "$mod ALT, J, resizeactive, 0 20"
-          "$mod ALT, left, resizeactive, -20 0"
-          "$mod ALT, right, resizeactive, 20 0"
-          "$mod ALT, up, resizeactive, 0 -20"
-          "$mod ALT, down, resizeactive, 0 20"
-        ];
-
-        # Media keys (repeat on hold)
-        bindel = [
-          ", XF86AudioRaiseVolume, exec, pamixer --increase 5"
-          ", XF86AudioLowerVolume, exec, pamixer --decrease 5"
-          ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
-          ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-        ];
-
-        # Media keys (toggle, no repeat)
-        bindl = [
-          ", XF86AudioMute, exec, pamixer --toggle"
-          ", XF86AudioMicMute, exec, pamixer --default-source --toggle"
-          ", XF86AudioPlay, exec, playerctl play-pause"
-          ", XF86AudioNext, exec, playerctl next"
-          ", XF86AudioPrev, exec, playerctl previous"
-        ];
-
-        # Mouse binds
-        bindm = [
-          "$mod, mouse:272, movewindow"
-          "$mod, mouse:273, resizewindow"
-        ];
-
-        # Window rules
-        windowrulev2 = [
-          "float, class:^(pavucontrol)$"
-          "float, class:^(nm-connection-editor)$"
-          "float, class:^(blueman-manager)$"
-          "float, class:^(org.gnome.Calculator)$"
-          "size 800 600, class:^(pavucontrol)$"
-          "center, class:^(pavucontrol)$"
-        ];
-
-        # Startup apps
-        exec-once = [
-          "waybar"
-          "dunst"
-          "nm-applet --indicator"
-          "hyprctl setcursor Bibata-Modern-Classic 24"
-        ];
-      };
-    };
-
-    # Hyprpaper wallpaper daemon
-    services.hyprpaper = {
-      enable = true;
-      settings = {
-        preload = [ wallpaper ];
-        wallpaper = [ ", ${wallpaper}" ];
-      };
-    };
+    # ── Dotfiles (symlinked directly to repo, editable without rebuild) ──
+    home.file.".config/hypr/hyprland.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprland.conf";
+    home.file.".config/hypr/hyprpaper.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprpaper.conf";
+    home.file.".config/wallpaper.jpg".source = ../../dotfiles/wallpapers/merry-hd.jpg;
+    home.file.".config/hypr/waybar.conf".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/waybar.conf";
+    home.file.".config/hypr/scripts/keybinds.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/keybinds.sh";
+    home.file.".config/hypr/scripts/powermenu.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/powermenu.sh";
+    home.file.".config/hypr/scripts/dunst-waybar.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
+    home.file.".config/rofi/nord.rasi".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
+    home.file.".config/waybar/config.jsonc".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.jsonc";
+    home.file.".config/waybar/style.css".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/style.css";
 
     # Cursor theme
     home.pointerCursor = {
@@ -272,135 +55,10 @@ in
       };
     };
 
-    # Waybar configuration
-    programs.waybar = {
-      enable = true;
-      settings = {
-        mainBar = {
-          layer = "top";
-          position = "top";
-          height = 36;
-          modules-left = [
-            "hyprland/workspaces"
-            "hyprland/mode"
-          ];
-          modules-center = [ "hyprland/window" ];
-          modules-right = [
-            "pulseaudio"
-            "network"
-            "cpu"
-            "memory"
-            "temperature"
-            "clock"
-            "tray"
-          ];
+    # Waybar — config managed via dotfiles (waybar/config.jsonc + style.css)
+    programs.waybar.enable = true;
 
-          "hyprland/workspaces" = {
-            disable-scroll = true;
-            all-outputs = true;
-            format = "{icon}";
-            format-icons = {
-              "1" = "1";
-              "2" = "2";
-              "3" = "3";
-              "4" = "4";
-              "5" = "5";
-              "6" = "6";
-              "7" = "7";
-              "8" = "8";
-              "9" = "9";
-              "10" = "10";
-            };
-          };
-
-          clock = {
-            format = "{:%H:%M}";
-            tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          };
-
-          cpu = {
-            format = "CPU {usage}%";
-            tooltip = false;
-          };
-
-          memory = {
-            format = "MEM {}%";
-            tooltip = false;
-          };
-
-          temperature = {
-            critical-threshold = 80;
-            format = "{icon} {temperatureC}°C";
-            format-icons = [
-              "󱃃"
-              "󰔏"
-              "󰸁"
-              "󱃂"
-            ];
-            # Note: Uncomment and adjust hwmon-path if temperature doesn't show
-            # hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
-          };
-
-          network = {
-            format-wifi = "󰖩 {signalStrength}%";
-            format-ethernet = "󰈀 {ipaddr}";
-            format-linked = "󰖪 {ipaddr}";
-            format-disconnected = "󰖪";
-            tooltip-format = "{ifname}: {ipaddr}";
-          };
-
-          pulseaudio = {
-            format = "{icon} {volume}%";
-            format-muted = "󰝟";
-            format-icons = {
-              default = [
-                "󰕿"
-                "󰖀"
-                "󰕾"
-              ];
-            };
-            on-click = "pavucontrol";
-          };
-        };
-      };
-
-      style = ''
-        * {
-          font-family: "JetBrainsMono Nerd Font", monospace;
-          font-size: 13px;
-          min-height: 0;
-          margin: 0;
-          padding: 0;
-        }
-
-        window#waybar {
-          background: rgba(46, 52, 64, 0.95);
-          border-bottom: 2px solid rgba(129, 161, 193, 0.5);
-        }
-
-        #workspaces button {
-          padding: 0 10px;
-          color: #d8dee9;
-          background: transparent;
-        }
-
-        #workspaces button.active {
-          color: #88c0d0;
-          background: rgba(136, 192, 208, 0.2);
-        }
-
-        #workspaces button:hover {
-          background: rgba(129, 161, 193, 0.2);
-        }
-
-        #clock, #cpu, #memory, #temperature, #network, #pulseaudio, #tray {
-          padding: 0 10px;
-          color: #d8dee9;
-        }
-      '';
-    };
-
-    # Foot terminal configuration
+    # Foot terminal (default terminal for Hyprland)
     programs.foot = {
       enable = true;
       settings = {
@@ -409,7 +67,7 @@ in
           dpi-aware = "yes";
         };
 
-        colors = {
+        colors-dark = {
           background = "2e3440";
           foreground = "d8dee9";
           regular0 = "3b4252";
@@ -486,8 +144,14 @@ in
       # Screen locker
       swaylock-effects
 
+      # Logout menu
+      wlogout
+
       # Color picker
       hyprpicker
+
+      # Wallpaper
+      hyprpaper
 
       # Network manager GUI
       networkmanagerapplet

@@ -63,9 +63,6 @@ in
     # Note: User-specific packages (waybar, foot, rofi, dunst, grim, slurp, etc.)
     # are managed by Home Manager in home/programs/hyprland.nix
     environment.systemPackages = with pkgs; [
-      # Wallpaper
-      hyprpaper
-
       # Notifications (system integration)
       libnotify
 

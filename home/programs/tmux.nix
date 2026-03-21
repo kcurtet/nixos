@@ -132,28 +132,28 @@
       bind p paste-buffer
       bind b choose-buffer
 
-      # ─── Barra de estado ────────────────────────────────────
+      # ─── Barra de estado (Nord) ───────────────────────────────
       set -g status-position top
       set -g status-interval 5
       set -g status-justify centre
 
-      set -g status-style "bg=#1e1e2e,fg=#cdd6f4"
+      set -g status-style "bg=#2e3440,fg=#d8dee9"
 
       set -g status-left-length 30
-      set -g status-left "#[fg=#1e1e2e,bg=#89b4fa,bold]  #S #[fg=#89b4fa,bg=#1e1e2e,nobold]"
+      set -g status-left "#[fg=#2e3440,bg=#81a1c1,bold]  #S #[fg=#81a1c1,bg=#2e3440,nobold]"
 
-      setw -g window-status-format         "#[fg=#6c7086] #I:#W "
-      setw -g window-status-current-format "#[fg=#1e1e2e,bg=#a6e3a1,bold] #I:#W #[fg=#a6e3a1,bg=#1e1e2e,nobold]"
+      setw -g window-status-format         "#[fg=#4c566a] #I:#W "
+      setw -g window-status-current-format "#[fg=#2e3440,bg=#a3be8c,bold] #I:#W #[fg=#a3be8c,bg=#2e3440,nobold]"
       setw -g window-status-separator      ""
 
       set -g status-right-length 50
-      set -g status-right "#[fg=#f9e2af,bg=#1e1e2e] 󰥔 %H:%M #[fg=#1e1e2e,bg=#f9e2af,bold] #H "
+      set -g status-right "#[fg=#ebcb8b,bg=#2e3440] 󰥔 %H:%M #[fg=#2e3440,bg=#ebcb8b,bold] #H "
 
       set -g pane-border-lines heavy
-      set -g pane-border-style        "fg=#313244"
-      set -g pane-active-border-style "fg=#89b4fa"
+      set -g pane-border-style        "fg=#3b4252"
+      set -g pane-active-border-style "fg=#88c0d0"
 
-      set -g message-style "bg=#89b4fa,fg=#1e1e2e,bold"
+      set -g message-style "bg=#81a1c1,fg=#2e3440,bold"
     '';
   };
 }

@@ -1,0 +1,256 @@
+/* ============================================
+   Nord Waybar — Frost & Aurora
+   Palette:
+     bg:       #2E3440  (Nord0)
+     bg-alt:   #3B4252  (Nord1)
+     fg:       #D8DEE9  (Nord4)
+     frost-0:  #8FBCBB  (Nord7  — teal)
+     frost-1:  #88C0D0  (Nord8  — cyan)
+     frost-2:  #81A1C1  (Nord9  — blue)
+     frost-3:  #5E81AC  (Nord10 — dark blue)
+     aurora-r: #BF616A  (Nord11 — red)
+     aurora-o: #D08770  (Nord12 — orange)
+     aurora-y: #EBCB8B  (Nord13 — yellow)
+     aurora-g: #A3BE8C  (Nord14 — green)
+     aurora-p: #B48EAD  (Nord15 — purple)
+   ============================================ */
+
+/* ── Global ──────────────────────────────── */
+* {
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 0;
+}
+
+window#waybar {
+  background: transparent;
+  color: #D8DEE9;
+}
+
+window#waybar > box {
+  background: alpha(#2E3440, 0.85);
+  border: 1px solid alpha(#4C566A, 0.6);
+  border-radius: 14px;
+  padding: 0 6px;
+}
+
+tooltip {
+  background: #2E3440;
+  border: 1px solid #4C566A;
+  border-radius: 10px;
+  color: #D8DEE9;
+}
+
+tooltip label {
+  color: #D8DEE9;
+  padding: 4px 8px;
+}
+
+/* ── Logo ────────────────────────────────── */
+#custom-logo {
+  color: #88C0D0;
+  font-size: 18px;
+  padding: 0 12px 0 8px;
+  margin: 4px 0;
+}
+
+/* ── Workspaces ──────────────────────────── */
+#workspaces {
+  margin: 4px 4px;
+  padding: 0;
+}
+
+#workspaces button {
+  color: #4C566A;
+  background: transparent;
+  padding: 2px 10px;
+  margin: 2px 2px;
+  border-radius: 10px;
+  border: none;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+#workspaces button:hover {
+  color: #88C0D0;
+  background: alpha(#88C0D0, 0.12);
+}
+
+#workspaces button.active {
+  color: #2E3440;
+  background: linear-gradient(135deg, #88C0D0, #81A1C1);
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 12px;
+}
+
+#workspaces button.urgent {
+  color: #2E3440;
+  background: #BF616A;
+}
+
+/* ── Window Title ────────────────────────── */
+#window {
+  color: #8FBCBB;
+  padding: 0 12px;
+  margin: 4px 0;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* ── Clock (center) ──────────────────────── */
+#clock {
+  color: #ECEFF4;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 0 16px;
+  margin: 4px 0;
+  background: alpha(#81A1C1, 0.15);
+  border-radius: 10px;
+}
+
+/* ── Separator ───────────────────────────── */
+#custom-separator {
+  color: alpha(#4C566A, 0.5);
+  padding: 0 4px;
+  font-size: 14px;
+}
+
+/* ── Tray ────────────────────────────────── */
+#tray {
+  margin: 4px 4px;
+  padding: 0 6px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+}
+
+/* ── Right-side Modules (shared) ─────────── */
+#pulseaudio,
+#network,
+#backlight,
+#battery {
+  padding: 0 10px;
+  margin: 4px 0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+#pulseaudio:hover,
+#network:hover,
+#backlight:hover,
+#battery:hover {
+  background: alpha(#D8DEE9, 0.08);
+}
+
+/* ── PulseAudio ──────────────────────────── */
+#pulseaudio {
+  color: #B48EAD;
+}
+
+#pulseaudio.muted {
+  color: #4C566A;
+}
+
+/* ── Network ─────────────────────────────── */
+#network {
+  color: #88C0D0;
+}
+
+#network.disconnected {
+  color: #BF616A;
+}
+
+/* ── Backlight ───────────────────────────── */
+#backlight {
+  color: #EBCB8B;
+}
+
+/* ── Battery ─────────────────────────────── */
+#battery {
+  color: #A3BE8C;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: #A3BE8C;
+}
+
+#battery.warning:not(.charging) {
+  color: #D08770;
+}
+
+#battery.critical:not(.charging) {
+  color: #BF616A;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ── Media Player ────────────────────────── */
+#custom-media {
+  color: #A3BE8C;
+  padding: 0 10px;
+  margin: 4px 0;
+  border-radius: 10px;
+  font-style: italic;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+#custom-media:hover {
+  background: alpha(#A3BE8C, 0.12);
+}
+
+#custom-media.Paused {
+  color: #4C566A;
+}
+
+/* ── Dunst Notifications ─────────────────── */
+#custom-dunst {
+  padding: 0 10px;
+  margin: 4px 0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+#custom-dunst:hover {
+  background: alpha(#D8DEE9, 0.08);
+}
+
+#custom-dunst.empty {
+  color: #4C566A;
+}
+
+#custom-dunst.has-notifs {
+  color: #EBCB8B;
+}
+
+#custom-dunst.paused {
+  color: #D08770;
+}
+
+/* ── Power Button ────────────────────────── */
+#custom-power {
+  color: #BF616A;
+  font-size: 16px;
+  padding: 0 12px 0 8px;
+  margin: 4px 0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+#custom-power:hover {
+  background: alpha(#BF616A, 0.2);
+  color: #ECEFF4;
+}

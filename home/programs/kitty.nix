@@ -5,7 +5,7 @@
 {
   programs.kitty = {
     enable = true;
-    themeFile = "${pkgs.kitty-themes}/share/kitty-themes/themes/Nord.conf";
+    themeFile = "Nord";
     font = {
       name = "JetBrainsMono Nerd Font";
       size = 14;

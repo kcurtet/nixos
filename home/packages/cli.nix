@@ -45,6 +45,7 @@
 
     # Media tools
     ffmpeg
+    timg
     yt-dlp
 
     # Browser integration

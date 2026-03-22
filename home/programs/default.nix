@@ -3,6 +3,7 @@
 # ============================================================================
 {
   imports = [
+    ./atuin.nix
     ./bat.nix
     ./direnv.nix
     ./hyprland.nix
@@ -13,7 +14,9 @@
     ./lazygit.nix
     ./shells.nix
     ./ssh.nix
+    ./starship.nix
     ./tmux.nix
+    ./yazi.nix
     ./zellij.nix
   ];
 }

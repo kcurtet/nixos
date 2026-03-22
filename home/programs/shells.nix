@@ -44,7 +44,7 @@
         e / v   nvim                    k       bat
         o       xdg-open                l       eza -la --icons
         g       lazygit                 y       yazi
-        z       autojump (cd rápido)
+        z       zoxide (cd rápido)
       EOF
 
       printf "\n"
@@ -84,8 +84,13 @@
   ];
 
   programs = {
-    # Autojump for directory navigation
-    autojump.enable = true;
+    # Zoxide for smart directory navigation (replaces autojump)
+    zoxide = {
+      enable = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+      enableZshIntegration = true;
+    };
 
     bash = {
       enable = true;
@@ -128,6 +133,14 @@
 
         if command -v wt >/dev/null 2>&1
           eval (wt config shell init fish)
+        end
+
+        # Notificar si un comando tardó más de 30s
+        function __notify_long_command --on-event fish_postexec
+          set -l duration (math $CMD_DURATION / 1000)
+          if test $duration -gt 30
+            notify-desktop "Terminal" "Comando terminado en {$duration}s: $argv" 2>/dev/null
+          end
         end
 
         # tv: cd a directorio

@@ -33,6 +33,11 @@
         color-scheme = "prefer-dark";
         gtk-theme = "Nordic";
       };
+      # Use foot as default terminal in GNOME
+      "org/gnome/desktop/default-applications/terminal" = {
+        exec = "foot";
+        exec-arg = "";
+      };
     };
   };
 }

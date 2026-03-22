@@ -8,7 +8,6 @@
     eza
     tree
     treemd
-    yazi
 
     # Archive tools
     p7zip
@@ -17,9 +16,11 @@
 
     # System utilities
     btop
+    dust
     iftop
     lm_sensors
     lsof
+    procs
 
     # Terminal utilities
     fd
@@ -30,6 +31,8 @@
     wl-clipboard
 
     # Network tools
+    doggo
+    gping
     lynx
     netcat-openbsd
 
@@ -58,6 +61,10 @@
 
     # Kitty themes
     kitty-themes
+
+    # Benchmarking and analysis
+    hyperfine
+    tokei
 
     # Added packages
     ast-grep

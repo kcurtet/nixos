@@ -33,6 +33,15 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
+    TERMINAL = "foot";
+  };
+
+  # Default terminal for GNOME / XDG
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/terminal" = [ "org.codeberg.dnkl.foot.desktop" ];
+    };
   };
 
   # Hyprland user configuration

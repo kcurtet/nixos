@@ -15,7 +15,7 @@ _:
     l = "eza -la --icons --group-directories-first";
     g = "lazygit";
     y = "yazi";
-    z = "j"; # autojump
+    z = "zi"; # zoxide interactive
 
     # Git shortcuts
     gs = "git status";

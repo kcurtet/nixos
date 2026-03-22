@@ -6,6 +6,8 @@ let
   flakeDir = "$HOME/system/nixos-config";
   optionsCache = "$HOME/.cache/tv-nix-options";
 
+  syncthingConfig = "/home/kx/syncthing/.config/syncthing/config.xml";
+
   # Helper script that builds/caches the options.json store path
   nixOptionsHelper = pkgs.writeShellScript "nix-options-helper" ''
     CACHE_DIR="${optionsCache}"
@@ -29,7 +31,7 @@ let
         return 1
       fi
       echo "$path" > "$CACHE_FILE"
-      ${pkgs.jq}/bin/jq -r 'keys[]' "$path/share/doc/nixos/options.json" > "$NAMES_FILE"
+      ${pkgs.jq}/bin/jq -r 'keys[] | select(startswith("<") | not)' "$path/share/doc/nixos/options.json" > "$NAMES_FILE"
     }
 
     case "$1" in
@@ -56,6 +58,123 @@ let
       refresh)
         rm -rf "$CACHE_DIR"
         ensure_cache && echo "Cache refreshed: $(wc -l < "$NAMES_FILE") options"
+        ;;
+    esac
+  '';
+
+  # Helper script for nix store browsing
+  nixStoreHelper = pkgs.writeShellScript "nix-store-helper" ''
+    CACHE_DIR="$HOME/.cache/tv-nix-store"
+    CACHE_FILE="$CACHE_DIR/paths"
+
+    case "$1" in
+      list)
+        # Cache for 1 hour
+        if [ -f "$CACHE_FILE" ] && [ $(($(date +%s) - $(stat -c %Y "$CACHE_FILE"))) -lt 3600 ]; then
+          cat "$CACHE_FILE"
+        else
+          mkdir -p "$CACHE_DIR"
+          nix path-info --all --size 2>/dev/null | ${pkgs.gawk}/bin/awk '{
+            size=$2;
+            if (size > 1073741824) printf "%.1fG\t%s\n", size/1073741824, $1;
+            else if (size > 1048576) printf "%.1fM\t%s\n", size/1048576, $1;
+            else if (size > 1024) printf "%.1fK\t%s\n", size/1024, $1;
+            else printf "%dB\t%s\n", size, $1;
+          }' | sort -t$'\t' -k1 -h -r | tee "$CACHE_FILE"
+        fi
+        ;;
+      show)
+        path="$2"
+        echo "=== Store Path Info ==="
+        nix path-info --size --closure-size "$path" 2>/dev/null | ${pkgs.gawk}/bin/awk '{
+          printf "NAR size:     %.1fM\nClosure size: %.1fM\n", $2/1048576, $3/1048576
+        }'
+        echo ""
+        echo "=== Direct References ==="
+        nix-store -q --references "$path" 2>/dev/null | sed 's|/nix/store/[a-z0-9]*-||'
+        echo ""
+        echo "=== Contents (top-level) ==="
+        ls "$path" 2>/dev/null
+        ;;
+      refresh)
+        rm -f "$CACHE_DIR/paths"
+        echo "Cache cleared. Will rebuild on next list."
+        ;;
+    esac
+  '';
+
+  # Helper for flake inputs
+  flakeInputsHelper = pkgs.writeShellScript "flake-inputs-helper" ''
+    cd "${flakeDir}" 2>/dev/null || exit 1
+
+    case "$1" in
+      list)
+        nix flake metadata --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '
+          .locks.nodes | to_entries[] |
+          select(.value.locked != null) |
+          .key + "\t" +
+          (if .value.locked.type == "github" then .value.locked.owner + "/" + .value.locked.repo else .value.locked.url // .value.locked.type // "unknown" end) + "\t" +
+          (.value.locked.rev // "n/a" | .[0:12]) + "\t" +
+          (.value.locked.lastModified // 0 | todate)
+        '
+        ;;
+      show)
+        input="$2"
+        echo "=== Flake Input: $input ==="
+        nix flake metadata --json 2>/dev/null | ${pkgs.jq}/bin/jq -r --arg name "$input" '
+          .locks.nodes[$name] // empty |
+          "Type:     \(.locked.type // "unknown")" +
+          (if .locked.owner then "\nOwner:    \(.locked.owner)" else "" end) +
+          (if .locked.repo then "\nRepo:     \(.locked.repo)" else "" end) +
+          (if .locked.rev then "\nRev:      \(.locked.rev)" else "" end) +
+          (if .locked.lastModified then "\nDate:     \(.locked.lastModified | todate)" else "" end) +
+          (if .locked.narHash then "\nHash:     \(.locked.narHash)" else "" end) +
+          "\n\n=== Inputs ===" +
+          (if .inputs then "\n" + (.inputs | to_entries | map(.key + " -> " + (if (.value | type) == "array" then .value[0] else .value end)) | join("\n")) else "\n(none)" end)
+        '
+        ;;
+    esac
+  '';
+
+  # Helper for syncthing
+  syncthingHelper = pkgs.writeShellScript "syncthing-helper" ''
+    API_KEY=$(${pkgs.gnugrep}/bin/grep -oP '<apikey>\K[^<]+' "${syncthingConfig}" 2>/dev/null)
+    if [ -z "$API_KEY" ]; then
+      echo "Cannot read Syncthing API key"
+      exit 1
+    fi
+    api() {
+      ${pkgs.curl}/bin/curl -sf -H "X-API-Key: $API_KEY" "http://127.0.0.1:8384$1" 2>/dev/null
+    }
+
+    case "$1" in
+      list)
+        api "/rest/config/folders" | ${pkgs.jq}/bin/jq -r '.[] | .label + "\t" + .id + "\t" + .path'
+        if [ $? -ne 0 ]; then echo "(syncthing not responding)"; fi
+        ;;
+      show)
+        folder_label="$2"
+        folder_id=$(api "/rest/config/folders" | ${pkgs.jq}/bin/jq -r --arg l "$folder_label" '.[] | select(.label == ($l | split("\t")[0])) | .id')
+        if [ -z "$folder_id" ]; then
+          echo "Folder not found"
+          exit 1
+        fi
+
+        echo "=== Folder: $folder_label ==="
+        api "/rest/config/folders" | ${pkgs.jq}/bin/jq -r --arg id "$folder_id" '
+          .[] | select(.id == $id) |
+          "ID:       \(.id)\nPath:     \(.path)\nType:     \(.type)\nIgnore:   \(.ignorePerms)\nWatch:    \(.fsWatcherEnabled)"
+        '
+        echo ""
+        echo "=== Sync Status ==="
+        api "/rest/db/status?folder=$folder_id" | ${pkgs.jq}/bin/jq -r '
+          "State:       \(.state)\nFiles:       \(.localFiles)/\(.globalFiles)\nBytes:       \(.inSyncBytes)/\(.globalBytes)\nNeed files:  \(.needFiles)\nNeed bytes:  \(.needBytes)"
+        '
+        echo ""
+        echo "=== Connected Devices ==="
+        api "/rest/config/folders" | ${pkgs.jq}/bin/jq -r --arg id "$folder_id" '
+          .[] | select(.id == $id) | .devices[].deviceID[:12]
+        '
         ;;
     esac
   '';
@@ -271,6 +390,225 @@ in
             description = "Open on search.nixos.org";
             command = "xdg-open 'https://search.nixos.org/options?query={}'";
             mode = "fork";
+          };
+        };
+      };
+
+      nix-store = {
+        metadata = {
+          name = "nix-store";
+          description = "Browse Nix store paths by size";
+          requirements = [ "nix" ];
+        };
+        source = {
+          command = "${nixStoreHelper} list";
+        };
+        preview = {
+          command = "${nixStoreHelper} show '{split:\\t:1}'";
+        };
+        ui = {
+          preview_panel = {
+            size = 55;
+          };
+        };
+        keybindings = {
+          ctrl-d = "actions:delete";
+          ctrl-r = "actions:refresh";
+        };
+        actions = {
+          delete = {
+            description = "Delete store path (requires sudo)";
+            command = "sudo nix store delete '{split:\\t:1}'";
+            mode = "fork";
+          };
+          refresh = {
+            description = "Refresh cache";
+            command = "${nixStoreHelper} refresh";
+            mode = "fork";
+          };
+        };
+      };
+
+      nix-flake-inputs = {
+        metadata = {
+          name = "nix-flake-inputs";
+          description = "Browse and update flake inputs";
+          requirements = [
+            "nix"
+            "jq"
+          ];
+        };
+        source = {
+          command = "${flakeInputsHelper} list";
+        };
+        preview = {
+          command = "${flakeInputsHelper} show '{split:\\t:0}'";
+        };
+        ui = {
+          preview_panel = {
+            size = 55;
+          };
+        };
+        keybindings = {
+          ctrl-u = "actions:update";
+          ctrl-o = "actions:open";
+        };
+        actions = {
+          update = {
+            description = "Update this input";
+            command = "cd ${flakeDir} && nix flake update '{split:\\t:0}'";
+            mode = "fork";
+          };
+          open = {
+            description = "Open on GitHub";
+            command = "xdg-open 'https://github.com/{split:\\t:1}'";
+            mode = "fork";
+          };
+        };
+      };
+
+      ollama-models = {
+        metadata = {
+          name = "ollama-models";
+          description = "Browse and manage Ollama models";
+          requirements = [ "ollama" ];
+        };
+        source = {
+          command = "ollama list | tail -n +2";
+        };
+        preview = {
+          command = "ollama show '{split: :0}'";
+        };
+        ui = {
+          preview_panel = {
+            size = 60;
+          };
+        };
+        keybindings = {
+          ctrl-d = "actions:delete";
+          ctrl-r = "actions:run";
+        };
+        actions = {
+          delete = {
+            description = "Delete model";
+            command = "ollama rm '{split: :0}'";
+            mode = "fork";
+          };
+          run = {
+            description = "Run model interactively";
+            command = "ollama run '{split: :0}'";
+            mode = "fork";
+          };
+        };
+      };
+
+      hcloud-servers = {
+        metadata = {
+          name = "hcloud-servers";
+          description = "Browse and manage Hetzner Cloud servers";
+          requirements = [ "hcloud" ];
+        };
+        source = {
+          command = "hcloud server list -o 'columns=name,status,server_type,ipv4,datacenter'";
+        };
+        preview = {
+          command = "hcloud server describe '{split: :0}' -o yaml";
+        };
+        ui = {
+          preview_panel = {
+            size = 60;
+          };
+        };
+        keybindings = {
+          ctrl-s = "actions:ssh";
+          ctrl-p = "actions:power";
+          ctrl-r = "actions:reboot";
+        };
+        actions = {
+          ssh = {
+            description = "SSH into server";
+            command = "ssh root@$(hcloud server ip '{split: :0}')";
+            mode = "execute";
+          };
+          power = {
+            description = "Toggle power (on if off, off if on)";
+            command = "status=$(hcloud server describe '{split: :0}' -o json | jq -r .status); if [ \"$status\" = \"running\" ]; then hcloud server poweroff '{split: :0}'; else hcloud server poweron '{split: :0}'; fi";
+            mode = "fork";
+          };
+          reboot = {
+            description = "Reboot server";
+            command = "hcloud server reboot '{split: :0}'";
+            mode = "fork";
+          };
+        };
+      };
+
+      syncthing-folders = {
+        metadata = {
+          name = "syncthing-folders";
+          description = "Browse Syncthing shared folders and sync status";
+          requirements = [
+            "curl"
+            "jq"
+          ];
+        };
+        source = {
+          command = "${syncthingHelper} list";
+        };
+        preview = {
+          command = "${syncthingHelper} show '{split:\\t:0}'";
+        };
+        ui = {
+          preview_panel = {
+            size = 55;
+          };
+        };
+        keybindings = {
+          ctrl-o = "actions:open";
+          ctrl-b = "actions:browse";
+        };
+        actions = {
+          open = {
+            description = "Open folder in file manager";
+            command = "xdg-open '{split:\\t:2}'";
+            mode = "fork";
+          };
+          browse = {
+            description = "Open Syncthing web UI";
+            command = "xdg-open 'http://localhost:8384'";
+            mode = "fork";
+          };
+        };
+      };
+
+      nixos-config = {
+        metadata = {
+          name = "nixos-config";
+          description = "Browse NixOS configuration files";
+          requirements = [
+            "fd"
+            "bat"
+          ];
+        };
+        source = {
+          command = "fd -t f -e nix . ${flakeDir} --strip-cwd-prefix";
+        };
+        preview = {
+          command = "bat -n --color=always '{}'";
+        };
+        ui = {
+          preview_panel = {
+            size = 65;
+          };
+        };
+        keybindings = {
+          ctrl-e = "actions:edit";
+        };
+        actions = {
+          edit = {
+            description = "Open in neovim";
+            command = "nvim '{}'";
+            mode = "execute";
           };
         };
       };

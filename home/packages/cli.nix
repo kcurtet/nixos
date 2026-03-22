@@ -26,7 +26,7 @@
     fd
     jq
     ripgrep
-    television
+    tldr
     trash-cli
     wl-clipboard
 

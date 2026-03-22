@@ -15,6 +15,7 @@
     ./shells.nix
     ./ssh.nix
     ./starship.nix
+    ./television.nix
     ./tmux.nix
     ./yazi.nix
     ./zellij.nix

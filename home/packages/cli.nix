@@ -69,6 +69,7 @@
     # Added packages
     ast-grep
     google-cloud-sdk
+    pandoc
     tesseract
   ];
 }

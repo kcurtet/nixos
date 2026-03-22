@@ -35,5 +35,7 @@
     # Note taking
     obsidian
 
+    # Office
+    libreoffice-fresh
   ];
 }

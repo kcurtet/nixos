@@ -65,6 +65,7 @@ in
         main = {
           font = "JetBrainsMono Nerd Font:size=11";
           dpi-aware = "yes";
+          login-shell = "yes";
         };
 
         colors-dark = {

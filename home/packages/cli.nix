@@ -25,7 +25,9 @@
     fd
     jq
     ripgrep
+    television
     trash-cli
+    wl-clipboard
 
     # Network tools
     lynx

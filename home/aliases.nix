@@ -1,18 +1,23 @@
 # ============================================================================
 # Shell Aliases
 # ============================================================================
-{ ... }:
+_:
 
 {
   home.shellAliases = {
-    # Editor
+    # Editores
     e = "nvim";
     v = "nvim";
 
-    z = "zellij";
+    # Herramientas básicas
+    k = "bat";
+    o = "xdg-open";
+    l = "eza -la --icons --group-directories-first";
+    g = "lazygit";
+    y = "yazi";
+    z = "j"; # autojump
 
     # Git shortcuts
-    g = "git";
     gs = "git status";
     gc = "git commit";
     gcm = "git commit -m";
@@ -20,16 +25,16 @@
     gp = "git push";
     gl = "git log --oneline --graph --decorate";
 
-    # File listing (using exa/eza)
-    ls = "exa";
-    l = "exa -l";
-    ll = "exa -la";
-    la = "exa -a";
-    t = "exa -T";
-    L = "exa -T -L";
-
-    # Navigation
-    c = "jump";
+    # Television channels
+    f = "tv files";
+    s = "tv text";
+    r = "tv trash";
+    p = "tv procs";
+    m = "tv man-pages";
+    u = "tv systemd-units";
+    n = "tv env";
+    G = "tv git-log";
+    D = "tv docker-containers";
 
     # pi-coding-agent shortcuts
     haiku = "pi -p haiku --model";

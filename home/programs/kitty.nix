@@ -11,6 +11,9 @@
       size = 14;
     };
     settings = {
+      # Shell — launch as login shell so ~/.profile (HM session vars) is sourced
+      "shell" = "/bin/bash --login";
+
       # Performance
       "repaint_delay" = 10;
       "input_delay" = 3;

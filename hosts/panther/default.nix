@@ -244,6 +244,7 @@ in
       wine-staging
       winetricks
       nixfmt-tree
+      ydotool
     ]
     ++ builtins.attrValues scripts;
 

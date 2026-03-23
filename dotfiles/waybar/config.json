@@ -10,8 +10,6 @@
   "modules-left": ["custom/logo", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
   "modules-right": [
-    "custom/gcal",
-    "custom/separator",
     "custom/media",
     "custom/separator",
     "tray",
@@ -169,13 +167,5 @@
     "tooltip": true,
     "tooltip-format": "Power Menu",
     "on-click": "~/.config/hypr/scripts/powermenu.sh"
-  },
-
-  "custom/gcal": {
-    "format": "󰃭  {}",
-    "exec": "gws calendar +agenda --today --format table | head -5 | tail -1",
-    "interval": 300,
-    "tooltip-format": "{}",
-    "on-click": "xdg-open https://calendar.google.com"
   }
 }

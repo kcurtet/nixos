@@ -27,7 +27,7 @@ in
     home.file.".config/hypr/scripts/powermenu.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/powermenu.sh";
     home.file.".config/hypr/scripts/dunst-waybar.sh".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
     home.file.".config/rofi/nord.rasi".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
-    home.file.".config/waybar/config.jsonc".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.jsonc";
+    home.file.".config/waybar/config".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.json";
     home.file.".config/waybar/style.css".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/style.css";
 
     # Cursor theme
@@ -55,7 +55,7 @@ in
       };
     };
 
-    # Waybar — config managed via dotfiles (waybar/config.jsonc + style.css)
+    # Waybar — config managed via dotfiles (waybar/config.json + style.css)
     programs.waybar.enable = true;
 
     # Foot terminal (default terminal for Hyprland)

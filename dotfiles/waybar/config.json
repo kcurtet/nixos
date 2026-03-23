@@ -172,12 +172,10 @@
   },
 
   "custom/gcal": {
-    "format": "{}",
-    "return-type": "json",
-    "exec": "~/.config/hypr/scripts/gcal-waybar.sh",
+    "format": "󰃭  {}",
+    "exec": "gws calendar +agenda --today --format table | head -5 | tail -1",
     "interval": 300,
     "tooltip-format": "{}",
-    "on-click": "xdg-open https://calendar.google.com",
-    "on-click-right": "gws calendar +agenda --today"
+    "on-click": "xdg-open https://calendar.google.com"
   }
 }

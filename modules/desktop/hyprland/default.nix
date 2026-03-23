@@ -69,7 +69,7 @@ in
       # File manager
       thunar
       thunar-volman
-      xfce.thunar-archive-plugin
+      thunar-archive-plugin
 
       # Archive manager GUI
       file-roller

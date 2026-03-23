@@ -69,6 +69,16 @@ in
       # File manager
       thunar
       thunar-volman
+      xfce.thunar-archive-plugin
+
+      # Archive manager GUI
+      file-roller
+
+      # Archive backends
+      p7zip
+      unzip
+      zip
+      unrar
 
       # Screen sharing
       v4l-utils

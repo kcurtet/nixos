@@ -14,6 +14,7 @@
     # Browsers
     brave
     librewolf
+    chromium
 
     # Communication
     telegram-desktop

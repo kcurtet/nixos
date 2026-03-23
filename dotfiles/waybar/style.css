@@ -216,6 +216,34 @@ tooltip label {
   color: #4C566A;
 }
 
+/* ── Google Calendar ─────────────────────── */
+#custom-gcal {
+  color: #88C0D0;
+  padding: 0 10px;
+  margin: 4px 0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+#custom-gcal:hover {
+  background: alpha(#88C0D0, 0.12);
+}
+
+#custom-gcal.urgent {
+  color: #BF616A;
+  background: alpha(#BF616A, 0.15);
+  font-weight: 700;
+}
+
+#custom-gcal.active {
+  color: #EBCB8B;
+  background: alpha(#EBCB8B, 0.12);
+}
+
+#custom-gcal.idle {
+  color: #88C0D0;
+}
+
 /* ── Dunst Notifications ─────────────────── */
 #custom-dunst {
   padding: 0 10px;

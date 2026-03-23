@@ -16,6 +16,8 @@
     "clock"
   ],
   "modules-right": [
+    "custom/gcal",
+    "custom/separator",
     "custom/media",
     "custom/separator",
     "tray",
@@ -173,5 +175,15 @@
     "tooltip": true,
     "tooltip-format": "Power Menu",
     "on-click": "~/.config/hypr/scripts/powermenu.sh"
+  },
+
+  "custom/gcal": {
+    "format": "󰃭  {}",
+    "return-type": "json",
+    "exec": "~/.config/hypr/scripts/gcal-waybar.sh",
+    "interval": 300,
+    "tooltip-format": "{}",
+    "on-click": "xdg-open https://calendar.google.com",
+    "on-click-right": "gws calendar +agenda --today"
   }
 }

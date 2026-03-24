@@ -33,9 +33,10 @@ nixos/
 
 | Command | Description |
 |---------|-------------|
-| `nix-apply` | Commit changes and apply configuration immediately |
+| `nix-apply` | Commit changes and apply configuration immediately (now prompts before committing; use `NIX_APPLY_AUTO=1` or `nix-apply --yes` for non-interactive) |
 | `nboot`    | Apply changes on next boot |
 | `nix-up`   | Update flake inputs (nixpkgs, home-manager, etc.) |
+
 ## Adding a New Host
 
 1. Create a new directory under `hosts/`:
@@ -123,9 +124,27 @@ nix-apply
 # Or manually:
 # sudo nixos-rebuild switch --flake .#panther
 ```
+
 ## Development Shell
 
 ```bash
 nix develop
 # Provides: nil, nixd, alejandra, statix, deadnix
 ```
+
+## CI & Pre-commit
+
+This repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` which runs `nix flake check` plus formatter and linter checks on pushes and pull requests.
+
+A sample local pre-commit hook is available at `.githooks/pre-commit`. To enable it locally:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook runs `nixfmt-tree`, `statix` and `deadnix`. It requires `nix` to be installed and may download dependencies the first time it runs.
+
+## Notes
+
+- Secrets are managed with sops/sops-nix. Do not commit plaintext secrets. `secrets/secrets.yaml` is encrypted with sops and should remain encrypted.
+- `nix-apply` now prompts before committing uncommitted changes. Use `NIX_APPLY_AUTO=1 nix-apply` or `nix-apply --yes` to skip the prompt.

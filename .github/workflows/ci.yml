@@ -22,6 +22,16 @@ jobs:
         run: |
           nix --extra-experimental-features 'nix-command flakes' flake check
 
+      - name: Eval panther configuration (fast)
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' eval --raw .#nixosConfigurations.panther
+
+      - name: Optional full system build (disabled by default)
+        if: env.RUN_FULL_BUILD == '1'
+        run: |
+          echo "RUN_FULL_BUILD is enabled — building panther system (may be slow)"
+          nix --extra-experimental-features 'nix-command flakes' build .#nixosConfigurations.panther.config.system.build.toplevel --no-link
+
       - name: Run formatter & linters
         run: |
           nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#nixfmt-tree nixpkgs#statix nixpkgs#deadnix --command bash -lc '

@@ -15,9 +15,29 @@
     FLAKE_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/system/nixos-config")
     # Check if there are changes to commit
     if git -C "$FLAKE_DIR" status --porcelain | grep -q .; then
-      echo "Committing changes before switch..."
-      git -C "$FLAKE_DIR" add .
-      git -C "$FLAKE_DIR" commit -m "nix: system configuration update $(date +'%Y-%m-%d %H:%M:%S')"
+      echo "Uncommitted changes detected in $FLAKE_DIR:"
+      git -C "$FLAKE_DIR" --no-pager status --short
+      echo "Diff:"
+      git -C "$FLAKE_DIR" --no-pager diff --no-color || true
+
+      # Allow non-interactive auto-commit via environment variable or --yes flag
+      if [ "${NIX_APPLY_AUTO:-}" = "1" ] || [ "${1:-}" = "--yes" ]; then
+        echo "Auto-commit enabled"
+        git -C "$FLAKE_DIR" add .
+        git -C "$FLAKE_DIR" commit -m "nix: system configuration update $(date +'%Y-%m-%d %H:%M:%S')"
+      else
+        read -p "Commit these changes and continue? [y/N]: " answer
+        case "$answer" in
+          [Yy]* )
+            git -C "$FLAKE_DIR" add .
+            git -C "$FLAKE_DIR" commit -m "nix: system configuration update $(date +'%Y-%m-%d %H:%M:%S')"
+            ;;
+          * )
+            echo "Skipping commit. Aborting rebuild."
+            exit 1
+            ;;
+        esac
+      fi
     else
       echo "No changes to commit"
     fi

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        run: |
+          curl -L https://nixos.org/nix/install | sh -s -- --no-daemon
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix --version
+
+      - name: Nix flake check
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' flake check
+
+      - name: Run formatter & linters
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#nixfmt-tree nixpkgs#statix nixpkgs#deadnix --command bash -lc '
+            set -euo pipefail
+            echo "Running nixfmt-tree --check"; nixfmt-tree --check .
+            echo "Running statix check"; statix check .
+            echo "Running deadnix"; deadnix .
+          '

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run format and static checks before commit. To enable this hook for your repo:
+#   git config core.hooksPath .githooks
+
+if command -v nix >/dev/null 2>&1; then
+  echo "Running pre-commit Nix checks (nixfmt-tree, statix, deadnix)..."
+  nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#nixfmt-tree nixpkgs#statix nixpkgs#deadnix --command bash -lc '
+    set -euo pipefail
+    nixfmt-tree --check . || { echo "nixfmt-tree formatting check failed"; exit 1; }
+    statix check . || { echo "statix lint check failed"; exit 1; }
+    deadnix . || { echo "deadnix check failed"; exit 1; }
+  '
+else
+  echo "nix not found in PATH; skipping pre-commit checks"
+fi

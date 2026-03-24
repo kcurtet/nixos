@@ -4,6 +4,12 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      run_full_build:
+        description: 'Enable full system build (slow). Use "true" to enable.'
+        required: false
+        default: 'false'
 
 jobs:
   check:

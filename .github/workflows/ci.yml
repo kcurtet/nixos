@@ -33,7 +33,7 @@ jobs:
           nix --extra-experimental-features 'nix-command flakes' eval --raw .#nixosConfigurations.panther
 
       - name: Optional full system build (disabled by default)
-        if: env.RUN_FULL_BUILD == '1'
+        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.run_full_build == 'true') || env.RUN_FULL_BUILD == '1' }}
         run: |
           echo "RUN_FULL_BUILD is enabled — building panther system (may be slow)"
           nix --extra-experimental-features 'nix-command flakes' build .#nixosConfigurations.panther.config.system.build.toplevel --no-link

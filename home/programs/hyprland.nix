@@ -93,6 +93,9 @@ in
       };
     };
 
+    # Waybar — config managed via dotfiles (waybar/config.json + style.css)
+    programs.waybar.enable = true;
+
     # Ensure screenshot directory exists
     xdg.userDirs.extraConfig = {
       XDG_SCREENSHOTS_DIR = "${config.home.homeDirectory}/Pictures/Screenshots";

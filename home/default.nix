@@ -49,6 +49,12 @@
   # Hyprland user configuration
   programs.hyprland-config.enable = true;
 
+  # Hyprland-related programs
+  programs.rofi-config.enable = true;
+  programs.foot-config.enable = true;
+  services.dunst-config.enable = true;
+  gtk-config.enable = true;
+
   # User settings (can be overridden per-host)
   programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";

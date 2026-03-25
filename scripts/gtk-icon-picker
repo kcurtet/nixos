@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+# ============================================================================
+# GTK Icon Picker - Lista iconos GTK con preview en rofi
+# ============================================================================
+# Uso: gtk-icon-picker [tema]
+# Muestra selector rofi con previews de iconos GTK
+# Al seleccionar, copia el nombre al portapapeles
+# ============================================================================
+
+set -euo pipefail
+
+# Configuración
+ICON_SIZE="${ICON_SIZE:-48px}"
+COLUMNS="${COLUMNS:-6}"
+LINES="${LINES:-10}"
+
+# ============================================================================
+# Obtener tema de iconos actual
+# ============================================================================
+get_theme() {
+    if command -v gsettings &>/dev/null; then
+        gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null | tr -d "'" || echo "Adwaita"
+    else
+        echo "Adwaita"
+    fi
+}
+
+# ============================================================================
+# Generar índice de iconos (nombre|ruta)
+# ============================================================================
+build_index() {
+    local theme="$1"
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"
+    local cache_file="$cache_dir/gtk-icons-$theme-index.txt"
+    local lock_file="$cache_dir/gtk-icons-$theme.lock"
+
+    mkdir -p "$cache_dir"
+
+    # Usar caché si existe y es reciente (< 7 días)
+    if [[ -f "$cache_file" ]]; then
+        local cache_age
+        cache_age=$(($(date +%s) - $(date +%s -r "$cache_file")))
+        if [[ $cache_age -lt 604800 ]]; then
+            cat "$cache_file"
+            return
+        fi
+    fi
+
+    # Lock para evitar builds paralelos
+    exec 200>"$lock_file"
+    flock -w 30 200 || return 1
+
+    # Verificar de nuevo por si otro proceso lo generó
+    if [[ -f "$cache_file" ]]; then
+        local cache_age
+        cache_age=$(($(date +%s) - $(date +%s -r "$cache_file")))
+        if [[ $cache_age -lt 604800 ]]; then
+            flock -u 200
+            cat "$cache_file"
+            return
+        fi
+    fi
+
+    echo "Generando índice de iconos..." >&2
+
+    # Directorios donde buscar
+    local icon_dirs=(
+        "$HOME/.local/share/icons"
+        "$HOME/.icons"
+        "/run/current-system/sw/share/icons"
+        "/nix/var/nix/profiles/default/share/icons"
+        "/usr/share/icons"
+    )
+
+    # Archivo temporal
+    local tmp_index
+    tmp_index=$(mktemp)
+    trap "rm -f '$tmp_index'" RETURN
+
+    # Encontrar todos los iconos
+    for dir in "${icon_dirs[@]}"; do
+        [[ -d "$dir" ]] || continue
+        for search_theme in "$theme" "Adwaita" "hicolor"; do
+            if [[ -d "$dir/$search_theme" ]]; then
+                while IFS= read -r -d '' path; do
+                    name=$(basename "$path")
+                    name="${name%.*}"  # Quitar extensión
+                    echo "$name|$path"
+                done < <(find -L "$dir/$search_theme" -type f \( -name "*.svg" -o -name "*.png" \) -print0 2>/dev/null)
+            fi
+        done
+    done | sort -u -t'|' -k1,1 > "$tmp_index"
+
+    mv "$tmp_index" "$cache_file"
+    flock -u 200
+
+    cat "$cache_file"
+}
+
+# ============================================================================
+# Copiar al portapapeles
+# ============================================================================
+copy_to_clipboard() {
+    local text="$1"
+    if command -v wl-copy &>/dev/null; then
+        echo -n "$text" | wl-copy
+    elif command -v xclip &>/dev/null; then
+        echo -n "$text" | xclip -selection clipboard
+    elif command -v xsel &>/dev/null; then
+        echo -n "$text" | xsel -ib
+    elif command -v copyq &>/dev/null; then
+        copyq copy "$text"
+    else
+        echo "$text"
+        return 1
+    fi
+    return 0
+}
+
+# ============================================================================
+# Main
+# ============================================================================
+main() {
+    local theme="${1:-$(get_theme)}"
+
+    echo "Tema: $theme" >&2
+
+    # Obtener índice de iconos
+    local index_file
+    index_file="${XDG_CACHE_HOME:-$HOME/.cache}/gtk-icons-$theme-index.txt"
+
+    if [[ ! -f "$index_file" ]]; then
+        build_index "$theme" >/dev/null
+    fi
+
+    local count
+    count=$(wc -l < "$index_file" 2>/dev/null || echo "0")
+    echo "$count iconos" >&2
+
+    # Archivo temporal para rofi
+    local tmp_file
+    tmp_file=$(mktemp)
+    trap "rm -f '$tmp_file'" EXIT
+
+    # Convertir a formato rofi
+    while IFS='|' read -r name path; do
+        if [[ -n "$name" && -n "$path" ]]; then
+            printf '%s\0icon\x1f%s\n' "$name" "$path"
+        fi
+    done < "$index_file" > "$tmp_file"
+
+    # Mostrar con rofi
+    local selected
+    selected=$(rofi -dmenu \
+        -i \
+        -p "󰀻 Iconos" \
+        -mesg "$theme: $count iconos" \
+        -show-icons \
+        -theme-str "
+            listview {
+                columns: $COLUMNS;
+                lines: $LINES;
+                fixed-columns: true;
+            }
+            element {
+                orientation: vertical;
+                children: [element-icon, element-text];
+            }
+            element-icon {
+                size: $ICON_SIZE;
+            }
+            element-text {
+                horizontal-align: 0.5;
+            }
+        " \
+        < "$tmp_file")
+
+    # Procesar selección
+    if [[ -n "$selected" ]]; then
+        copy_to_clipboard "$selected"
+        notify-send "Icono copiado" "$selected" 2>/dev/null || true
+        echo "$selected"
+    fi
+}
+
+main "$@"

@@ -23,6 +23,7 @@ in
           font = "JetBrainsMono Nerd Font:size=14";
           dpi-aware = "yes";
           login-shell = "yes";
+          pad = "10x10";
         };
 
         colors-dark = {

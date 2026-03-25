@@ -72,11 +72,11 @@
       bind -n M-L resize-pane -R 2
 
       # ─── Mover paneles (HJKL) ────────────────────────────────
-
-      bind -n C-M-h swap-pane -L
+      # Note: swap-pane -L/-R require tmux 3.4+, using format specifiers for compatibility
+      bind -n C-M-h swap-pane -s '{left-of}'
       bind -n C-M-j swap-pane -D
       bind -n C-M-k swap-pane -U
-      bind -n C-M-l swap-pane -R
+      bind -n C-M-l swap-pane -s '{right-of}'
 
       # ─── Navegación entre ventanas ───────────────────────────
       bind -r 1 select-window -t 1

@@ -135,8 +135,10 @@
       bind p paste-buffer
       bind b choose-buffer
 
+      # ─── Unbind keys ──────────────────────────────────────────
+      unbind -n C-l
       # ─── Barra de estado (Nord) ───────────────────────────────
-      set -g status-position bottom
+      set -g status-position top
       set -g status-interval 5
       set -g status-justify left
 

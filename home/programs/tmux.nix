@@ -124,27 +124,27 @@
       # ─── Unbind keys ──────────────────────────────────────────
       unbind -n C-l
 
-      # ─── Barra de estado (Nord) ───────────────────────────────
+      # ─── Barra de estado (Nord + transparencia) ───────────────
       set -g status-position top
       set -g status-interval 5
       set -g status-justify left
 
-      set -g status-style "bg=#2e3440,fg=#d8dee9"
+      set -g status-style "bg=default,fg=#d8dee9"
 
       # Left: session name + window count
       set -g status-left-length 40
-      set -g status-left "#[fg=#2e3440,bg=#81a1c1,bold]  #S #[fg=#81a1c1,bg=#3b4252,nobold]#[fg=#d8dee9,bg=#3b4252] #{session_windows}  #[fg=#3b4252,bg=#2e3440]"
+      set -g status-left "#[fg=#81a1c1,bold] #S #[fg=#4c566a]│#[fg=#d8dee9] #{session_windows} "
 
       # Windows: inactive dimmed, active with frost accent
-      setw -g window-status-format         "#[fg=#4c566a,bg=#2e3440]  #I #[fg=#4c566a]#W "
-      setw -g window-status-current-format "#[fg=#2e3440,bg=#434c5e]#[fg=#88c0d0,bg=#434c5e,bold] #I #[fg=#d8dee9]#W #[fg=#434c5e,bg=#2e3440]"
-      setw -g window-status-separator      ""
+      setw -g window-status-format         "#[fg=#4c566a] #I:#W "
+      setw -g window-status-current-format "#[fg=#88c0d0,bold] #I:#W #[default]"
+      setw -g window-status-separator      "#[fg=#3b4252]│"
       setw -g window-status-activity-style "fg=#ebcb8b,bold"
       setw -g window-status-bell-style     "fg=#bf616a,bold"
 
-      # Right: git branch + pane count + date + time + host
+      # Right: command + date + time + host
       set -g status-right-length 80
-      set -g status-right "#[fg=#3b4252,bg=#2e3440]#[fg=#a3be8c,bg=#3b4252]  #{pane_current_command} #[fg=#434c5e,bg=#3b4252]#[fg=#d8dee9,bg=#434c5e] 󰃭 %d/%m #[fg=#4c566a,bg=#434c5e]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg=#81a1c1,bg=#434c5e]#[fg=#2e3440,bg=#81a1c1,bold] #H "
+      set -g status-right "#[fg=#4c566a]│#[fg=#a3be8c] #{pane_current_command} #[fg=#4c566a]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg=#4c566a]│#[fg=#81a1c1,bold] #H "
 
       # Pane borders: thin lines, frost accent on active
       set -g pane-border-lines single

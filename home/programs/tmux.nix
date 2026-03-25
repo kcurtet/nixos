@@ -30,6 +30,7 @@
       set  -g extended-keys
       set -g extended-keys-format csi-u
       set-option -g allow-passthrough on
+      set-option -g destroy-unattached on
 
 
       # ─── Recargar config ─────────────────────────────────────

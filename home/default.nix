@@ -35,6 +35,7 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
+    VISUAL = "foot -e nvim";
     TERMINAL = "foot";
   };
 

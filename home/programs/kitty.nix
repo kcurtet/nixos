@@ -88,7 +88,8 @@
       "ctrl+shift+c" = "copy_to_clipboard";
       "ctrl+shift+v" = "paste_from_clipboard";
       "ctrl+shift+s" = "paste_from_selection";
-      "ctrl+shift+f" = "launch --type=overlay --stdin-source=@screen_scrollback fzf --no-sort --no-mouse --exact -i tac +s -m --ansi --tiebreak=begin --bind=shift-tab:up,tab:down --cycle q";
+      "ctrl+shift+f" =
+        "launch --type=overlay --stdin-source=@screen_scrollback fzf --no-sort --no-mouse --exact -i tac +s -m --ansi --tiebreak=begin --bind=shift-tab:up,tab:down --cycle q";
     };
   };
 }

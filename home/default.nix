@@ -21,8 +21,10 @@
   '';
 
   # Emacs config (symlinked directly to repo, editable without rebuild)
-  home.file.".config/emacs/early-init.el".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/emacs/early-init.el";
-  home.file.".config/emacs/init.el".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/emacs/init.el";
+  home.file.".config/emacs/early-init.el".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/emacs/early-init.el";
+  home.file.".config/emacs/init.el".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/emacs/init.el";
 
   # PATH additions
   home.sessionPath = [

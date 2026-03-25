@@ -162,7 +162,7 @@ in
     #   users.users.kx.initialHashedPassword = "<sops-managed-hash>";
     # Use `secrets/secrets.yaml` (managed by sops) and reference the value here after decryption.
     # Consider using sops-nix integration (sops.defaultSopsFile is already configured).
-    
+
   };
 
   security.sudo.wheelNeedsPassword = false;

@@ -6,16 +6,17 @@
 set -euo pipefail
 
 ALARM_DIR="$HOME/.local/share/alarms"
-SOUND_FILE="/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-# Alternative sounds: complete, message, phone-incoming-call
+SOUND_FILE="/run/current-system/sw/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+# Alternative sounds: complete, message, bell
 
 mkdir -p "$ALARM_DIR"
 
 play_sound() {
-    if command -v paplay &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
-        paplay "$SOUND_FILE" --volume=65536 &
-    elif command -v pw-play &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
+    # Try pw-play first (PipeWire), then paplay (PulseAudio)
+    if command -v pw-play &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
         pw-play "$SOUND_FILE" &
+    elif command -v paplay &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
+        paplay "$SOUND_FILE" --volume=65536 &
     fi
 }
 
@@ -170,7 +171,7 @@ rofi_menu() {
             [[ -z "$time_input" ]] && exit 0
             local message=$(rofi -dmenu -p "Message" -theme ~/.config/rofi/nord.rasi)
             [[ -z "$message" ]] && message="Alarm"
-            add_alarm "$time_input "$message""
+            add_alarm "$time_input" "$message"
             ;;
         "📋 List Alarms")
             local alarms=$(list_alarms)

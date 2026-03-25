@@ -68,10 +68,10 @@
       bind l select-pane -R
 
       # Alt + hjkl sin prefix
-      bind -n M-h select-pane -L
-      bind -n M-j select-pane -D
-      bind -n M-k select-pane -U
-      bind -n M-l select-pane -R
+      # bind -n M-h select-pane -L
+      # bind -n M-j select-pane -D
+      # bind -n M-k select-pane -U
+      # bind -n M-l select-pane -R
 
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'
@@ -94,6 +94,13 @@
       bind -n M-K resize-pane -U 2
       bind -n M-L resize-pane -R 2
 
+      # ─── Mover paneles (HJKL) ────────────────────────────────
+
+      bind -n M-h swap-pane -L
+      bind -n M-j swap-pane -D
+      bind -n M-k swap-pane -U
+      bind -n M-l swap-pane -R
+
       # ─── Navegación entre ventanas ───────────────────────────
       bind -r 1 select-window -t 1
       bind -r 2 select-window -t 2
@@ -109,7 +116,7 @@
       bind -r '>' select-window -n
       bind -n -r M-p previous-window
       bind -n -r M-n next-window
-      bind 0 choose-window
+      bind C-0 choose-window
 
 
       # ─── Gestión de paneles ──────────────────────────────────
@@ -137,6 +144,7 @@
 
       # ─── Unbind keys ──────────────────────────────────────────
       unbind -n C-l
+
       # ─── Barra de estado (Nord) ───────────────────────────────
       set -g status-position top
       set -g status-interval 5

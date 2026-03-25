@@ -39,6 +39,9 @@ in
         ".config/hypr/scripts/alarm.sh" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/alarm.sh";
         };
+        ".local/bin/alarm" = {
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/alarm.sh";
+        };
         ".config/hypr/waybar.conf" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/waybar.conf";
         };

@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Alarm Manager for Hyprland
-# Uses: notify-send (dunst), systemd timers, rofi
+# Alarm Manager for Hyprland - systemd persistent backend
+# Uses: systemd --user timers, notify-send, pw-play
+# Alarms persist across reboots
 # ============================================================================
 set -euo pipefail
 
 ALARM_DIR="$HOME/.local/share/alarms"
+SYSTEMD_DIR="$HOME/.config/systemd/user"
 SOUND_FILE="/run/current-system/sw/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-# Alternative sounds: complete, message, bell
 
-mkdir -p "$ALARM_DIR"
+mkdir -p "$ALARM_DIR" "$SYSTEMD_DIR"
+
+# ============================================================================
+# Helpers
+# ============================================================================
 
 play_sound() {
-    # Try pw-play first (PipeWire), then paplay (PulseAudio)
     if command -v pw-play &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
         pw-play "$SOUND_FILE" &
     elif command -v paplay &>/dev/null && [[ -f "$SOUND_FILE" ]]; then
@@ -26,23 +30,119 @@ notify_alarm() {
     notify-send -u critical -t 0 -a "Alarm" "⏰ ALARM" "$message"
 }
 
-# Add a new alarm
+# Generate a safe systemd unit name (alphanumeric + dash only)
+sanitize_name() {
+    echo "$1" | tr -c '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]' | sed 's/-\+/-/g; s/^-\|-$//g'
+}
+
+# ============================================================================
+# Systemd unit management
+# ============================================================================
+
+create_systemd_units() {
+    local alarm_id="$1"
+    local message="$2"
+    local delay_seconds="$3"
+    local trigger_time="$4"
+    local calendar_time="$5"  # Empty for relative timers
+    
+    local safe_id=$(sanitize_name "$alarm_id")
+    local unit_name="alarm-${safe_id}"
+    
+    # Create service unit
+    cat > "$SYSTEMD_DIR/${unit_name}.service" << EOF
+[Unit]
+Description=Alarm: ${message}
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env bash -c 'notify-send -u critical -t 0 -a "Alarm" "⏰ ALARM" "${message}" && pw-play ${SOUND_FILE}'
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+[Install]
+WantedBy=default.target
+EOF
+
+    # Create timer unit
+    if [[ -n "$calendar_time" ]]; then
+        # Absolute time (OnCalendar)
+        cat > "$SYSTEMD_DIR/${unit_name}.timer" << EOF
+[Unit]
+Description=Timer for alarm: ${message}
+
+[Timer]
+OnCalendar=${calendar_time}
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+    else
+        # Relative time (OnActiveSec)
+        cat > "$SYSTEMD_DIR/${unit_name}.timer" << EOF
+[Unit]
+Description=Timer for alarm: ${message}
+
+[Timer]
+OnActiveSec=${delay_seconds}s
+Persistent=false
+
+[Install]
+WantedBy=timers.target
+EOF
+    fi
+    
+    # Store alarm metadata
+    cat > "$ALARM_DIR/${unit_name}" << EOF
+MESSAGE=${message}
+TRIGGER_TIME=${trigger_time}
+DELAY_SECONDS=${delay_seconds}
+CREATED=$(date +"%Y-%m-%d %H:%M:%S")
+UNIT_NAME=${unit_name}
+EOF
+    
+    # Reload systemd, enable and start timer
+    systemctl --user daemon-reload
+    systemctl --user enable --now "${unit_name}.timer"
+}
+
+remove_systemd_units() {
+    local unit_name="$1"
+    
+    systemctl --user stop "${unit_name}.timer" 2>/dev/null || true
+    systemctl --user disable "${unit_name}.timer" 2>/dev/null || true
+    
+    # Also remove symlink manually (in case systemd already unloaded the unit)
+    rm -f "$SYSTEMD_DIR/timers.target.wants/${unit_name}.timer"
+    rm -f "$SYSTEMD_DIR/${unit_name}.timer" "$SYSTEMD_DIR/${unit_name}.service"
+    rm -f "$ALARM_DIR/${unit_name}"
+    
+    systemctl --user daemon-reload
+}
+
+# ============================================================================
+# Commands
+# ============================================================================
+
 add_alarm() {
     local time_input="$1"
     local message="${2:-Alarm}"
     local alarm_id=$(date +%s%N | head -c 13)
-    local alarm_file="$ALARM_DIR/alarm-$alarm_id"
     
-    # Parse time input (supports: "10:30", "10m", "1h", "2h30m", "tomorrow 8:00")
-    local delay_seconds
+    local delay_seconds=""
+    local calendar_time=""
+    local trigger_time=""
     
+    # Parse time input
     if [[ "$time_input" =~ ^([0-9]+):([0-9]+)$ ]]; then
-        # Format: HH:MM (today or tomorrow)
+        # Format: HH:MM (absolute time)
         local target_hour="${BASH_REMATCH[1]}"
         local target_min="${BASH_REMATCH[2]}"
         local now=$(date +%s)
-        local target=$(date -j -f "%H:%M" "$target_hour:$target_min" +%s 2>/dev/null || \
-                       date -d "$target_hour:$target_min" +%s 2>/dev/null)
+        local target=$(date -d "${target_hour}:${target_min}" +%s 2>/dev/null || \
+                       date -j -f "%H:%M" "${target_hour}:${target_min}" +%s 2>/dev/null)
         
         if [[ -z "$target" ]]; then
             echo "Error: Invalid time format" >&2
@@ -53,26 +153,28 @@ add_alarm() {
         if [[ "$target" -le "$now" ]]; then
             target=$((target + 86400))
         fi
+        
         delay_seconds=$((target - now))
+        trigger_time=$(date -d "@${target}" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || \
+                       date -j -f "%s" "${target}" +"%Y-%m-%d %H:%M:%S")
+        
+        # Use OnCalendar for absolute time (more precise across reboots)
+        calendar_time=$(date -d "@${target}" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || \
+                        date -j -f "%s" "${target}" +"%Y-%m-%d %H:%M:%S")
         
     elif [[ "$time_input" =~ ^([0-9]+)h([0-9]+)m$ ]]; then
-        # Format: XhYm (e.g., 1h30m)
         delay_seconds=$((${BASH_REMATCH[1]} * 3600 + ${BASH_REMATCH[2]} * 60))
         
     elif [[ "$time_input" =~ ^([0-9]+)h$ ]]; then
-        # Format: Xh (e.g., 2h)
         delay_seconds=$((${BASH_REMATCH[1]} * 3600))
         
     elif [[ "$time_input" =~ ^([0-9]+)m$ ]]; then
-        # Format: Xm (e.g., 30m)
         delay_seconds=$((${BASH_REMATCH[1]} * 60))
         
     elif [[ "$time_input" =~ ^([0-9]+)s$ ]]; then
-        # Format: Xs (e.g., 90s)
         delay_seconds=$((${BASH_REMATCH[1]}))
         
     elif [[ "$time_input" =~ ^([0-9]+)$ ]]; then
-        # Format: X (minutes by default)
         delay_seconds=$((${BASH_REMATCH[1]} * 60))
         
     else
@@ -85,76 +187,116 @@ add_alarm() {
         exit 1
     fi
     
-    local trigger_time=$(date -d "+$delay_seconds seconds" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || \
-                         date -j -v+${delay_seconds}S +"%Y-%m-%d %H:%M:%S")
+    # Calculate trigger time if not already set (relative timers)
+    if [[ -z "$trigger_time" ]]; then
+        trigger_time=$(date -d "+${delay_seconds} seconds" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || \
+                       date -j -v+${delay_seconds}S +"%Y-%m-%d %H:%M:%S")
+    fi
     
-    # Create alarm file with metadata
-    cat > "$alarm_file" << EOF
-MESSAGE=$message
-TRIGGER_TIME=$trigger_time
-DELAY_SECONDS=$delay_seconds
-CREATED=$(date +"%Y-%m-%d %H:%M:%S")
-EOF
-    
-    # Start background timer
-    (
-        sleep "$delay_seconds"
-        notify_alarm "$message"
-        rm -f "$alarm_file"
-    ) &
-    echo $! >> "$alarm_file"
+    create_systemd_units "$alarm_id" "$message" "$delay_seconds" "$trigger_time" "$calendar_time"
     
     notify-send -u low -a "Alarm" "Alarm Set" "$message at $trigger_time"
     echo "Alarm set: $message at $trigger_time"
 }
 
-# List all alarms
 list_alarms() {
-    local alarms=()
-    for f in "$ALARM_DIR"/alarm-*; do
-        [[ -f "$f" ]] || continue
-        local message=$(grep "^MESSAGE=" "$f" | cut -d= -f2-)
-        local trigger=$(grep "^TRIGGER_TIME=" "$f" | cut -d= -f2-)
-        alarms+=("$trigger - $message")
-    done
+    # Clean up expired alarms first
+    cleanup_expired 2>/dev/null || true
     
-    if [[ ${#alarms[@]} -eq 0 ]]; then
+    local timers=$(systemctl --user list-timers --all --no-legend "alarm-*.timer" 2>/dev/null || true)
+    local found=0
+
+    if [[ -z "$timers" ]]; then
         echo "No active alarms"
         return
     fi
-    
-    printf '%s\n' "${alarms[@]}" | sort
+
+    while read -r line; do
+        [[ -n "$line" ]] || continue
+
+        local unit=$(echo "$line" | awk '{print $1}' | sed 's/.timer$//')
+
+        # Skip expired alarms (shows "X ago" in the time column)
+        if echo "$line" | grep -q "ago"; then
+            # Clean up expired timer
+            remove_systemd_units "$unit" 2>/dev/null || true
+            continue
+        fi
+
+        local next_trigger=$(echo "$line" | awk '{print $4, $5}')
+
+        # Get message from metadata file
+        local meta_file="$ALARM_DIR/${unit}"
+        local message="Alarm"
+        if [[ -f "$meta_file" ]]; then
+            message=$(grep "^MESSAGE=" "$meta_file" | cut -d= -f2-)
+        fi
+
+        echo "$next_trigger - $message"
+        found=1
+    done <<< "$timers"
+
+    [[ "$found" -eq 0 ]] && echo "No active alarms"
 }
 
-# Remove alarm
 remove_alarm() {
     local pattern="$1"
-    for f in "$ALARM_DIR"/alarm-*; do
-        [[ -f "$f" ]] || continue
-        local message=$(grep "^MESSAGE=" "$f" | cut -d= -f2-)
+    local found=0
+    
+    for meta_file in "$ALARM_DIR"/alarm-*; do
+        [[ -f "$meta_file" ]] || continue
+        local message=$(grep "^MESSAGE=" "$meta_file" | cut -d= -f2-)
+        local unit_name=$(grep "^UNIT_NAME=" "$meta_file" | cut -d= -f2-)
+        
         if [[ "$message" == *"$pattern"* ]]; then
-            local pid=$(grep -E "^[0-9]+$" "$f" | tail -1)
-            [[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
-            rm -f "$f"
+            remove_systemd_units "$unit_name"
             echo "Removed: $message"
             notify-send -u low -a "Alarm" "Alarm Removed" "$message"
+            found=1
         fi
     done
+    
+    [[ "$found" -eq 0 ]] && echo "No alarm matching '$pattern' found"
 }
 
-# Clear all alarms
-clear_all() {
-    for f in "$ALARM_DIR"/alarm-*; do
-        [[ -f "$f" ]] || continue
-        local pid=$(grep -E "^[0-9]+$" "$f" | tail -1)
-        [[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
-        rm -f "$f"
+# Clean up expired alarms (timers that already fired)
+cleanup_expired() {
+    local count=0
+    
+    # Get timers that show "ago" (already fired)
+    # Extract unit name (alarm-*.timer) from lines containing "ago"
+    local expired=$(systemctl --user list-timers --all --no-legend "alarm-*.timer" 2>/dev/null | grep "ago" | grep -oE 'alarm-[0-9]+\.timer' | sed 's/.timer$//')
+    
+    for unit_name in $expired; do
+        [[ -n "$unit_name" ]] || continue
+        remove_systemd_units "$unit_name"
+        count=$((count + 1))
     done
-    notify-send -u low -a "Alarm" "Alarms Cleared" "All alarms removed"
-    echo "All alarms cleared"
+    
+    [[ "$count" -gt 0 ]] && echo "Cleaned up $count expired alarms"
 }
 
+clear_all() {
+    local count=0
+    for meta_file in "$ALARM_DIR"/alarm-*; do
+        [[ -f "$meta_file" ]] || continue
+        local unit_name=$(grep "^UNIT_NAME=" "$meta_file" | cut -d= -f2-)
+        remove_systemd_units "$unit_name"
+        count=$((count + 1))
+    done
+    
+    if [[ "$count" -gt 0 ]]; then
+        notify-send -u low -a "Alarm" "Alarms Cleared" "Removed $count alarms"
+        echo "Cleared $count alarms"
+    else
+        echo "No alarms to clear"
+    fi
+}
+
+# ============================================================================
 # Rofi interface
+# ============================================================================
+
 rofi_menu() {
     local options=(
         "➕ New Alarm"
@@ -183,7 +325,6 @@ rofi_menu() {
     esac
 }
 
-# Quick timer menu
 quick_timer() {
     local options=(
         "5m - 5 minutes"
@@ -203,39 +344,55 @@ quick_timer() {
     add_alarm "$time" "Timer"
 }
 
+# Direct notification (for systemd service)
+notify() {
+    local message="${1:-Alarm}"
+    notify_alarm "$message"
+}
+
+# ============================================================================
 # Usage
+# ============================================================================
+
 usage() {
     cat << EOF
-Alarm Manager for Hyprland
+Alarm Manager for Hyprland (systemd backend)
 
-Usage: alarm.sh [command] [args]
+Usage: alarm [command] [args]
 
 Commands:
   add <time> [message]  Add alarm (time: HH:MM, 30m, 1h, 1h30m)
   list                  List active alarms
   remove <pattern>      Remove alarms matching pattern
   clear                 Clear all alarms
+  cleanup               Remove expired alarms
   menu                  Open rofi menu
   quick                 Quick timer menu
-  
+  notify [message]      Trigger alarm notification (for systemd)
+
 Examples:
-  alarm.sh add 09:00 "Wake up"
-  alarm.sh add 30m "Break over"
-  alarm.sh add 1h30m "Meeting"
-  alarm.sh list
-  alarm.sh remove "Break"
-  alarm.sh clear
+  alarm add 09:00 "Wake up"
+  alarm add 30m "Break over"
+  alarm add 1h30m "Meeting"
+  alarm list
+  alarm remove "Break"
+  alarm clear
+
+Alarms persist across reboots via systemd user timers.
+View with: systemctl --user list-timers alarm-*
 EOF
 }
 
 # Main
 case "${1:-menu}" in
-    add)   add_alarm "$2" "${3:-Alarm}" ;;
-    list)  list_alarms ;;
+    add)    add_alarm "$2" "${3:-Alarm}" ;;
+    list)   list_alarms ;;
     remove) remove_alarm "${2:-}" ;;
-    clear) clear_all ;;
-    menu)  rofi_menu ;;
-    quick) quick_timer ;;
+    clear)  clear_all ;;
+    menu)   rofi_menu ;;
+    quick)  quick_timer ;;
+    notify) notify "${2:-Alarm}" ;;
+    cleanup) cleanup_expired ;;
     -h|--help) usage ;;
-    *)     usage ;;
+    *)      usage ;;
 esac

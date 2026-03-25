@@ -22,6 +22,7 @@
     plugins = with pkgs.tmuxPlugins; [
       copy-toolkit
       session-wizard
+      vim-tmux-navigator
     ];
 
     extraConfig = ''

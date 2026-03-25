@@ -19,36 +19,13 @@
     clock24 = true;
     newSession = true;
 
-    plugins = with pkgs; [
-      {
-        plugin = tmuxPlugins.tmux-which-key;
-        extraConfig = ''
-          # Enable XDG support to write to home directory instead of Nix store
-          set -g @tmux-which-key-xdg-enable 1
-          set -g @tmux-which-key-xdg-plugin-path "tmux/plugins/tmux-which-key"
-          # Optional: disable autobuild if you prefer manual rebuilds
-          set -g @tmux-which-key-disable-autobuild 1
-        '';
-      }
-      tmuxPlugins.vim-tmux-navigator
-      tmuxPlugins.cpu
-      tmuxPlugins.copy-toolkit
-      {
-        plugin = tmuxPlugins.resurrect;
-        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
-      }
-      {
-        plugin = tmuxPlugins.continuum;
-        extraConfig = ''
-          set -g @continuum-restore 'on'
-          set -g @continuum-save-interval '60' # minutes
-        '';
-      }
+    plugins = with pkgs.tmuxPlugins; [
+      copy-toolkit
+      session-wizard
     ];
 
     extraConfig = ''
       # ─── General ──────────────────────────────────────────────
-      set -ag terminal-overrides ",xterm-256color:RGB"
       set  -g extended-keys
       set -g extended-keys-format csi-u
       set-option -g allow-passthrough on
@@ -77,7 +54,7 @@
       unbind '"'
       unbind %
       bind v   split-window -h -c "#{pane_current_path}"
-      bind e   split-window -v -c "#{pane_current_path}"
+      bind s   split-window -v -c "#{pane_current_path}"
       bind '\' split-window -h -c "#{pane_current_path}"
       bind '-' split-window -v -c "#{pane_current_path}"
 

@@ -52,6 +52,7 @@
     ffmpeg
     timg
     yt-dlp
+    castero # podcast client
 
     # Browser integration
     libsecret # for cookie extraction in browsers

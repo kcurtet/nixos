@@ -1,6 +1,3 @@
-# ============================================================================
-# Custom Shell Scripts
-# ============================================================================
 { pkgs }:
 {
   nboot = pkgs.writeShellScriptBin "nboot" ''
@@ -21,7 +18,7 @@
       git -C "$FLAKE_DIR" --no-pager diff --no-color || true
 
       # Allow non-interactive auto-commit via environment variable or --yes flag
-      if [ "${NIX_APPLY_AUTO:-}" = "1" ] || [ "${1:-}" = "--yes" ]; then
+      if [ "$\{NIX_APPLY_AUTO:-}" = "1" ] || [ "${"1:-"}" = "--yes" ]; then
         echo "Auto-commit enabled"
         git -C "$FLAKE_DIR" add .
         git -C "$FLAKE_DIR" commit -m "nix: system configuration update $(date +'%Y-%m-%d %H:%M:%S')"

@@ -5,6 +5,7 @@
 {
   programs.ghostty = {
     enable = true;
+    enableBashIntegration = true;
     settings = {
       command = "${pkgs.bash}/bin/bash -l";
       theme = "Nord";

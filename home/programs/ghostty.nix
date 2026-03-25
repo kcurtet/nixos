@@ -6,13 +6,14 @@
   programs.ghostty = {
     enable = true;
     settings = {
+      command = "${pkgs.bash}/bin/bash -l";
       theme = "Nord";
       font-size = 14;
       font-family = "JetBrainsMono Nerd Font";
       window-padding-x = 10;
       window-padding-y = 10;
-      background-opacity = 0.95;
-      unfocused-split-opacity = 0.85;
+      background-opacity = 0.68;
+      unfocused-split-opacity = 0.68;
       cursor-style = "block";
       cursor-style-blink = true;
       copy-on-select = "clipboard";

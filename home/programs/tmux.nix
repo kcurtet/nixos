@@ -23,7 +23,10 @@
       {
         plugin = tmuxPlugins.tmux-which-key;
         extraConfig = ''
-          # Must be set before plugin loads to prevent writing to Nix store
+          # Enable XDG support to write to home directory instead of Nix store
+          set -g @tmux-which-key-xdg-enable 1
+          set -g @tmux-which-key-xdg-plugin-path "tmux/plugins/tmux-which-key"
+          # Optional: disable autobuild if you prefer manual rebuilds
           set -g @tmux-which-key-disable-autobuild 1
         '';
       }

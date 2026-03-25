@@ -96,10 +96,10 @@
 
       # ─── Mover paneles (HJKL) ────────────────────────────────
 
-      bind -n M-h swap-pane -L
-      bind -n M-j swap-pane -D
-      bind -n M-k swap-pane -U
-      bind -n M-l swap-pane -R
+      bind -n C-M-h swap-pane -L
+      bind -n C-M-j swap-pane -D
+      bind -n C-M-k swap-pane -U
+      bind -n C-M-l swap-pane -R
 
       # ─── Navegación entre ventanas ───────────────────────────
       bind -r 1 select-window -t 1

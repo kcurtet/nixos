@@ -49,7 +49,7 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
         };
         ".config/wallpaper.jpg" = {
-          source = ../../dotfiles/wallpapers/merry-hd.jpg;
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/wallpapers/merry-hd.jpg";
         };
         ".config/waybar/config" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.json";

@@ -17,6 +17,7 @@
     # Editors
     neovim
     emacs-pgtk
+    emacsPackages.vterm
     vscode-fhs
 
     # AI assistants

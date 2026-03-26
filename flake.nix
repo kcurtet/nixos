@@ -27,8 +27,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Neovim configuration
-    nixvim.url = "github:kcurtet/nixvim";
+    # Neovim configuration (local submodule)
+    nixvim = {
+      url = "path:./nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Home Manager
     home-manager = {
@@ -68,6 +71,9 @@
         };
     in
     {
+      # Enable git submodules support
+      self.submodules = true;
+
       # ============================================================================
       # NixOS Configurations
       # ============================================================================

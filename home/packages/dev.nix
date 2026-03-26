@@ -8,9 +8,6 @@
     playwright.browsers
     playwright
 
-    # Code metrics
-    tokei
-
     # Cloud tools
     hcloud
 
@@ -29,8 +26,6 @@
     crush
 
     # nix
-    nixd
-    nixfmt-tree
     deadnix
     statix
 

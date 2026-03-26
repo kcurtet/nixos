@@ -792,6 +792,89 @@
                                                                    user-emacs-directory)))))))
   :config (gptel-agent-update))         ;Read files from agents directories
 
+;; ── SOPS Auto Encryption/Decryption ─────────────────────────────────────────
+;; Automatically decrypt SOPS-encrypted files on open and encrypt on save
+(defvar-local sops--encrypted nil
+  "Non-nil if current buffer contains decrypted SOPS content.")
+
+(defun sops--is-encrypted-p ()
+  "Check if current buffer contains SOPS-encrypted content."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "ENC\\[" (+ (point-min) 1000) t)))
+
+(defun sops--decrypt-buffer ()
+  "Decrypt current buffer using sops."
+  (let* ((file (buffer-file-name))
+         (temp-file (make-temp-file "sops-decrypt")))
+    (when (and file (sops--is-encrypted-p))
+      (call-process "sops" nil temp-file nil "--decrypt" file)
+      (erase-buffer)
+      (insert-file-contents temp-file)
+      (delete-file temp-file)
+      (setq sops--encrypted t)
+      (set-buffer-modified-p nil)
+      (message "SOPS: Decrypted %s" (file-name-nondirectory file)))))
+
+(defun sops--encrypt-buffer ()
+  "Encrypt current buffer using sops, writing encrypted content to file."
+  (when sops--encrypted
+    (let* ((file (buffer-file-name))
+           (temp-decrypted (make-temp-file "sops-decrypted"))
+           (temp-encrypted (make-temp-file "sops-encrypted")))
+      ;; Write current (decrypted) content to temp file
+      (write-region (point-min) (point-max) temp-decrypted)
+      ;; Encrypt it
+      (call-process "sops" nil nil nil "--encrypt" "--in-place" temp-decrypted)
+      ;; Write encrypted content to actual file
+      (let ((encrypted-content (with-temp-buffer
+                                 (insert-file-contents temp-decrypted)
+                                 (buffer-string))))
+        (write-region encrypted-content nil file))
+      ;; Cleanup
+      (delete-file temp-decrypted)
+      (delete-file temp-encrypted)
+      (message "SOPS: Encrypted and saved"))))
+
+(defun sops--restore-decrypted ()
+  "Restore decrypted content after saving encrypted version."
+  (when sops--encrypted
+    (let ((file (buffer-file-name)))
+      (sops--decrypt-buffer))))
+
+(defun sops--setup-hooks ()
+  "Setup SOPS hooks for current buffer if it matches secrets pattern."
+  (let ((file (buffer-file-name)))
+    (when (and file
+               (string-match-p "\\(secrets?\\.ya?ml\\|.secret\\.ya?ml\\|/secrets?/.+\\.ya?ml\\)" file))
+      ;; Decrypt on open
+      (sops--decrypt-buffer)
+      ;; Setup save hooks
+      (add-hook 'before-save-hook #'sops--encrypt-buffer nil t)
+      (add-hook 'after-save-hook #'sops--restore-decrypted nil t))))
+
+(add-hook 'find-file-hook #'sops--setup-hooks)
+
+;; Manual commands
+(defun sops-encrypt-buffer ()
+  "Manually mark current buffer for SOPS encryption on save."
+  (interactive)
+  (setq sops--encrypted t)
+  (message "Marked for SOPS encryption on save"))
+
+(defun sops-decrypt-buffer ()
+  "Manually decrypt current SOPS file."
+  (interactive)
+  (sops--decrypt-buffer))
+
+(defun sops-status ()
+  "Show SOPS status for current buffer."
+  (interactive)
+  (message "SOPS: %s"
+           (cond (sops--encrypted "Encrypted (will encrypt on save)")
+                 ((sops--is-encrypted-p) "Encrypted file (not decrypted)")
+                 (t "Not managed"))))
+
 (provide 'init)
 ;; ============================================================================
 ;; End of init.el

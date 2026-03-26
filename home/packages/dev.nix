@@ -7,6 +7,9 @@ let
 in
 {
   home.packages = with pkgs; [
+    # C compiler for tree-sitter grammar compilation
+    gcc
+
     playwright-driver
     playwright.browsers
     playwright

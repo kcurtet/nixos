@@ -3,20 +3,14 @@
 ;; Init.el — Minimal Emacs Configuration (Nord Theme)
 ;; ============================================================================
 
-;; ── Package management ─────────────────────────────────────────────────────
-(require 'package)
-(setq package-archives
-      '(("melpa"  . "https://melpa.org/packages/")
-        ("gnu"    . "https://elpa.gnu.org/packages/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))
+;; ── Package management (straight.el) ───────────────────────────────────────
+;; straight.el is bootstrapped in early-init.el
+(straight-use-package 'use-package)
 
-;; Bootstrap use-package
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;; Configure use-package to use straight.el
 (require 'use-package)
-(setq use-package-always-ensure t)
+(setq use-package-always-ensure t
+      straight-use-package-by-default t)
 
 ;; ── Shell Environment (Nix paths) ──────────────────────────────────────────
 (use-package exec-path-from-shell
@@ -532,6 +526,11 @@
 (use-package nix-mode
   :mode "\\.nix\\'")
 
+;; Hyprland config mode
+(use-package hyprlang-ts-mode
+  :straight (hyprlang-ts-mode :type git :host github :repo "Nathan-Melaku/hyprlang-ts-mode")
+  :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode))
+
 ;; Magit
 (use-package magit
   :bind ("C-x g" . magit-status))
@@ -617,100 +616,100 @@
   (setq gptel-model 'glm-5
         gptel-backend (gptel-get-backend "Zai"))
 
-  ;; ── Agent Tools ───────────────────────────────────────────────────────────
-  ;; 1. Bash - Ejecutar comandos de shell
-  (gptel-make-tool
-   :name "bash"
-   :function (lambda (command)
-               (message "Ejecutando bash: %s" command)
-               (shell-command-to-string command))
-   :description "Ejecuta un comando en la terminal y devuelve la salida."
-   :args (list '(:name "command"
-                       :type string
-                       :description "Comando de shell a ejecutar")))
-
-  ;; 2. Read - Leer archivo
-  (gptel-make-tool
-   :name "read_file"
-   :function (lambda (path)
-               (if (file-exists-p path)
-                   (with-temp-buffer
-                     (insert-file-contents path)
-                     (buffer-string))
-                 (format "Error: Archivo no encontrado: %s" path)))
-   :description "Lee el contenido de un archivo."
-   :args (list '(:name "path"
-                       :type string
-                       :description "Ruta completa al archivo")))
-
-  ;; 3. Write - Escribir archivo (crear/sobrescribir)
-  (gptel-make-tool
-   :name "write_file"
-   :function (lambda (path content)
-               (with-temp-file path (insert content))
-               (format "Archivo escrito exitosamente: %s" path))
-   :description "Escribe contenido en un archivo. Crea el archivo si no existe."
-   :args (list '(:name "path"
-                       :type string
-                       :description "Ruta del archivo")
-               '(:name "content"
-                       :type string
-                       :description "Contenido a escribir")))
-
-  ;; 4. Edit - Editar archivo (reemplazo de texto)
-  (gptel-make-tool
-   :name "edit_file"
-   :function (lambda (path search replace)
-               (with-current-buffer (find-file-noselect path)
-                 (goto-char (point-min))
-                 (if (search-forward search nil t)
-                     (progn
-                       (replace-match replace t t)
-                       (save-buffer)
-                       (format "Reemplazo exitoso en %s" path))
-                   (format "Texto no encontrado: %s" search))))
-   :description "Reemplaza una ocurrencia exacta de texto en un archivo."
-   :args (list '(:name "path"
-                       :type string
-                       :description "Ruta del archivo")
-               '(:name "search"
-                       :type string
-                       :description "Texto exacto a buscar")
-               '(:name "replace"
-                       :type string
-                       :description "Texto por el cual reemplazar")))
-
-  ;; 5. Find - Buscar archivos
-  (gptel-make-tool
-   :name "list_files"
-   :function (lambda (directory pattern)
-               (mapconcat #'identity
-                          (directory-files-recursively directory pattern)
-                          "\n"))
-   :description "Lista archivos en un directorio que coincidan con un patrón."
-   :args (list '(:name "directory"
-                       :type string
-                       :description "Directorio donde buscar")
-               '(:name "pattern"
-                       :type string
-                       :description "Patrón regex (ej: \\.el$)")))
-
-  ;; 6. Grep - Buscar dentro de archivos
-  (gptel-make-tool
-   :name "grep_search"
-   :function (lambda (pattern path)
-               (shell-command-to-string
-                (format "grep -rn '%s' '%s' 2>/dev/null || echo 'Sin resultados'"
-                        pattern path)))
-   :description "Busca texto dentro de archivos recursivamente."
-   :args (list '(:name "pattern"
-                       :type string
-                       :description "Texto a buscar")
-               '(:name "path"
-                       :type string
-                       :description "Directorio o archivo base")))
-
-  (setq gptel-tools (gptel-get-tool '("bash" "read_file" "write_file")))
+  ;; ;; ── Agent Tools ───────────────────────────────────────────────────────────
+  ;; ;; 1. Bash - Ejecutar comandos de shell
+  ;; (gptel-make-tool
+  ;;  :name "bash"
+  ;;  :function (lambda (command)
+  ;;              (message "Ejecutando bash: %s" command)
+  ;;              (shell-command-to-string command))
+  ;;  :description "Ejecuta un comando en la terminal y devuelve la salida."
+  ;;  :args (list '(:name "command"
+  ;;                      :type string
+  ;;                      :description "Comando de shell a ejecutar")))
+  ;;
+  ;; ;; 2. Read - Leer archivo
+  ;; (gptel-make-tool
+  ;;  :name "read_file"
+  ;;  :function (lambda (path)
+  ;;              (if (file-exists-p path)
+  ;;                  (with-temp-buffer
+  ;;                    (insert-file-contents path)
+  ;;                    (buffer-string))
+  ;;                (format "Error: Archivo no encontrado: %s" path)))
+  ;;  :description "Lee el contenido de un archivo."
+  ;;  :args (list '(:name "path"
+  ;;                      :type string
+  ;;                      :description "Ruta completa al archivo")))
+  ;;
+  ;; ;; 3. Write - Escribir archivo (crear/sobrescribir)
+  ;; (gptel-make-tool
+  ;;  :name "write_file"
+  ;;  :function (lambda (path content)
+  ;;              (with-temp-file path (insert content))
+  ;;              (format "Archivo escrito exitosamente: %s" path))
+  ;;  :description "Escribe contenido en un archivo. Crea el archivo si no existe."
+  ;;  :args (list '(:name "path"
+  ;;                      :type string
+  ;;                      :description "Ruta del archivo")
+  ;;              '(:name "content"
+  ;;                      :type string
+  ;;                      :description "Contenido a escribir")))
+  ;;
+  ;; ;; 4. Edit - Editar archivo (reemplazo de texto)
+  ;; (gptel-make-tool
+  ;;  :name "edit_file"
+  ;;  :function (lambda (path search replace)
+  ;;              (with-current-buffer (find-file-noselect path)
+  ;;                (goto-char (point-min))
+  ;;                (if (search-forward search nil t)
+  ;;                    (progn
+  ;;                      (replace-match replace t t)
+  ;;                      (save-buffer)
+  ;;                      (format "Reemplazo exitoso en %s" path))
+  ;;                  (format "Texto no encontrado: %s" search))))
+  ;;  :description "Reemplaza una ocurrencia exacta de texto en un archivo."
+  ;;  :args (list '(:name "path"
+  ;;                      :type string
+  ;;                      :description "Ruta del archivo")
+  ;;              '(:name "search"
+  ;;                      :type string
+  ;;                      :description "Texto exacto a buscar")
+  ;;              '(:name "replace"
+  ;;                      :type string
+  ;;                      :description "Texto por el cual reemplazar")))
+  ;;
+  ;; ;; 5. Find - Buscar archivos
+  ;; (gptel-make-tool
+  ;;  :name "list_files"
+  ;;  :function (lambda (directory pattern)
+  ;;              (mapconcat #'identity
+  ;;                         (directory-files-recursively directory pattern)
+  ;;                         "\n"))
+  ;;  :description "Lista archivos en un directorio que coincidan con un patrón."
+  ;;  :args (list '(:name "directory"
+  ;;                      :type string
+  ;;                      :description "Directorio donde buscar")
+  ;;              '(:name "pattern"
+  ;;                      :type string
+  ;;                      :description "Patrón regex (ej: \\.el$)")))
+  ;;
+  ;; ;; 6. Grep - Buscar dentro de archivos
+  ;; (gptel-make-tool
+  ;;  :name "grep_search"
+  ;;  :function (lambda (pattern path)
+  ;;              (shell-command-to-string
+  ;;               (format "grep -rn '%s' '%s' 2>/dev/null || echo 'Sin resultados'"
+  ;;                       pattern path)))
+  ;;  :description "Busca texto dentro de archivos recursivamente."
+  ;;  :args (list '(:name "pattern"
+  ;;                      :type string
+  ;;                      :description "Texto a buscar")
+  ;;              '(:name "path"
+  ;;                      :type string
+  ;;                      :description "Directorio o archivo base")))
+  ;;
+  ;; (setq gptel-tools (gptel-get-tool '("bash" "read_file" "write_file")))
 
   ;; ── End Agent Tools
 
@@ -718,6 +717,10 @@
   :bind (("C-c RET" . gptel-send)
          ("C-c g"   . gptel)
          ("C-c M-g" . gptel-rewrite)))
+
+;; gptel-agent mode
+(use-package gptel-agent
+  :config (gptel-agent-update))         ;Read files from agents directories
 
 (provide 'init)
 ;; ============================================================================

@@ -13,7 +13,22 @@
             (setq gc-cons-threshold (* 16 1024 1024)  ; 16MB
                   gc-cons-percentage 0.1)))
 
-;; Disable package.el (we use use-package + straight or built-in)
+;; ── Straight.el Bootstrap ──────────────────────────────────────────────────
+;; straight.el replaces package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Disable package.el completely
 (setq package-enable-at-startup nil)
 
 ;; Prevent UI flash
@@ -29,7 +44,6 @@
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
-
 
 ;; Native compilation settings
 (when (featurep 'native-compile)

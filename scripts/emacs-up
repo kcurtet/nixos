@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+# ============================================================================
+# emacs-up — Update straight.el packages (like doom upgrade)
+# ============================================================================
+set -euo pipefail
+
+EMACS="${EMACS:-emacs}"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/emacs"
+STRAIGHT_DIR="$CONFIG_DIR/straight"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+info()    { echo -e "${BLUE}→${NC} $1"; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+warn()    { echo -e "${YELLOW}!${NC} $1"; }
+error()   { echo -e "${RED}✗${NC} $1"; exit 1; }
+
+usage() {
+    cat <<EOF
+Usage: emacs-up [COMMAND]
+
+Commands:
+  update     Pull all packages from upstream (default)
+  rebuild    Rebuild all packages (after Emacs upgrade)
+  freeze     Save current versions to versions.lock
+  thaw       Restore packages from versions.lock
+  clean      Remove unused packages and repos
+  purge      Remove entire straight directory (nuclear option)
+  status     Show package counts and lockfile status
+
+Examples:
+  emacs-up           # Update all packages
+  emacs-up rebuild   # Rebuild after Emacs version change
+  emacs-up freeze    # Lock current versions
+EOF
+}
+
+run_emacs() {
+    local expr="$1"
+    "$EMACS" --batch --eval "(progn (setq user-emacs-directory \"$CONFIG_DIR/\") $expr)" 2>/dev/null
+}
+
+cmd_update() {
+    info "Updating straight.el packages..."
+
+    # Update in batch mode
+    "$EMACS" --batch \
+        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+        --eval "(straight-pull-all)" \
+        2>&1 | grep -v "^Loading\|^Wrote" || true
+
+    success "Packages updated"
+
+    # Show summary
+    if [[ -f "$STRAIGHT_DIR/versions.lock.el" ]]; then
+        local count
+        count=$(grep -c "(:type" "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
+        info "Lockfile has $count packages"
+    fi
+}
+
+cmd_rebuild() {
+    info "Rebuilding all packages..."
+
+    "$EMACS" --batch \
+        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+        --eval "(straight-rebuild-all)" \
+        2>&1 | grep -v "^Loading\|^Wrote" || true
+
+    success "Packages rebuilt"
+}
+
+cmd_freeze() {
+    info "Freezing package versions..."
+
+    "$EMACS" --batch \
+        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+        --eval "(straight-freeze-versions)" \
+        2>&1 | grep -v "^Loading\|^Wrote" || true
+
+    success "Versions saved to $STRAIGHT_DIR/versions.lock.el"
+}
+
+cmd_thaw() {
+    info "Thawing packages from lockfile..."
+
+    if [[ ! -f "$STRAIGHT_DIR/versions.lock.el" ]]; then
+        error "No versions.lock.el found. Run 'emacs-up freeze' first."
+    fi
+
+    "$EMACS" --batch \
+        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+        --eval "(straight-thaw-versions)" \
+        2>&1 | grep -v "^Loading\|^Wrote" || true
+
+    success "Packages restored from lockfile"
+}
+
+cmd_clean() {
+    info "Cleaning unused packages..."
+
+    "$EMACS" --batch \
+        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+        --eval "(straight-prune-build)" \
+        --eval "(straight-remove-unused-repos)" \
+        2>&1 | grep -v "^Loading\|^Wrote" || true
+
+    success "Cleaned unused packages"
+}
+
+cmd_purge() {
+    warn "This will delete $STRAIGHT_DIR entirely!"
+    read -rp "Continue? [y/N] " confirm
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        rm -rf "$STRAIGHT_DIR"
+        success "Straight directory removed. Run emacs to reinstall."
+    else
+        info "Aborted"
+    fi
+}
+
+cmd_status() {
+    echo -e "${BLUE}Emacs Config Status${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Config dir
+    if [[ -d "$CONFIG_DIR" ]]; then
+        echo -e "Config dir:     ${GREEN}$CONFIG_DIR${NC}"
+    else
+        echo -e "Config dir:     ${RED}not found${NC}"
+    fi
+
+    # Straight dir
+    if [[ -d "$STRAIGHT_DIR" ]]; then
+        local repo_count build_count
+        repo_count=$(find "$STRAIGHT_DIR/repos" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+        build_count=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+        echo -e "Repos:          ${GREEN}$repo_count${NC}"
+        echo -e "Builds:         ${GREEN}$build_count${NC}"
+    else
+        echo -e "Straight dir:   ${YELLOW}not initialized${NC}"
+    fi
+
+    # Lockfile
+    if [[ -f "$STRAIGHT_DIR/versions.lock.el" ]]; then
+        local lock_count
+        lock_count=$(grep -c "(:type" "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
+        local lock_age
+        lock_age=$(stat -c %Y "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
+        local lock_date
+        lock_date=$(date -d "@$lock_age" "+%Y-%m-%d %H:%M" 2>/dev/null || date -r "$lock_age" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "unknown")
+        echo -e "Lockfile:       ${GREEN}$lock_count packages (last: $lock_date)${NC}"
+    else
+        echo -e "Lockfile:       ${YELLOW}not found${NC}"
+    fi
+
+    # Straight version
+    if [[ -f "$STRAIGHT_DIR/repos/straight.el/straight.el" ]]; then
+        local straight_version
+        straight_version=$(grep -m1 "Version:" "$STRAIGHT_DIR/repos/straight.el/straight.el" 2>/dev/null | awk '{print $3}' || echo "unknown")
+        echo -e "Straight ver:   ${GREEN}$straight_version${NC}"
+    fi
+}
+
+# Main
+case "${1:-update}" in
+    update)  cmd_update ;;
+    rebuild) cmd_rebuild ;;
+    freeze)  cmd_freeze ;;
+    thaw)    cmd_thaw ;;
+    clean)   cmd_clean ;;
+    purge)   cmd_purge ;;
+    status)  cmd_status ;;
+    -h|--help|help) usage ;;
+    *)       error "Unknown command: $1. Use --help for usage." ;;
+esac

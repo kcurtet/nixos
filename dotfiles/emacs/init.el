@@ -499,7 +499,8 @@
           (toml       "https://github.com/tree-sitter/tree-sitter-toml")
           (bash       "https://github.com/tree-sitter/tree-sitter-bash")
           (nix        "https://github.com/nix-community/tree-sitter-nix")
-          (rust       "https://github.com/tree-sitter/tree-sitter-rust")))
+          (rust       "https://github.com/tree-sitter/tree-sitter-rust")
+          (hyprlang   "https://github.com/tree-sitter-grammars/tree-sitter-hyprlang")))
 
   ;; Remap major modes to treesitter variants
   (setq major-mode-remap-alist
@@ -529,7 +530,12 @@
 ;; Hyprland config mode
 (use-package hyprlang-ts-mode
   :straight (hyprlang-ts-mode :type git :host github :repo "Nathan-Melaku/hyprlang-ts-mode")
-  :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode))
+  :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode)
+  :config
+  ;; Install grammar if not present
+  (when (and (treesit-available-p)
+             (not (treesit-language-available-p 'hyprlang)))
+    (treesit-install-language-grammar 'hyprlang)))
 
 ;; Magit
 (use-package magit

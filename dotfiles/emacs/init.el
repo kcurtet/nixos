@@ -418,6 +418,12 @@
     "hv" '(describe-variable :which-key "variable")
     "hk" '(describe-key :which-key "key")
 
+    ;; Quit
+    "q"  '(:ignore t :which-key "quit")
+    "qq" '(save-buffers-kill-emacs :which-key "quit")
+    "q!" '((lambda () (interactive) (kill-emacs)) :which-key "quit (force)")
+    "qs" '((lambda () (interactive) (save-some-buffers t) (kill-emacs)) :which-key "save & quit")
+
     ;; LLM (gptel)
     "a"  '(:ignore t :which-key "ai")
     "aa" '(gptel :which-key "chat")

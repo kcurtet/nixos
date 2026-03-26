@@ -31,13 +31,11 @@
 ;; Disable package.el completely
 (setq package-enable-at-startup nil)
 
-;; Prevent UI flash
-(setq inhibit-redisplay t
-      inhibit-message t)
+;; Prevent UI flash (only inhibit redisplay, not messages - we want to see straight.el output)
+(setq inhibit-redisplay t)
 (add-hook 'window-setup-hook
           (lambda ()
-            (setq inhibit-redisplay nil
-                  inhibit-message nil)
+            (setq inhibit-redisplay nil)
             (redisplay)))
 
 ;; Disable UI chrome early

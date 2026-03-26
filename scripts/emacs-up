@@ -76,7 +76,7 @@ run_straight_cmd() {
         --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
         --eval "(load \"$CONFIG_DIR/init.el\" nil t)" \
         --eval "($cmd)" \
-        2>&1 | grep -v "^Loading\|^Wrote\|^Compiling\|^Saving\|^Checking" || true
+        2>&1 | grep -v "^Loading\|^Wrote" || true
 }
 
 cmd_update() {
@@ -84,9 +84,21 @@ cmd_update() {
     check_config
     check_straight
 
-    info "Updating straight.el packages..."
+    local repos_before builds_before
+    repos_before=$(find "$STRAIGHT_DIR/repos" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+    builds_before=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+
+    info "Updating straight.el packages... ($repos_before repos)"
     run_straight_cmd "straight-pull-all"
+
+    local repos_after builds_after
+    repos_after=$(find "$STRAIGHT_DIR/repos" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+    builds_after=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+
+    echo ""
     success "Packages updated"
+    echo -e "  Repos:  ${repos_before} → ${repos_after}"
+    echo -e "  Builds: ${builds_before} → ${builds_after}"
 
     # Show summary
     if [[ -f "$STRAIGHT_DIR/versions.lock.el" ]]; then
@@ -101,9 +113,18 @@ cmd_rebuild() {
     check_config
     check_straight
 
-    info "Rebuilding all packages..."
+    local builds_before
+    builds_before=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+
+    info "Rebuilding all packages... ($builds_before builds)"
     run_straight_cmd "straight-rebuild-all"
+
+    local builds_after
+    builds_after=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+
+    echo ""
     success "Packages rebuilt"
+    echo -e "  Builds: ${builds_before} → ${builds_after}"
 }
 
 cmd_freeze() {

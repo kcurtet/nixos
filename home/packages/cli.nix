@@ -4,6 +4,9 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    # XDG utilities
+    xdg-terminal-exec # Default terminal for .desktop files with Terminal=true
+
     # File managers and tree viewers
     eza
     tree

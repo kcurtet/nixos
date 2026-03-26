@@ -43,7 +43,7 @@
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "x-scheme-handler/terminal" = [ "org.codeberg.dnkl.foot.desktop" ];
+      "x-scheme-handler/terminal" = [ "foot.desktop" ];
     };
   };
 

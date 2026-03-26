@@ -159,7 +159,7 @@ cmd_update() {
     builds_before=$(count_dirs "$STRAIGHT_DIR/build")
 
     info "Updating straight.el packages... ($repos_before repos, $JOBS jobs)"
-    run_straight_cmd "straight-pull-all"
+    run_straight_cmd "(straight-pull-all)"
 
     local repos_after builds_after
     repos_after=$(count_dirs "$STRAIGHT_DIR/repos")
@@ -189,7 +189,7 @@ cmd_rebuild() {
     builds_before=$(count_dirs "$STRAIGHT_DIR/build")
 
     info "Rebuilding all packages... ($builds_before builds, $JOBS jobs)"
-    run_straight_cmd "straight-rebuild-all"
+    run_straight_cmd "(straight-rebuild-all)"
 
     local builds_after
     builds_after=$(count_dirs "$STRAIGHT_DIR/build")

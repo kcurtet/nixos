@@ -1,0 +1,13 @@
+diff --git a/gptel-agent.el b/gptel-agent.el
+index d50ee69..08c114b 100644
+--- a/gptel-agent.el
++++ b/gptel-agent.el
+@@ -175,7 +175,7 @@ Returns an alist of (agent-name . file-path)."
+   (setq gptel-agent--skills nil)
+   (mapc (lambda (dir)
+           (when (file-directory-p dir)
+-            (dolist (skill-file (directory-files-recursively dir "SKILL\\.md"))
++            (dolist (skill-file (directory-files-recursively dir "SKILL\\.md\\'"))
+               (pcase-let ((`(,name . ,skill-plist) ;loading only metadata
+                            (gptel-agent-read-file skill-file nil t)))
+                 ;; validating skill definition

@@ -12,7 +12,8 @@ _:
     # Herramientas básicas
     k = "bat";
     o = "xdg-open";
-    l = "eza -la --icons --group-directories-first";
+    l = "eza -l --icons --group-directories-first";
+    ll = "eza -la --icons --group-directories-first";
     g = "lazygit";
     y = "yazi";
     z = "zi"; # zoxide interactive

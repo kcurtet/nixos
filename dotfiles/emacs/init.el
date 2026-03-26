@@ -365,6 +365,11 @@
     "ff" '(consult-fd :which-key "find file")
     "fr" '(consult-recent-file :which-key "recent files")
     "fs" '(save-buffer :which-key "save")
+    "fS" '(save-some-buffers :which-key "save all")
+    "fR" '(rename-file :which-key "rename")
+    "fD" '(delete-file :which-key "delete")
+    "fy" '((lambda () (interactive) (kill-new (buffer-file-name))) :which-key "yank path")
+    "fe" '((lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))) :which-key "edit init.el")
     "ft" '(treemacs :which-key "treemacs")
 
     ;; Buffers
@@ -374,6 +379,12 @@
     "bd" '(kill-this-buffer :which-key "kill (current) buffer")
     "bn" '(next-buffer :which-key "next")
     "bp" '(previous-buffer :which-key "prev")
+    "bs" '(save-buffer :which-key "save")
+    "bS" '(save-some-buffers :which-key "save all")
+    "br" '(revert-buffer :which-key "revert")
+    "bi" '(ibuffer :which-key "ibuffer")
+    "bm" '(bookmark-set :which-key "set bookmark")
+    "bM" '(bookmark-jump :which-key "jump bookmark")
 
     ;; Windows
     "w"  '(:ignore t :which-key "windows")
@@ -386,6 +397,43 @@
     "wj" '(evil-window-down :which-key "down")
     "wk" '(evil-window-up :which-key "up")
     "wl" '(evil-window-right :which-key "right")
+
+    ;; Edit
+    "e"  '(:ignore t :which-key "edit")
+    "ed" '((lambda () (interactive) (let ((line (thing-at-point 'line t))) (end-of-line) (insert "\n" line))) :which-key "duplicate line")
+    "ek" '(kill-whole-line :which-key "kill line")
+    "eJ" '(join-line :which-key "join line")
+    "eu" '(vundo :which-key "undo tree")
+    "er" '(replace-string :which-key "replace")
+    "eR" '(query-replace :which-key "query replace")
+
+    ;; Registers
+    "r"  '(:ignore t :which-key "registers")
+    "ry" '(copy-to-register :which-key "copy to reg")
+    "rp" '(insert-register :which-key "paste from reg")
+    "rj" '(jump-to-register :which-key "jump to reg")
+
+    ;; Toggle
+    "T"  '(:ignore t :which-key "toggle")
+    "Tt" '(treemacs :which-key "treemacs")
+    "Tn" '(display-line-numbers-mode :which-key "line numbers")
+    "Tw" '(whitespace-mode :which-key "whitespace")
+    "Tf" '(auto-fill-mode :which-key "auto fill")
+    "Ts" '(flymake-mode :which-key "flymake")
+    "Tm" '(toggle-frame-maximized :which-key "maximize")
+    "TF" '(toggle-frame-fullscreen :which-key "fullscreen")
+
+    ;; Errors
+    "x"  '(:ignore t :which-key "errors")
+    "xn" '(next-error :which-key "next error")
+    "xp" '(previous-error :which-key "prev error")
+    "xl" '(flymake-show-buffer-diagnostics :which-key "list errors")
+
+    ;; Bookmarks
+    "m"  '(:ignore t :which-key "bookmarks")
+    "mm" '(bookmark-set :which-key "set")
+    "mj" '(bookmark-jump :which-key "jump")
+    "ml" '(list-bookmarks :which-key "list")
 
     ;; Git
     "g"  '(:ignore t :which-key "git")

@@ -67,6 +67,11 @@
     hyperfine
     tokei
 
+    # Spell checking
+    hunspell
+    hunspellDicts.en_US
+    hunspellDicts.es_ES
+
     # Added packages
     ast-grep
     google-cloud-sdk

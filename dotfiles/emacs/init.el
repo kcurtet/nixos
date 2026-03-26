@@ -18,6 +18,16 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; ── Shell Environment (Nix paths) ──────────────────────────────────────────
+(use-package exec-path-from-shell
+  :demand t
+  :config
+  (setq exec-path-from-shell-arguments '("-l"))  ; login shell for full env
+  (exec-path-from-shell-initialize)
+  ;; Import additional Nix-related env vars
+  (dolist (var '("NIX_PATH" "NIX_SSL_CERT_FILE" "LOCALE_ARCHIVE"))
+    (exec-path-from-shell-copy-env var)))
+
 ;; ── Defaults ───────────────────────────────────────────────────────────────
 (setq-default
  indent-tabs-mode nil
@@ -53,26 +63,135 @@
 (global-hl-line-mode 1)
 (pixel-scroll-precision-mode 1)
 
-;; Frame transparency (75% opacity)
-(set-frame-parameter nil 'alpha-background 75)
-(add-to-list 'default-frame-alist '(alpha-background . 75))
+;; Frame transparency (85% opacity - slightly higher for readability)
+(set-frame-parameter nil 'alpha-background 85)
+(add-to-list 'default-frame-alist '(alpha-background . 85))
+
+;; Prettier UI elements
+(setq-default
+ cursor-type '(bar . 2)                    ; Thicker bar cursor
+ cursor-in-non-selected-windows 'hollow    ; Hollow cursor in inactive windows
+ window-resize-pixelwise t                 ; Pixel-perfect window resizing
+ frame-resize-pixelwise t)
+
+;; Nerd Icons (required for doom-modeline, treemacs, etc.)
+(use-package nerd-icons
+  :demand t)
+
+;; Beautiful modeline
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-height 30
+        doom-modeline-bar-width 4
+        doom-modeline-icon t
+        doom-modeline-major-mode-icon t
+        doom-modeline-major-mode-color-icon t
+        doom-modeline-buffer-state-icon t
+        doom-modeline-buffer-modification-icon t
+        doom-modeline-enable-word-count t
+        doom-modeline-minor-modes nil
+        doom-modeline-display-default-persp-name t
+        doom-modeline-lsp t
+        doom-modeline-github nil
+        doom-modeline-modal-icon t
+        doom-modeline-mu4e nil
+        doom-modeline-irc nil
+        doom-modeline-time nil
+        doom-modeline-vcs-max-length 30))
+
+;; Dashboard
+(use-package dashboard
+  :init
+  (setq dashboard-center-content t
+        dashboard-vertically-center-content t
+        dashboard-startup-banner 'logo
+        dashboard-banner-logo-title "EMACS"
+        dashboard-icon-type 'nerd-icons
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-set-init-info t
+        dashboard-items '((recents   . 5)
+                          (bookmarks . 5)
+                          (projects  . 5))
+        dashboard-navigator-buttons
+        `(;; Line 1
+          ((,(nerd-icons-mdicon "nf-md-github" :face 'nerd-icons-blue)
+            "GitHub"
+            "Browse homepage"
+            (lambda (&rest _) (browse-url "https://github.com")))
+           (,(nerd-icons-mdicon "nf-md-file_document" :face 'nerd-icons-green)
+            "Config"
+            "Open config"
+            (lambda (&rest _) (find-file user-init-file))))))
+  :config
+  (dashboard-setup-startup-hook))
+
+;; Rainbow delimiters - colorful parentheses
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Indentation guides
+(use-package highlight-indent-guides
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-character ?│
+        highlight-indent-guides-responsive 'top
+        highlight-indent-guides-delay 0))
+
+;; Pulsing cursor on window change
+(use-package pulsar
+  :init (pulsar-global-mode 1)
+  :config
+  (setq pulsar-pulse t
+        pulsar-delay 0.055
+        pulsar-iterations 10
+        pulsar-face 'pulsar-green)
+  (dolist (cmd '(other-window
+                 evil-window-left evil-window-right evil-window-up evil-window-down
+                 split-window-below split-window-right delete-window))
+    (add-to-list 'pulsar-pulse-functions cmd)))
 
 ;; Disable line numbers in some modes
 (dolist (mode '(term-mode-hook
-               shell-mode-hook
-               eshell-mode-hook
-               vterm-mode-hook))
+                shell-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Font
 (set-face-attribute 'default nil
                     :family "JetBrainsMono Nerd Font"
-                    :height 140)
+                    :height 140
+                    :weight 'medium)
 
 ;; ── Theme (Nord) ───────────────────────────────────────────────────────────
 (use-package nord-theme
   :config
-  (load-theme 'nord t))
+  (setq nord-comment-brightness 15
+        nord-region-highlight 'snowstorm)
+  (load-theme 'nord t)
+
+  ;; Custom face tweaks for better aesthetics
+  (with-eval-after-load 'nord-theme
+    (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+    (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+    (set-face-attribute 'font-lock-string-face nil :slant 'italic)
+    (set-face-attribute 'line-number-current-line nil :weight 'bold)
+    (set-face-attribute 'show-paren-match nil :weight 'ultra-bold :underline t)
+    (set-face-attribute 'vertical-border nil :foreground "#3b4252")
+    (set-face-attribute 'fringe nil :background nil)))
+
+;; Beacon - highlight cursor on scroll/jump
+(use-package beacon
+  :init (beacon-mode 1)
+  :config
+  (setq beacon-size 40
+        beacon-blink-when-point-moves-horizontally nil
+        beacon-blink-when-point-moves-vertically 10
+        beacon-color "#88c0d0"))
 
 ;; ── Completion (Vertico + Orderless + Marginalia) ──────────────────────────
 (use-package vertico
@@ -90,12 +209,123 @@
   :bind (("C-s"   . consult-line)
          ("C-x b" . consult-buffer)
          ("M-g g" . consult-goto-line)
-         ("M-s r" . consult-ripgrep)))
+         ("M-s r" . consult-ripgrep)
+         ("C-x f" . consult-fd))
+  :config
+  ;; Use fd for file finding
+  (setq consult-fd-args '("fd" "--full-path" "--color=never" "--hidden" "--exclude" ".git")))
+
+;; ── In-Buffer Completion (Corfu) ────────────────────────────────────────────
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :config
+  (setq corfu-cycle t
+        corfu-auto t
+        corfu-auto-delay 0.2
+        corfu-auto-prefix 2
+        corfu-preview-current nil))
+
+;; Add extensions (cape) to completion-at-point
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 ;; ── Which Key ──────────────────────────────────────────────────────────────
 (use-package which-key
   :init (which-key-mode)
-  :config (setq which-key-idle-delay 0.5))
+  :config
+  (setq which-key-idle-delay 0.3
+        which-key-idle-secondary-delay 0.05
+        which-key-sort-order 'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns 4
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-allow-imprecise-window-fit nil
+        which-key-separator " → "))
+
+;; ── Treemacs (File Tree) ────────────────────────────────────────────────────
+(use-package treemacs
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay        0.5
+          treemacs-directory-name-transformer      #'identity
+          treemacs-display-in-side-window          t
+          treemacs-eldoc-display                   'simple
+          treemacs-file-event-delay                2000
+          treemacs-file-extension-regex            treemacs-last-period-regex-value
+          treemacs-file-follow-delay               0.2
+          treemacs-file-name-transformer           #'identity
+          treemacs-follow-after-init               t
+          treemacs-expand-after-init               t
+          treemacs-find-workspace-method           'find-for-file-or-pick-first
+          treemacs-git-command-pipe                ""
+          treemacs-goto-tag-strategy               'refetch-index
+          treemacs-header-scroll-indicators        '(nil " ↘ " " ↘")
+          treemacs-hide-dot-git-directory          t
+          treemacs-indentation                     2
+          treemacs-indentation-string              " "
+          treemacs-is-never-other-window           nil
+          treemacs-max-git-entries                 5000
+          treemacs-missing-project-action          'ask
+          treemacs-move-forward-on-expand          nil
+          treemacs-no-png-images                   nil
+          treemacs-no-delete-other-windows         t
+          treemacs-project-follow-cleanup          nil
+          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                        'left
+          treemacs-read-string-input               'from-child-frame
+          treemacs-recenter-distance               0.1
+          treemacs-recenter-after-file-follow      nil
+          treemacs-recenter-after-tag-follow       nil
+          treemacs-recenter-after-project-jump     'always
+          treemacs-recenter-after-project-expand   'on-distance
+          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+          treemacs-show-cursor                     nil
+          treemacs-show-hidden-files               t
+          treemacs-silent-filewatch                nil
+          treemacs-silent-refresh                  nil
+          treemacs-sorting                         'alphabetic-ignoring-case
+          treemacs-select-when-already-in-treemacs 'move-back
+          treemacs-space-between-root-nodes        t
+          treemacs-tag-follow-cleanup              t
+          treemacs-tag-follow-delay                1.5
+          treemacs-text-scale                      nil
+          treemacs-user-mode-line-format           'none
+          treemacs-user-header-line-format         nil
+          treemacs-wide-toggle-width               70
+          treemacs-width                           35
+          treemacs-width-increment                 1
+          treemacs-width-is-initially-locked       t
+          treemacs-workspace-switch-cleanup        nil)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (treemacs-git-mode 'deferred))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-nerd-icons
+  :after (treemacs nerd-icons)
+  :config (treemacs-load-theme "nerd-icons"))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
 
 ;; ── Vim Keybindings (Evil) ─────────────────────────────────────────────────
 (use-package evil
@@ -138,9 +368,10 @@
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
-    "ff" '(find-file :which-key "find file")
+    "ff" '(consult-fd :which-key "find file")
     "fr" '(consult-recent-file :which-key "recent files")
     "fs" '(save-buffer :which-key "save")
+    "ft" '(treemacs :which-key "treemacs")
 
     ;; Buffers
     "b"  '(:ignore t :which-key "buffers")
@@ -165,10 +396,23 @@
     "g"  '(:ignore t :which-key "git")
     "gg" '(magit-status :which-key "magit")
 
+    ;; Projects
+    "p"  '(:ignore t :which-key "projects")
+    "pp" '(consult-projectile-switch-project :which-key "switch project")
+    "pf" '(consult-projectile-find-file :which-key "find file in project")
+    "pr" '(projectile-run-project :which-key "run")
+    "pc" '(projectile-compile-project :which-key "compile")
+    "pb" '(consult-projectile :which-key "consult project")
+
     ;; Search
-    "s"  '(:ignore t :which-key "search")
+    "s"  '(:ignore t :which-key "search/spell")
     "ss" '(consult-line :which-key "line")
     "sg" '(consult-ripgrep :which-key "ripgrep")
+    "sd" '(my/toggle-dictionary :which-key "switch dict")
+    "sc" '(flyspell-correct-wrapper :which-key "correct word")
+
+    ;; Selection
+    "v"  '(er/expand-region :which-key "expand selection")
 
     ;; Terminal
     "t"  '(vterm :which-key "terminal")
@@ -177,7 +421,14 @@
     "h"  '(:ignore t :which-key "help")
     "hf" '(describe-function :which-key "function")
     "hv" '(describe-variable :which-key "variable")
-    "hk" '(describe-key :which-key "key"))
+    "hk" '(describe-key :which-key "key")
+
+    ;; LLM (gptel)
+    "a"  '(:ignore t :which-key "ai")
+    "aa" '(gptel :which-key "chat")
+    "as" '(gptel-send :which-key "send")
+    "ar" '(gptel-rewrite :which-key "rewrite")
+    "am" '(gptel-menu :which-key "menu"))
 
   ;; Global keybindings (work in all states)
   (general-define-key
@@ -193,6 +444,51 @@
 
 ;; Auto-revert files changed on disk
 (global-auto-revert-mode 1)
+
+;; ── Direnv Integration ──────────────────────────────────────────────────────
+(use-package envrc
+  :init (envrc-global-mode))
+
+;; ── Auto-formatting ─────────────────────────────────────────────────────────
+(use-package apheleia
+  :init (apheleia-global-mode)
+  :config
+  (setf (alist-get 'nix-mode apheleia-formatters) '("nixfmt"))
+  (setf (alist-get 'nix-mode apheleia-mode-alist) '(nixfmt)))
+
+;; ── Code Snippets ───────────────────────────────────────────────────────────
+(use-package yasnippet
+  :init (yas-global-mode)
+  :config
+  (setq yas-snippet-dirs '("~/.config/emacs/snippets")))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+;; ── Smart Selection ─────────────────────────────────────────────────────────
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+;; ── Better Help ─────────────────────────────────────────────────────────────
+(use-package helpful
+  :bind
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-key] . helpful-key)
+  ([remap describe-command] . helpful-command))
+
+;; ── Projects (Projectile) ──────────────────────────────────────────────────
+(use-package projectile
+  :init (projectile-mode 1)
+  :config
+  (setq projectile-completion-system 'default
+        projectile-enable-caching t
+        projectile-switch-project-action 'projectile-dired)
+  :bind-keymap ("C-c p" . projectile-command-map))
+
+;; Integrate projectile with consult
+(use-package consult-projectile
+  :after (projectile consult))
 
 ;; ── Programming ────────────────────────────────────────────────────────────
 ;; Treesitter (Emacs 29+)
@@ -246,6 +542,182 @@
   :commands vterm
   :config
   (setq vterm-max-scrollback 10000))
+
+;; ── Spell Checking (Flyspell + Spanish) ─────────────────────────────────────
+(use-package flyspell-correct
+  :after flyspell)
+
+(use-package consult-flyspell
+  :after consult)
+
+(setq ispell-program-name "hunspell"
+      ispell-default-dictionary "en_US")
+
+;; Helper function to toggle Spanish/English
+(defun my/toggle-dictionary ()
+  "Toggle between English and Spanish dictionaries."
+  (interactive)
+  (if (string= ispell-local-dictionary "es_ES")
+      (progn (ispell-change-dictionary "en_US")
+             (message "Dictionary: English"))
+    (ispell-change-dictionary "es_ES")
+    (message "Dictionary: Spanish")))
+
+;; Hooks for automatic spell checking
+(add-hook 'text-mode-hook #'flyspell-mode)
+(add-hook 'org-mode-hook #'flyspell-mode)
+(add-hook 'prog-mode-hook #'flyspell-prog-mode) ; Comments only
+
+;; ── Git Integration ─────────────────────────────────────────────────────────
+(use-package diff-hl
+  :init
+  (global-diff-hl-mode 1)
+  (diff-hl-margin-mode 1)
+  :config
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+;; ── Org Mode ─────────────────────────────────────────────────────────────────
+(use-package org-modern
+  :hook (org-mode . org-modern-mode))
+
+(use-package org
+  :config
+  (setq org-startup-indented t
+        org-hide-emphasis-markers t))
+
+;; ── Undo Visualizer ──────────────────────────────────────────────────────────
+(use-package vundo
+  :config
+  (setq vundo-compact-display t)
+  :bind ("C-x u" . vundo))
+
+;; ── LLM Chat (gptel) ────────────────────────────────────────────────────────
+(use-package gptel
+  :config
+  ;; API key from file (sops-nix secret)
+  (setq gptel-api-key (lambda ()
+                        (with-temp-buffer
+                          (insert-file-contents "/run/secrets/zai_api_key")
+                          (string-trim (buffer-string)))))
+
+  ;; Z.AI provider with GLM-5 model
+  (gptel-make-openai "Zai"
+    :host "api.z.ai"
+    :endpoint "/api/coding/paas/v4/chat/completions"
+    :stream t
+    :key 'gptel-api-key
+    :models '((glm-5
+               :description "GLM-5 reasoning model from Z.AI"
+               :capabilities (reasoning tool-use)
+               :context-window 128
+               :input-cost 0.1
+               :output-cost 0.1)))
+
+  ;; Set Zai + GLM-5 as default
+  (setq gptel-model 'glm-5
+        gptel-backend (gptel-get-backend "Zai"))
+
+  ;; ── Agent Tools ───────────────────────────────────────────────────────────
+  ;; 1. Bash - Ejecutar comandos de shell
+  (gptel-make-tool
+   :name "bash"
+   :function (lambda (command)
+               (message "Ejecutando bash: %s" command)
+               (shell-command-to-string command))
+   :description "Ejecuta un comando en la terminal y devuelve la salida."
+   :args (list '(:name "command"
+                       :type string
+                       :description "Comando de shell a ejecutar")))
+
+  ;; 2. Read - Leer archivo
+  (gptel-make-tool
+   :name "read_file"
+   :function (lambda (path)
+               (if (file-exists-p path)
+                   (with-temp-buffer
+                     (insert-file-contents path)
+                     (buffer-string))
+                 (format "Error: Archivo no encontrado: %s" path)))
+   :description "Lee el contenido de un archivo."
+   :args (list '(:name "path"
+                       :type string
+                       :description "Ruta completa al archivo")))
+
+  ;; 3. Write - Escribir archivo (crear/sobrescribir)
+  (gptel-make-tool
+   :name "write_file"
+   :function (lambda (path content)
+               (with-temp-file path (insert content))
+               (format "Archivo escrito exitosamente: %s" path))
+   :description "Escribe contenido en un archivo. Crea el archivo si no existe."
+   :args (list '(:name "path"
+                       :type string
+                       :description "Ruta del archivo")
+               '(:name "content"
+                       :type string
+                       :description "Contenido a escribir")))
+
+  ;; 4. Edit - Editar archivo (reemplazo de texto)
+  (gptel-make-tool
+   :name "edit_file"
+   :function (lambda (path search replace)
+               (with-current-buffer (find-file-noselect path)
+                 (goto-char (point-min))
+                 (if (search-forward search nil t)
+                     (progn
+                       (replace-match replace t t)
+                       (save-buffer)
+                       (format "Reemplazo exitoso en %s" path))
+                   (format "Texto no encontrado: %s" search))))
+   :description "Reemplaza una ocurrencia exacta de texto en un archivo."
+   :args (list '(:name "path"
+                       :type string
+                       :description "Ruta del archivo")
+               '(:name "search"
+                       :type string
+                       :description "Texto exacto a buscar")
+               '(:name "replace"
+                       :type string
+                       :description "Texto por el cual reemplazar")))
+
+  ;; 5. Find - Buscar archivos
+  (gptel-make-tool
+   :name "list_files"
+   :function (lambda (directory pattern)
+               (mapconcat #'identity
+                          (directory-files-recursively directory pattern)
+                          "\n"))
+   :description "Lista archivos en un directorio que coincidan con un patrón."
+   :args (list '(:name "directory"
+                       :type string
+                       :description "Directorio donde buscar")
+               '(:name "pattern"
+                       :type string
+                       :description "Patrón regex (ej: \\.el$)")))
+
+  ;; 6. Grep - Buscar dentro de archivos
+  (gptel-make-tool
+   :name "grep_search"
+   :function (lambda (pattern path)
+               (shell-command-to-string
+                (format "grep -rn '%s' '%s' 2>/dev/null || echo 'Sin resultados'"
+                        pattern path)))
+   :description "Busca texto dentro de archivos recursivamente."
+   :args (list '(:name "pattern"
+                       :type string
+                       :description "Texto a buscar")
+               '(:name "path"
+                       :type string
+                       :description "Directorio o archivo base")))
+
+  (setq gptel-tools (gptel-get-tool '("bash" "read_file" "write_file")))
+
+  ;; ── End Agent Tools
+
+  ;; Keybindings
+  :bind (("C-c RET" . gptel-send)
+         ("C-c g"   . gptel)
+         ("C-c M-g" . gptel-rewrite)))
 
 (provide 'init)
 ;; ============================================================================

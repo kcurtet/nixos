@@ -1,5 +1,10 @@
 { pkgs }:
+let
+  emacs-up = pkgs.writeScriptBin "emacs-up" (builtins.readFile ./emacs-up);
+in
 {
+  inherit emacs-up;
+
   nboot = pkgs.writeShellScriptBin "nboot" ''
     # Auto-detect flake directory from git repository
     FLAKE_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/system/nixos-config")

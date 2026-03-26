@@ -727,8 +727,7 @@
 ;; gptel-agent mode
 ;; Patch: fix SKILL.md regex to not match .backup files
 (use-package gptel-agent
-  :straight (gptel-agent :type git :host github :repo "karthink/gptel"
-                         :files ("gptel-agent.el" "gptel-agent-tools.el")
+  :straight (gptel-agent :type git :host github :repo "karthink/gptel-agent"
                          :pre-build ((lambda ()
                                        (shell-command
                                         (format "patch -p1 < %s"

@@ -371,6 +371,7 @@
     "b"  '(:ignore t :which-key "buffers")
     "bb" '(consult-buffer :which-key "switch buffer")
     "bk" '(kill-buffer :which-key "kill buffer")
+    "bd" '(kill-this-buffer :which-key "kill (current) buffer")
     "bn" '(next-buffer :which-key "next")
     "bp" '(previous-buffer :which-key "prev")
 
@@ -487,6 +488,11 @@
 ;; ── Programming ────────────────────────────────────────────────────────────
 ;; Treesitter (Emacs 29+)
 (when (treesit-available-p)
+  ;; Add Nix-provided grammars to load path
+  (add-to-list 'treesit-extra-load-path
+               (expand-file-name "tree-sitter" user-emacs-directory))
+
+  ;; Language sources for ad-hoc compilation (fallback if not in Nix)
   (setq treesit-language-source-alist
         '((python     "https://github.com/tree-sitter/tree-sitter-python")
           (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
@@ -528,14 +534,10 @@
   :mode "\\.nix\\'")
 
 ;; Hyprland config mode
+;; Grammar provided by NixOS (home/packages/dev.nix)
 (use-package hyprlang-ts-mode
   :straight (hyprlang-ts-mode :type git :host github :repo "Nathan-Melaku/hyprlang-ts-mode")
-  :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode)
-  :config
-  ;; Install grammar if not present
-  (when (and (treesit-available-p)
-             (not (treesit-language-available-p 'hyprlang)))
-    (treesit-install-language-grammar 'hyprlang)))
+  :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode))
 
 ;; Magit
 (use-package magit

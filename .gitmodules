@@ -1,3 +1,0 @@
-[submodule "nixvim"]
-	path = nixvim
-	url = https://github.com/kcurtet/nixvim.git

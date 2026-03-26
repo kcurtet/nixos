@@ -97,6 +97,96 @@
   :init (which-key-mode)
   :config (setq which-key-idle-delay 0.5))
 
+;; ── Vim Keybindings (Evil) ─────────────────────────────────────────────────
+(use-package evil
+  :init
+  (setq evil-want-integration t
+        evil-want-keybinding nil
+        evil-want-C-u-scroll t
+        evil-want-C-i-jump nil
+        evil-undo-system 'undo-redo
+        evil-search-module 'evil-search)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package evil-surround
+  :after evil
+  :config (global-evil-surround-mode 1))
+
+(use-package evil-commentary
+  :after evil
+  :config (evil-commentary-mode))
+
+;; ── Keybindings (general.el) ───────────────────────────────────────────────
+(use-package general
+  :config
+  (general-evil-setup t)
+
+  ;; Leader key (SPC)
+  (general-create-definer leader
+    :states '(normal visual motion)
+    :keymaps 'override
+    :prefix "SPC")
+
+  (leader
+    ""   '(:ignore t :which-key "leader")
+
+    ;; Files
+    "f"  '(:ignore t :which-key "files")
+    "ff" '(find-file :which-key "find file")
+    "fr" '(consult-recent-file :which-key "recent files")
+    "fs" '(save-buffer :which-key "save")
+
+    ;; Buffers
+    "b"  '(:ignore t :which-key "buffers")
+    "bb" '(consult-buffer :which-key "switch buffer")
+    "bk" '(kill-buffer :which-key "kill buffer")
+    "bn" '(next-buffer :which-key "next")
+    "bp" '(previous-buffer :which-key "prev")
+
+    ;; Windows
+    "w"  '(:ignore t :which-key "windows")
+    "ww" '(other-window :which-key "other")
+    "wd" '(delete-window :which-key "delete")
+    "wD" '(delete-other-windows :which-key "delete others")
+    "ws" '(split-window-below :which-key "split below")
+    "wv" '(split-window-right :which-key "split right")
+    "wh" '(evil-window-left :which-key "left")
+    "wj" '(evil-window-down :which-key "down")
+    "wk" '(evil-window-up :which-key "up")
+    "wl" '(evil-window-right :which-key "right")
+
+    ;; Git
+    "g"  '(:ignore t :which-key "git")
+    "gg" '(magit-status :which-key "magit")
+
+    ;; Search
+    "s"  '(:ignore t :which-key "search")
+    "ss" '(consult-line :which-key "line")
+    "sg" '(consult-ripgrep :which-key "ripgrep")
+
+    ;; Terminal
+    "t"  '(vterm :which-key "terminal")
+
+    ;; Help
+    "h"  '(:ignore t :which-key "help")
+    "hf" '(describe-function :which-key "function")
+    "hv" '(describe-variable :which-key "variable")
+    "hk" '(describe-key :which-key "key"))
+
+  ;; Global keybindings (work in all states)
+  (general-define-key
+   "M-o" 'other-window
+   "M-1" 'delete-other-windows
+   "M-2" 'split-window-below
+   "M-3" 'split-window-right
+   "M-0" 'delete-window))
+
 ;; ── File management ────────────────────────────────────────────────────────
 (setq recentf-max-saved-items 50)
 (recentf-mode 1)
@@ -152,6 +242,7 @@
 
 ;; ── Terminal ───────────────────────────────────────────────────────────────
 (use-package vterm
+  :ensure nil
   :commands vterm
   :config
   (setq vterm-max-scrollback 10000))

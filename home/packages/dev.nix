@@ -16,8 +16,7 @@
 
     # Editors
     neovim
-    emacs-pgtk
-    emacsPackages.vterm
+    (emacsPackagesFor emacs-pgtk).emacsWithPackages (ep: [ ep.vterm ])
     vscode-fhs
 
     # AI assistants

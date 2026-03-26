@@ -149,14 +149,18 @@
         "nixvim": "nixvim_2"
       },
       "locked": {
-        "path": "./nixvim",
-        "type": "path"
+        "lastModified": 1774480195,
+        "narHash": "sha256-jWqUruL5KuF/4ogzeXgfnjhF8jkFwDpw6c2Wr8gvS2Y=",
+        "owner": "kcurtet",
+        "repo": "nixvim",
+        "rev": "f66378a4fceb066d4ce2ee2b7a1f9d59065d7a3b",
+        "type": "github"
       },
       "original": {
-        "path": "./nixvim",
-        "type": "path"
-      },
-      "parent": []
+        "owner": "kcurtet",
+        "repo": "nixvim",
+        "type": "github"
+      }
     },
     "nixvim_2": {
       "inputs": {

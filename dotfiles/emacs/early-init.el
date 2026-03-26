@@ -30,6 +30,7 @@
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 
+
 ;; Native compilation settings
 (when (featurep 'native-compile)
   (setq native-comp-async-report-warnings-errors nil

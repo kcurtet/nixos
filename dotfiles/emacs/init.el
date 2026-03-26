@@ -53,6 +53,10 @@
 (global-hl-line-mode 1)
 (pixel-scroll-precision-mode 1)
 
+;; Frame transparency (75% opacity)
+(set-frame-parameter nil 'alpha-background 75)
+(add-to-list 'default-frame-alist '(alpha-background . 75))
+
 ;; Disable line numbers in some modes
 (dolist (mode '(term-mode-hook
                shell-mode-hook

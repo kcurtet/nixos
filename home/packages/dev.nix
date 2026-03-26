@@ -3,35 +3,24 @@
 # ============================================================================
 { pkgs, ... }:
 let
-  emacs-with-vterm = (pkgs.emacsPackagesFor pkgs.emacs-pgtk).emacsWithPackages (ep: [ ep.vterm ]);
+  treesitter-grammars = pkgs.emacsPackages.treesit-grammars.with-grammars (p: [
+    p.tree-sitter-bash
+    p.tree-sitter-json
+    p.tree-sitter-nix
+    p.tree-sitter-python
+    p.tree-sitter-rust
+    p.tree-sitter-toml
+    p.tree-sitter-yaml
+    p.tree-sitter-javascript
+    p.tree-sitter-typescript
+    p.tree-sitter-tsx
+    p.tree-sitter-hyprlang
+  ]);
 
-  # Tree-sitter grammars from nixpkgs
-  treesitter-grammars = with pkgs.tree-sitter-grammars; [
-    tree-sitter-bash
-    tree-sitter-json
-    tree-sitter-nix
-    tree-sitter-python
-    tree-sitter-rust
-    tree-sitter-toml
-    tree-sitter-yaml
-    tree-sitter-javascript
-    tree-sitter-typescript
-    tree-sitter-tsx
-    tree-sitter-hyprlang
-  ];
-
-  # Create a directory with all grammars linked with Emacs naming convention
-  treesitter-dir = pkgs.runCommand "emacs-treesitter-grammars" { } ''
-    mkdir -p $out
-    ${pkgs.lib.concatStrings (map (grammar: ''
-      lang=$(basename ${grammar} | sed 's/tree-sitter-//' | sed 's/-[0-9].*//')
-      ln -sf ${grammar}/parser $out/libtree-sitter-$lang.so
-      if [ -d "${grammar}/queries" ]; then
-        mkdir -p $out/$lang-queries
-        ln -sf ${grammar}/queries/* $out/$lang-queries/ 2>/dev/null || true
-      fi
-    '') treesitter-grammars)}
-  '';
+  emacs-with-packages = (pkgs.emacsPackagesFor pkgs.emacs-pgtk).emacsWithPackages (ep: [
+    ep.vterm
+    treesitter-grammars
+  ]);
 in
 {
   home.packages = with pkgs; [
@@ -50,7 +39,7 @@ in
 
     # Editors
     neovim
-    emacs-with-vterm
+    emacs-with-packages
     vscode-fhs
 
     # AI assistants
@@ -86,6 +75,4 @@ in
     fennel-ls
   ];
 
-  # Link tree-sitter grammars to ~/.config/emacs/tree-sitter
-  home.file.".config/emacs/tree-sitter".source = treesitter-dir;
 }

@@ -21,12 +21,18 @@ in
     # ── Dotfiles (symlinked directly to repo, editable without rebuild) ──
     home = {
       file = {
+        # Cursor theme index with proper Directories field (fixes hyprtoolkit warning)
+        ".icons/default/index.theme".text = lib.mkForce ''
+          [Icon Theme]
+          Name=Default
+          Comment=Default Cursor Theme
+          Inherits=Bibata-Modern-Classic
+          Directories=
+        '';
         ".config/hypr/hyprland.conf" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprland.conf";
         };
-        ".config/hypr/hyprpaper.conf" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprpaper.conf";
-        };
+
         ".config/hypr/scripts/dunst-waybar.sh" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
         };
@@ -84,7 +90,7 @@ in
         hyprpicker
 
         # Wallpaper
-        hyprpaper
+        swww
 
         # Network manager GUI
         networkmanagerapplet

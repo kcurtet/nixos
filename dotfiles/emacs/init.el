@@ -542,10 +542,6 @@
 ;; ── Programming ────────────────────────────────────────────────────────────
 ;; Treesitter (Emacs 29+)
 (when (treesit-available-p)
-  ;; Add Nix-provided grammars to load path
-  (add-to-list 'treesit-extra-load-path
-               (expand-file-name "tree-sitter" user-emacs-directory))
-
   ;; Language sources for ad-hoc compilation (fallback if not in Nix)
   (setq treesit-language-source-alist
         '((python     "https://github.com/tree-sitter/tree-sitter-python")
@@ -823,31 +819,54 @@
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
+(defun sops--find-config ()
+  "Find .sops.yaml by walking up from current file's directory."
+  (let ((dir (file-name-directory (buffer-file-name))))
+    (while (and dir
+                (not (string= dir "/"))
+                (not (file-exists-p (expand-file-name ".sops.yaml" dir))))
+      (setq dir (file-name-directory (directory-file-name dir))))
+    (when (file-exists-p (expand-file-name ".sops.yaml" dir))
+      (expand-file-name ".sops.yaml" dir))))
+
 (defun sops--encrypt-buffer ()
   "Encrypt current buffer using sops, writing encrypted content to file."
   (when sops--encrypted
     (let* ((file (buffer-file-name))
-           (temp-decrypted (make-temp-file "sops-decrypted" nil ".yaml")))
+           (filename (file-name-nondirectory file))
+           (config (sops--find-config))
+           (temp-decrypted (make-temp-file "sops-decrypted" nil ".yaml"))
+           (temp-encrypted (make-temp-file "sops-encrypted" nil ".yaml"))
+           (status 0)
+           (args '()))
+      (unless config
+        (error "SOPS: No .sops.yaml found"))
       ;; Write current (decrypted) content to temp file
       (write-region (point-min) (point-max) temp-decrypted nil 'silent)
-      ;; Encrypt in place
-      (let ((status (call-process "sops" nil nil nil "--encrypt" "--in-place" temp-decrypted)))
-        (if (and (numberp status) (= status 0))
-            ;; Write encrypted content to actual file
-            (let ((encrypted-content (with-temp-buffer
-                                       (insert-file-contents temp-decrypted)
-                                       (buffer-string))))
-              (write-region encrypted-content nil file nil 'silent)
-              (message "SOPS: Encrypted and saved"))
-          (message "SOPS: Encryption failed (exit code %s)" status)))
-      (when (file-exists-p temp-decrypted)
-        (delete-file temp-decrypted)))))
+      ;; Build args: --config, --filename-override for path_regex match, --encrypt
+      (setq args (list "--config" config
+                       "--filename-override" filename
+                       "--encrypt" temp-decrypted))
+      (setq status (apply #'call-process "sops" nil `(:file ,temp-encrypted) nil args))
+      (if (and (numberp status) (= status 0))
+          ;; Write encrypted content to actual file
+          (let ((encrypted-content (with-temp-buffer
+                                     (insert-file-contents temp-encrypted)
+                                     (buffer-string))))
+            (write-region encrypted-content nil file nil 'silent)
+            (message "SOPS: Encrypted and saved"))
+        (message "SOPS: Encryption failed (exit code %s)" status))
+      (delete-file temp-decrypted)
+      (when (file-exists-p temp-encrypted)
+        (delete-file temp-encrypted)))))
 
-(defun sops--restore-decrypted ()
-  "Restore decrypted content after saving encrypted version."
+(defun sops--save-file ()
+  "Encrypt and save current buffer. Returns t to prevent default save."
   (when sops--encrypted
-    (let ((file (buffer-file-name)))
-      (sops--decrypt-buffer))))
+    (sops--encrypt-buffer)
+    ;; Mark buffer as unmodified since we already saved
+    (set-buffer-modified-p nil)
+    t))  ; Return t to signal we handled the save
 
 (defun sops--setup-hooks ()
   "Setup SOPS hooks for current buffer if it matches secrets pattern."
@@ -856,9 +875,8 @@
                (string-match-p "\\(secrets?\\.ya?ml\\|.secret\\.ya?ml\\|/secrets?/.+\\.ya?ml\\)" file))
       ;; Decrypt on open
       (sops--decrypt-buffer)
-      ;; Setup save hooks
-      (add-hook 'before-save-hook #'sops--encrypt-buffer nil t)
-      (add-hook 'after-save-hook #'sops--restore-decrypted nil t))))
+      ;; Use write-contents-functions - returning t prevents default save
+      (add-hook 'write-contents-functions #'sops--save-file nil t))))
 
 (add-hook 'find-file-hook #'sops--setup-hooks)
 

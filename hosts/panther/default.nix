@@ -23,7 +23,6 @@ in
     ../../modules/nvidia/specialisations.nix
     ../../modules/gaming
     ../../modules/virtualization
-    ../../modules/desktop/gnome
     ../../modules/desktop/hyprland
     ../../modules/services
     ../../modules/laptop
@@ -108,20 +107,20 @@ in
   };
 
   # ============================================================================
-  # Desktop Environments - GNOME + Hyprland
+  # Desktop Environments - Hyprland only
   # ============================================================================
-  desktop.gnome = {
-    enable = true;
-    gdm = true; # GDM is shared with Hyprland
-    xkb.layout = "es";
-    xkb.variant = "cat";
-  };
-
   desktop.hyprland-wayland = {
     enable = true;
     xkb.layout = "es";
     xkb.variant = "cat";
   };
+
+  # GDM display manager (for Hyprland login)
+  services.displayManager.gdm.enable = true;
+  services.xserver.enable = true;
+  services.xserver.xkb.layout = "es";
+  services.xserver.xkb.variant = "cat";
+  services.gnome.gnome-keyring.enable = true;
 
   # ============================================================================
   # Audio

@@ -40,21 +40,52 @@ Examples:
 EOF
 }
 
-run_emacs() {
-    local expr="$1"
-    "$EMACS" --batch --eval "(progn (setq user-emacs-directory \"$CONFIG_DIR/\") $expr)" 2>/dev/null
+check_emacs() {
+    if ! command -v "$EMACS" &>/dev/null; then
+        error "Emacs not found. Install Emacs first or set EMACS env var."
+    fi
 }
 
-cmd_update() {
-    info "Updating straight.el packages..."
+check_config() {
+    if [[ ! -f "$CONFIG_DIR/init.el" ]]; then
+        error "No init.el found at $CONFIG_DIR\n       Configure Emacs first or set XDG_CONFIG_HOME correctly."
+    fi
+}
 
-    # Update in batch mode
+check_straight() {
+    if [[ ! -d "$STRAIGHT_DIR/repos/straight.el" ]]; then
+        warn "straight.el not found. Starting Emacs to bootstrap..."
+        # Start Emacs in batch mode to trigger straight bootstrap
+        "$EMACS" --batch \
+            --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
+            --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
+            --eval "(load \"$CONFIG_DIR/init.el\" nil t)" \
+            2>&1 | grep -v "^Loading\|^Wrote\|^Warnings\|^Compiling" || true
+
+        if [[ ! -d "$STRAIGHT_DIR/repos/straight.el" ]]; then
+            error "Failed to bootstrap straight.el. Check your init.el configuration."
+        fi
+        success "straight.el bootstrapped"
+    fi
+}
+
+run_straight_cmd() {
+    local cmd="$1"
     "$EMACS" --batch \
         --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
         --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
-        --eval "(straight-pull-all)" \
-        2>&1 | grep -v "^Loading\|^Wrote" || true
+        --eval "(load \"$CONFIG_DIR/init.el\" nil t)" \
+        --eval "($cmd)" \
+        2>&1 | grep -v "^Loading\|^Wrote\|^Compiling\|^Saving\|^Checking" || true
+}
 
+cmd_update() {
+    check_emacs
+    check_config
+    check_straight
+
+    info "Updating straight.el packages..."
+    run_straight_cmd "straight-pull-all"
     success "Packages updated"
 
     # Show summary
@@ -66,59 +97,56 @@ cmd_update() {
 }
 
 cmd_rebuild() {
+    check_emacs
+    check_config
+    check_straight
+
     info "Rebuilding all packages..."
-
-    "$EMACS" --batch \
-        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
-        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
-        --eval "(straight-rebuild-all)" \
-        2>&1 | grep -v "^Loading\|^Wrote" || true
-
+    run_straight_cmd "straight-rebuild-all"
     success "Packages rebuilt"
 }
 
 cmd_freeze() {
+    check_emacs
+    check_config
+    check_straight
+
     info "Freezing package versions..."
-
-    "$EMACS" --batch \
-        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
-        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
-        --eval "(straight-freeze-versions)" \
-        2>&1 | grep -v "^Loading\|^Wrote" || true
-
+    run_straight_cmd "straight-freeze-versions"
     success "Versions saved to $STRAIGHT_DIR/versions.lock.el"
 }
 
 cmd_thaw() {
-    info "Thawing packages from lockfile..."
+    check_emacs
+    check_config
 
     if [[ ! -f "$STRAIGHT_DIR/versions.lock.el" ]]; then
         error "No versions.lock.el found. Run 'emacs-up freeze' first."
     fi
 
-    "$EMACS" --batch \
-        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
-        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
-        --eval "(straight-thaw-versions)" \
-        2>&1 | grep -v "^Loading\|^Wrote" || true
+    check_straight
 
+    info "Thawing packages from lockfile..."
+    run_straight_cmd "straight-thaw-versions"
     success "Packages restored from lockfile"
 }
 
 cmd_clean() {
+    check_emacs
+    check_config
+    check_straight
+
     info "Cleaning unused packages..."
-
-    "$EMACS" --batch \
-        --eval "(setq user-emacs-directory \"$CONFIG_DIR/\")" \
-        --eval "(load \"$CONFIG_DIR/early-init.el\" nil t)" \
-        --eval "(straight-prune-build)" \
-        --eval "(straight-remove-unused-repos)" \
-        2>&1 | grep -v "^Loading\|^Wrote" || true
-
+    run_straight_cmd "progn (straight-prune-build) (straight-remove-unused-repos)"
     success "Cleaned unused packages"
 }
 
 cmd_purge() {
+    if [[ ! -d "$STRAIGHT_DIR" ]]; then
+        warn "Straight directory doesn't exist: $STRAIGHT_DIR"
+        exit 0
+    fi
+
     warn "This will delete $STRAIGHT_DIR entirely!"
     read -rp "Continue? [y/N] " confirm
 
@@ -131,14 +159,37 @@ cmd_purge() {
 }
 
 cmd_status() {
+    check_emacs
+
     echo -e "${BLUE}Emacs Config Status${NC}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Emacs version
+    local emacs_ver
+    emacs_ver=$("$EMACS" --version | head -1 2>/dev/null || echo "not found")
+    echo -e "Emacs:          ${GREEN}$emacs_ver${NC}"
 
     # Config dir
     if [[ -d "$CONFIG_DIR" ]]; then
         echo -e "Config dir:     ${GREEN}$CONFIG_DIR${NC}"
     else
         echo -e "Config dir:     ${RED}not found${NC}"
+        exit 0
+    fi
+
+    # init.el
+    if [[ -f "$CONFIG_DIR/init.el" ]]; then
+        echo -e "init.el:        ${GREEN}found${NC}"
+    else
+        echo -e "init.el:        ${RED}not found${NC}"
+        exit 0
+    fi
+
+    # early-init.el
+    if [[ -f "$CONFIG_DIR/early-init.el" ]]; then
+        echo -e "early-init.el:  ${GREEN}found${NC}"
+    else
+        echo -e "early-init.el:  ${YELLOW}not found${NC}"
     fi
 
     # Straight dir
@@ -146,10 +197,12 @@ cmd_status() {
         local repo_count build_count
         repo_count=$(find "$STRAIGHT_DIR/repos" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
         build_count=$(find "$STRAIGHT_DIR/build" -maxdepth 1 -type d 2>/dev/null | tail -n +2 | wc -l)
+        echo -e "Straight dir:   ${GREEN}initialized${NC}"
         echo -e "Repos:          ${GREEN}$repo_count${NC}"
         echo -e "Builds:         ${GREEN}$build_count${NC}"
     else
         echo -e "Straight dir:   ${YELLOW}not initialized${NC}"
+        exit 0
     fi
 
     # Lockfile
@@ -157,7 +210,7 @@ cmd_status() {
         local lock_count
         lock_count=$(grep -c "(:type" "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
         local lock_age
-        lock_age=$(stat -c %Y "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
+        lock_age=$(stat -c %Y "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || stat -f %m "$STRAIGHT_DIR/versions.lock.el" 2>/dev/null || echo "0")
         local lock_date
         lock_date=$(date -d "@$lock_age" "+%Y-%m-%d %H:%M" 2>/dev/null || date -r "$lock_age" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "unknown")
         echo -e "Lockfile:       ${GREEN}$lock_count packages (last: $lock_date)${NC}"

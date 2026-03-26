@@ -25,14 +25,11 @@
   # Flake Inputs
   # ============================================================================
   inputs = {
-    # Enable git submodules for this flake
-    self.submodules = true;
-
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Neovim configuration (local submodule)
+    # Neovim configuration
     nixvim = {
-      url = "path:./nixvim";
+      url = "github:kcurtet/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -2,6 +2,9 @@
 # Development Tools
 # ============================================================================
 { pkgs, ... }:
+let
+  emacs-with-vterm = (pkgs.emacsPackagesFor pkgs.emacs-pgtk).emacsWithPackages (ep: [ ep.vterm ]);
+in
 {
   home.packages = with pkgs; [
     playwright-driver
@@ -16,7 +19,7 @@
 
     # Editors
     neovim
-    (emacsPackagesFor emacs-pgtk).emacsWithPackages (ep: [ ep.vterm ])
+    emacs-with-vterm
     vscode-fhs
 
     # AI assistants

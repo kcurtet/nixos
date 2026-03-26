@@ -247,17 +247,6 @@
   :config
   (setq vterm-max-scrollback 10000))
 
-;; ── Keybindings ────────────────────────────────────────────────────────────
-;; Unbind annoying defaults
-(global-unset-key (kbd "C-z"))  ; suspend-frame
-
-;; Window management
-(global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-below)
-(global-set-key (kbd "M-3") 'split-window-right)
-(global-set-key (kbd "M-0") 'delete-window)
-
 (provide 'init)
 ;; ============================================================================
 ;; End of init.el

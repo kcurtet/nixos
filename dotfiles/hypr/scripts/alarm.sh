@@ -2,7 +2,7 @@
 # ============================================================================
 # Alarm Manager for Hyprland - systemd persistent backend
 # Uses: systemd --user timers, notify-send, pw-play
-# Alarms persist across reboots
+# Alarms persist across reboots. Supports repeating alarms.
 # ============================================================================
 set -euo pipefail
 
@@ -11,6 +11,63 @@ SYSTEMD_DIR="$HOME/.config/systemd/user"
 SOUND_FILE="/run/current-system/sw/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
 
 mkdir -p "$ALARM_DIR" "$SYSTEMD_DIR"
+
+# ============================================================================
+# Repeat pattern helpers
+# ============================================================================
+
+# Map human-readable repeat label to systemd OnCalendar expression
+# Input: time string HH:MM + repeat label
+# Output: OnCalendar expression
+repeat_to_calendar() {
+    local time="$1"   # HH:MM
+    local label="$2"  # daily, weekdays, weekends, mon, tue, etc.
+
+    case "${label,,}" in
+        none|"")        echo "" ;;
+        daily)          echo "*-*-* ${time}:00" ;;
+        weekdays|mon-fri)  echo "Mon..Fri *-*-* ${time}:00" ;;
+        weekends)       echo "Sat..Sun *-*-* ${time}:00" ;;
+        mon|monday)     echo "Mon *-*-* ${time}:00" ;;
+        tue|tuesday)    echo "Tue *-*-* ${time}:00" ;;
+        wed|wednesday)  echo "Wed *-*-* ${time}:00" ;;
+        thu|thursday)   echo "Thu *-*-* ${time}:00" ;;
+        fri|friday)     echo "Fri *-*-* ${time}:00" ;;
+        sat|saturday)   echo "Sat *-*-* ${time}:00" ;;
+        sun|sunday)     echo "Sun *-*-* ${time}:00" ;;
+        weekly)         echo "Mon *-*-* ${time}:00" ;;
+        biweekly)       echo "biweekly *-*-* ${time}:00" ;;
+        monthly)        echo "*-*-01 ${time}:00" ;;
+        hourly)         echo "hourly" ;;
+        *)
+            # Allow raw systemd OnCalendar expression passthrough
+            echo "$label"
+            ;;
+    esac
+}
+
+# Display-friendly label for a repeat pattern
+repeat_display_label() {
+    local label="${1:-}"
+    case "${label,,}" in
+        none|"")         echo "once" ;;
+        daily)           echo "every day" ;;
+        weekdays|mon-fri) echo "weekdays" ;;
+        weekends)        echo "weekends" ;;
+        mon|monday)      echo "every Monday" ;;
+        tue|tuesday)     echo "every Tuesday" ;;
+        wed|wednesday)   echo "every Wednesday" ;;
+        thu|thursday)    echo "every Thursday" ;;
+        fri|friday)      echo "every Friday" ;;
+        sat|saturday)    echo "every Saturday" ;;
+        sun|sunday)      echo "every Sunday" ;;
+        weekly)          echo "every week (Mon)" ;;
+        biweekly)        echo "every 2 weeks" ;;
+        monthly)         echo "monthly" ;;
+        hourly)          echo "hourly" ;;
+        *)               echo "$label" ;;
+    esac
+}
 
 # ============================================================================
 # Helpers
@@ -45,6 +102,7 @@ create_systemd_units() {
     local delay_seconds="$3"
     local trigger_time="$4"
     local calendar_time="$5"  # Empty for relative timers
+    local repeat="${6:-none}" # Repeat pattern (none, daily, weekdays, etc.)
     
     local safe_id=$(sanitize_name "$alarm_id")
     local unit_name="alarm-${safe_id}"
@@ -66,8 +124,8 @@ WantedBy=default.target
 EOF
 
     # Create timer unit
-    if [[ -n "$calendar_time" ]]; then
-        # Absolute time (OnCalendar)
+    if [[ -n "$calendar_time" ]] || [[ -n "$repeat" && "$repeat" != "none" ]]; then
+        # Absolute / repeating time (OnCalendar)
         cat > "$SYSTEMD_DIR/${unit_name}.timer" << EOF
 [Unit]
 Description=Timer for alarm: ${message}
@@ -101,6 +159,7 @@ TRIGGER_TIME=${trigger_time}
 DELAY_SECONDS=${delay_seconds}
 CREATED=$(date +"%Y-%m-%d %H:%M:%S")
 UNIT_NAME=${unit_name}
+REPEAT=${repeat}
 EOF
     
     # Reload systemd, enable and start timer
@@ -127,17 +186,41 @@ remove_systemd_units() {
 # ============================================================================
 
 add_alarm() {
-    local time_input="$1"
-    local message="${2:-Alarm}"
+    local time_input=""
+    local message="Alarm"
+    local repeat="none"
+    
+    # Parse arguments: extract --repeat <pattern>
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --repeat)
+                shift
+                repeat="${1:-none}"
+                ;;
+            *)
+                if [[ -z "$time_input" ]]; then
+                    time_input="$1"
+                elif [[ "$message" == "Alarm" ]]; then
+                    message="$1"
+                fi
+                ;;
+        esac
+        shift
+    done
+    
+    [[ -z "$time_input" ]] && { echo "Error: Missing time argument" >&2; exit 1; }
+    
     local alarm_id=$(date +%s%N | head -c 13)
     
     local delay_seconds=""
     local calendar_time=""
     local trigger_time=""
+    local parsed_time=""  # HH:MM extracted from input
     
     # Parse time input
     if [[ "$time_input" =~ ^([0-9]+):([0-9]+)$ ]]; then
         # Format: HH:MM (absolute time)
+        parsed_time=$(printf "%02d:%02d" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
         local target_hour="${BASH_REMATCH[1]}"
         local target_min="${BASH_REMATCH[2]}"
         local now=$(date +%s)
@@ -182,7 +265,21 @@ add_alarm() {
         exit 1
     fi
     
-    if [[ "$delay_seconds" -lt 1 ]]; then
+    # Repeating alarms require HH:MM format
+    if [[ "$repeat" != "none" ]] && [[ -z "$parsed_time" ]]; then
+        echo "Error: Repeating alarms require HH:MM time format (e.g. 09:00)" >&2
+        exit 1
+    fi
+    
+    # For repeating alarms, convert repeat label to OnCalendar expression
+    if [[ "$repeat" != "none" && -n "$parsed_time" ]]; then
+        calendar_time=$(repeat_to_calendar "$parsed_time" "$repeat")
+        # Trigger time shows next occurrence
+        trigger_time="${parsed_time} ($(repeat_display_label "$repeat"))"
+        delay_seconds=0
+    fi
+    
+    if [[ "$repeat" == "none" && "$delay_seconds" -lt 1 ]]; then
         echo "Error: Alarm must be in the future" >&2
         exit 1
     fi
@@ -193,14 +290,14 @@ add_alarm() {
                        date -j -v+${delay_seconds}S +"%Y-%m-%d %H:%M:%S")
     fi
     
-    create_systemd_units "$alarm_id" "$message" "$delay_seconds" "$trigger_time" "$calendar_time"
+    create_systemd_units "$alarm_id" "$message" "$delay_seconds" "$trigger_time" "$calendar_time" "$repeat"
     
     notify-send -u low -a "Alarm" "Alarm Set" "$message at $trigger_time"
     echo "Alarm set: $message at $trigger_time"
 }
 
 list_alarms() {
-    # Clean up expired alarms first
+    # Clean up expired one-shot alarms first
     cleanup_expired 2>/dev/null || true
     
     local timers=$(systemctl --user list-timers --all --no-legend "alarm-*.timer" 2>/dev/null || true)
@@ -216,23 +313,31 @@ list_alarms() {
 
         local unit=$(echo "$line" | awk '{print $1}' | sed 's/.timer$//')
 
-        # Skip expired alarms (shows "X ago" in the time column)
+        # Get message and repeat from metadata file
+        local meta_file="$ALARM_DIR/${unit}"
+        local message="Alarm"
+        local repeat="none"
+        if [[ -f "$meta_file" ]]; then
+            message=$(grep "^MESSAGE=" "$meta_file" | cut -d= -f2-)
+            repeat=$(grep "^REPEAT=" "$meta_file" | cut -d= -f2-)
+        fi
+
+        # Skip expired one-shot alarms (shows "X ago" in the time column)
+        # But keep repeating alarms — they fire regularly, "ago" is expected
         if echo "$line" | grep -q "ago"; then
-            # Clean up expired timer
-            remove_systemd_units "$unit" 2>/dev/null || true
+            if [[ "$repeat" == "none" || -z "$repeat" ]]; then
+                remove_systemd_units "$unit" 2>/dev/null || true
+            fi
             continue
         fi
 
         local next_trigger=$(echo "$line" | awk '{print $4, $5}')
-
-        # Get message from metadata file
-        local meta_file="$ALARM_DIR/${unit}"
-        local message="Alarm"
-        if [[ -f "$meta_file" ]]; then
-            message=$(grep "^MESSAGE=" "$meta_file" | cut -d= -f2-)
+        local repeat_label=""
+        if [[ -n "$repeat" && "$repeat" != "none" ]]; then
+            repeat_label=" [$(repeat_display_label "$repeat")]"
         fi
 
-        echo "$next_trigger - $message"
+        echo "${next_trigger} - ${message}${repeat_label}"
         found=1
     done <<< "$timers"
 
@@ -264,11 +369,20 @@ cleanup_expired() {
     local count=0
     
     # Get timers that show "ago" (already fired)
-    # Extract unit name (alarm-*.timer) from lines containing "ago"
     local expired=$(systemctl --user list-timers --all --no-legend "alarm-*.timer" 2>/dev/null | grep "ago" | grep -oE 'alarm-[0-9]+\.timer' | sed 's/.timer$//')
     
     for unit_name in $expired; do
         [[ -n "$unit_name" ]] || continue
+        
+        # Skip repeating alarms — they naturally show "ago" between occurrences
+        local meta_file="$ALARM_DIR/${unit_name}"
+        if [[ -f "$meta_file" ]]; then
+            local repeat=$(grep "^REPEAT=" "$meta_file" | cut -d= -f2-)
+            if [[ -n "$repeat" && "$repeat" != "none" ]]; then
+                continue
+            fi
+        fi
+        
         remove_systemd_units "$unit_name"
         count=$((count + 1))
     done
@@ -300,6 +414,7 @@ clear_all() {
 rofi_menu() {
     local options=(
         "➕ New Alarm"
+        "🔁 Repeating Alarm"
         "📋 List Alarms"
         "🗑️ Clear All"
         "❌ Cancel"
@@ -314,6 +429,51 @@ rofi_menu() {
             local message=$(rofi -dmenu -p "Message" -theme ~/.config/rofi/nord.rasi)
             [[ -z "$message" ]] && message="Alarm"
             add_alarm "$time_input" "$message"
+            ;;
+        "🔁 Repeating Alarm")
+            local time_input=$(rofi -dmenu -p "Time (HH:MM)" -theme ~/.config/rofi/nord.rasi)
+            [[ -z "$time_input" ]] && exit 0
+            local message=$(rofi -dmenu -p "Message" -theme ~/.config/rofi/nord.rasi)
+            [[ -z "$message" ]] && message="Alarm"
+            local repeat_options=(
+                "Every day"
+                "Weekdays (Mon–Fri)"
+                "Weekends (Sat–Sun)"
+                "Every Monday"
+                "Every Tuesday"
+                "Every Wednesday"
+                "Every Thursday"
+                "Every Friday"
+                "Every Saturday"
+                "Every Sunday"
+                "Weekly (Monday)"
+                "Biweekly"
+                "Monthly"
+                "Hourly"
+            )
+            local repeat_choice=$(printf '%s\n' "${repeat_options[@]}" | rofi -dmenu -i -p "Repeat" -theme ~/.config/rofi/nord.rasi)
+            [[ -z "$repeat_choice" ]] && exit 0
+
+            # Map display label back to internal repeat key
+            local repeat_key=""
+            case "$repeat_choice" in
+                "Every day")           repeat_key="daily" ;;
+                "Weekdays (Mon–Fri)")  repeat_key="weekdays" ;;
+                "Weekends (Sat–Sun)")  repeat_key="weekends" ;;
+                "Every Monday")        repeat_key="mon" ;;
+                "Every Tuesday")       repeat_key="tue" ;;
+                "Every Wednesday")     repeat_key="wed" ;;
+                "Every Thursday")      repeat_key="thu" ;;
+                "Every Friday")        repeat_key="fri" ;;
+                "Every Saturday")      repeat_key="sat" ;;
+                "Every Sunday")        repeat_key="sun" ;;
+                "Weekly (Monday)")     repeat_key="weekly" ;;
+                "Biweekly")            repeat_key="biweekly" ;;
+                "Monthly")             repeat_key="monthly" ;;
+                "Hourly")              repeat_key="hourly" ;;
+            esac
+
+            add_alarm "$time_input" "$message" --repeat "$repeat_key"
             ;;
         "📋 List Alarms")
             local alarms=$(list_alarms)
@@ -361,7 +521,7 @@ Alarm Manager for Hyprland (systemd backend)
 Usage: alarm [command] [args]
 
 Commands:
-  add <time> [message]  Add alarm (time: HH:MM, 30m, 1h, 1h30m)
+  add <time> [message] [--repeat <pattern>]  Add alarm
   list                  List active alarms
   remove <pattern>      Remove alarms matching pattern
   clear                 Clear all alarms
@@ -370,10 +530,33 @@ Commands:
   quick                 Quick timer menu
   notify [message]      Trigger alarm notification (for systemd)
 
+Time formats:
+  HH:MM     Absolute time (e.g. 09:00, 17:30)
+  Xm        Relative minutes (e.g. 30m, 90m)
+  Xh        Relative hours (e.g. 1h, 2h)
+  XhYm      Combined (e.g. 1h30m)
+  Xs        Relative seconds
+
+Repeat patterns (require HH:MM time):
+  daily          Every day at given time
+  weekdays       Monday–Friday
+  weekends       Saturday–Sunday
+  mon..sun       Specific day of the week
+  weekly         Every Monday
+  biweekly       Every 2 weeks
+  monthly        1st of every month
+  hourly         Every hour
+
+  You can also pass raw systemd OnCalendar expressions.
+
 Examples:
   alarm add 09:00 "Wake up"
   alarm add 30m "Break over"
   alarm add 1h30m "Meeting"
+  alarm add 09:00 "Standup" --repeat weekdays
+  alarm add 22:00 "Wind down" --repeat daily
+  alarm add 08:00 "Weekend run" --repeat sat
+  alarm add 14:00 "Biweekly sync" --repeat biweekly
   alarm list
   alarm remove "Break"
   alarm clear
@@ -385,7 +568,7 @@ EOF
 
 # Main
 case "${1:-menu}" in
-    add)    add_alarm "$2" "${3:-Alarm}" ;;
+    add)    shift; add_alarm "$@" ;;
     list)   list_alarms ;;
     remove) remove_alarm "${2:-}" ;;
     clear)  clear_all ;;

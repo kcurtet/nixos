@@ -70,11 +70,11 @@
 
 ;; Nerd Icons (required for doom-modeline, treemacs, etc.)
 (use-package nerd-icons
-  :demand t)
+  :defer t)
 
 ;; Beautiful modeline
 (use-package doom-modeline
-  :init (doom-modeline-mode 1)
+  :defer t
   :config
   (setq doom-modeline-height 30
         doom-modeline-bar-width 4
@@ -92,10 +92,12 @@
         doom-modeline-mu4e nil
         doom-modeline-irc nil
         doom-modeline-time nil
-        doom-modeline-vcs-max-length 30))
+        doom-modeline-vcs-max-length 30)
+  (doom-modeline-mode 1))
 
 ;; Dashboard
 (use-package dashboard
+  :defer t
   :init
   (setq dashboard-center-content t
         dashboard-vertically-center-content t
@@ -136,7 +138,7 @@
 
 ;; Pulsing cursor on window change
 (use-package pulsar
-  :init (pulsar-global-mode 1)
+  :defer t
   :config
   (setq pulsar-pulse t
         pulsar-delay 0.055
@@ -145,7 +147,8 @@
   (dolist (cmd '(other-window
                  evil-window-left evil-window-right evil-window-up evil-window-down
                  split-window-below split-window-right delete-window))
-    (add-to-list 'pulsar-pulse-functions cmd)))
+    (add-to-list 'pulsar-pulse-functions cmd))
+  (pulsar-global-mode 1))
 
 ;; Disable line numbers in some modes
 (dolist (mode '(term-mode-hook
@@ -155,14 +158,17 @@
                 dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; Font
-(set-face-attribute 'default nil
-                    :family "JetBrainsMono Nerd Font"
-                    :height 140
-                    :weight 'medium)
+;; Font (deferred for faster startup)
+(run-with-idle-timer 0.1 nil
+                     (lambda ()
+                       (set-face-attribute 'default nil
+                                           :family "JetBrainsMono Nerd Font"
+                                           :height 140
+                                           :weight 'medium)))
 
 ;; ── Theme (Nord) ───────────────────────────────────────────────────────────
 (use-package nord-theme
+  :defer t
   :config
   (setq nord-comment-brightness 15
         nord-region-highlight 'snowstorm)
@@ -178,20 +184,26 @@
     (set-face-attribute 'vertical-border nil :foreground "#3b4252")
     (set-face-attribute 'fringe nil :background nil)))
 
+;; Load theme after frame setup (deferred but early)
+(add-hook 'window-setup-hook (lambda () (load-theme 'nord t)) 100)
+
 ;; Beacon - highlight cursor on scroll/jump
 (use-package beacon
-  :init (beacon-mode 1)
+  :defer 0.3
   :config
   (setq beacon-size 40
         beacon-blink-when-point-moves-horizontally nil
         beacon-blink-when-point-moves-vertically 10
-        beacon-color "#88c0d0"))
+        beacon-color "#88c0d0")
+  (beacon-mode 1))
 
 ;; ── Completion (Vertico + Orderless + Marginalia) ──────────────────────────
+;; Completion stack - needs to be ready when user interacts
 (use-package vertico
   :init (vertico-mode))
 
 (use-package orderless
+  :defer t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil))
@@ -200,6 +212,7 @@
   :init (marginalia-mode))
 
 (use-package consult
+  :defer t
   :bind (("C-s"   . consult-line)
          ("C-x b" . consult-buffer)
          ("M-g g" . consult-goto-line)
@@ -211,8 +224,7 @@
 
 ;; ── In-Buffer Completion (Corfu) ────────────────────────────────────────────
 (use-package corfu
-  :init
-  (global-corfu-mode)
+  :init (global-corfu-mode)
   :config
   (setq corfu-cycle t
         corfu-auto t
@@ -222,13 +234,14 @@
 
 ;; Add extensions (cape) to completion-at-point
 (use-package cape
+  :defer 0.1
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 ;; ── Which Key ──────────────────────────────────────────────────────────────
 (use-package which-key
-  :init (which-key-mode)
+  :defer 0.3
   :config
   (setq which-key-idle-delay 0.3
         which-key-idle-secondary-delay 0.05
@@ -239,7 +252,8 @@
         which-key-min-display-lines 6
         which-key-side-window-slot -10
         which-key-allow-imprecise-window-fit nil
-        which-key-separator " → "))
+        which-key-separator " → ")
+  (which-key-mode 1))
 
 ;; ── Treemacs (File Tree) ────────────────────────────────────────────────────
 (use-package treemacs
@@ -496,20 +510,23 @@
 
 ;; ── Direnv Integration ──────────────────────────────────────────────────────
 (use-package envrc
-  :init (envrc-global-mode))
+  :defer 0.1
+  :config (envrc-global-mode))
 
 ;; ── Auto-formatting ─────────────────────────────────────────────────────────
 (use-package apheleia
-  :init (apheleia-global-mode)
+  :defer 0.2
   :config
   (setf (alist-get 'nix-mode apheleia-formatters) '("nixfmt"))
-  (setf (alist-get 'nix-mode apheleia-mode-alist) '(nixfmt)))
+  (setf (alist-get 'nix-mode apheleia-mode-alist) '(nixfmt))
+  (apheleia-global-mode))
 
 ;; ── Code Snippets ───────────────────────────────────────────────────────────
 (use-package yasnippet
-  :init (yas-global-mode)
+  :defer 0.3
   :config
-  (setq yas-snippet-dirs '("~/.config/emacs/snippets")))
+  (setq yas-snippet-dirs '("~/.config/emacs/snippets"))
+  (yas-global-mode 1))
 
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -528,15 +545,17 @@
 
 ;; ── Projects (Projectile) ──────────────────────────────────────────────────
 (use-package projectile
-  :init (projectile-mode 1)
+  :defer 0.2
   :config
   (setq projectile-completion-system 'default
         projectile-enable-caching t
         projectile-switch-project-action 'projectile-dired)
+  (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 
 ;; Integrate projectile with consult
 (use-package consult-projectile
+  :defer t
   :after (projectile consult))
 
 ;; ── Programming ────────────────────────────────────────────────────────────
@@ -581,16 +600,19 @@
 
 ;; Nix mode
 (use-package nix-mode
+  :defer t
   :mode "\\.nix\\'")
 
 ;; Hyprland config mode
 ;; Grammar provided by NixOS (home/packages/dev.nix)
 (use-package hyprlang-ts-mode
+  :defer t
   :straight (hyprlang-ts-mode :type git :host github :repo "Nathan-Melaku/hyprlang-ts-mode")
   :mode ("hyprland\\.conf\\'" . hyprlang-ts-mode))
 
 ;; Magit
 (use-package magit
+  :defer t
   :bind ("C-x g" . magit-status))
 
 ;; ── Terminal ───────────────────────────────────────────────────────────────
@@ -602,9 +624,11 @@
 
 ;; ── Spell Checking (Flyspell + Spanish) ─────────────────────────────────────
 (use-package flyspell-correct
+  :defer t
   :after flyspell)
 
 (use-package consult-flyspell
+  :defer t
   :after consult)
 
 (setq ispell-program-name "hunspell"
@@ -627,10 +651,10 @@
 
 ;; ── Git Integration ─────────────────────────────────────────────────────────
 (use-package diff-hl
-  :init
+  :defer 0.3
+  :config
   (global-diff-hl-mode 1)
   (diff-hl-margin-mode 1)
-  :config
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;; ── Org Mode ─────────────────────────────────────────────────────────────────
@@ -638,18 +662,22 @@
   :hook (org-mode . org-modern-mode))
 
 (use-package org
+  :defer t
   :config
   (setq org-startup-indented t
         org-hide-emphasis-markers t))
 
 ;; ── Undo Visualizer ──────────────────────────────────────────────────────────
 (use-package vundo
+  :defer t
   :config
   (setq vundo-compact-display t)
   :bind ("C-x u" . vundo))
 
 ;; ── LLM Chat (gptel) ────────────────────────────────────────────────────────
 (use-package gptel
+  :defer t
+  :commands (gptel gptel-send gptel-rewrite gptel-menu)
   :config
   ;; API key from file (sops-nix secret)
   (setq gptel-api-key (lambda ()
@@ -777,8 +805,10 @@
          ("C-c M-g" . gptel-rewrite)))
 
 ;; gptel-agent mode
-;; Patch: fix SKILL.md regex to not match .backup files
+;; Patch: follow symlinks when searching for SKILL.md files
 (use-package gptel-agent
+  :defer t
+  :after gptel
   :straight (gptel-agent :type git :host github :repo "karthink/gptel-agent"
                          :pre-build ((lambda ()
                                        (shell-command

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Google Calendar events for Waybar (via gws CLI)
 
-OUTPUT=$(gws calendar +agenda --days 1 --format json 2>/dev/null)
+OUTPUT=$(gws calendar +agenda --days 1 --format json 2>/dev/null | grep -v '^Using keyring')
 
 if [ -z "$OUTPUT" ]; then
   echo '{"text": "", "tooltip": "No events today"}'

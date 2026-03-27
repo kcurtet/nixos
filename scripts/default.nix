@@ -6,15 +6,21 @@ in
   inherit emacs-up;
 
   nboot = pkgs.writeShellScriptBin "nboot" ''
-    # Auto-detect flake directory from git repository
-    FLAKE_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/system/nixos-config")
+    # Use nixos-config repo root, auto-detect if inside it
+    FLAKE_DIR="$HOME/system/nixos-config"
+    if [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$FLAKE_DIR" ]; then
+      FLAKE_DIR=$(git rev-parse --show-toplevel)
+    fi
     sudo nixos-rebuild boot --flake "$FLAKE_DIR"
   '';
 
   # Commit all changes and apply configuration
   nix-apply = pkgs.writeShellScriptBin "nix-apply" ''
-    # Auto-detect flake directory from git repository
-    FLAKE_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/system/nixos-config")
+    # Use nixos-config repo root, auto-detect if inside it
+    FLAKE_DIR="$HOME/system/nixos-config"
+    if [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$FLAKE_DIR" ]; then
+      FLAKE_DIR=$(git rev-parse --show-toplevel)
+    fi
     # Check if there are changes to commit
     if git -C "$FLAKE_DIR" status --porcelain | grep -q .; then
       echo "Uncommitted changes detected in $FLAKE_DIR:"
@@ -48,8 +54,11 @@ in
 
   # Update flake inputs (nixpkgs, home-manager, etc.)
   nix-up = pkgs.writeShellScriptBin "nix-up" ''
-    # Auto-detect flake directory from git repository
-    FLAKE_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/system/nixos-config")
+    # Use nixos-config repo root, auto-detect if inside it
+    FLAKE_DIR="$HOME/system/nixos-config"
+    if [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$FLAKE_DIR" ]; then
+      FLAKE_DIR=$(git rev-parse --show-toplevel)
+    fi
     echo "Updating flake inputs..."
     nix flake update --flake "$FLAKE_DIR"
     echo "Done! Run 'nix-apply' to rebuild with the new inputs."

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Google Calendar events for Waybar (via gws CLI)
-# Output: Waybar JSON {"text": "...", "tooltip": "..."}
 
 OUTPUT=$(gws calendar +agenda --days 1 --format json 2>/dev/null)
 
@@ -9,23 +8,20 @@ if [ -z "$OUTPUT" ]; then
   exit 0
 fi
 
-COUNT=$(echo "$OUTPUT" | jq -r '.count // 0')
-
-if [ "$COUNT" -eq 0 ]; then
-  echo '{"text": "󰃭 ", "tooltip": "No events today"}'
-  exit 0
-fi
-
-# Build text: show next event summary (truncated)
-NEXT_EVENT=$(echo "$OUTPUT" | jq -r '.events[0].summary // "No title"' | cut -c1-25)
-NEXT_START=$(echo "$OUTPUT" | jq -r '.events[0].start // ""' | sed 's/T/ /' | cut -c12-16)
-TEXT="󰃭 ${NEXT_START} ${NEXT_EVENT}"
-
-# Build tooltip: all events with times
-TOOLTIP="<b>Today's events</b>\n"
-TOOLTIP+=$(echo "$OUTPUT" | jq -r '
-  .events[] |
-  "• \(.summary // "Untitled")\n  \(.start | split("T")[1] | split("+")[0] | split(":")[0:2] | join(":")) – \(.end | split("T")[1] | split("+")[0] | split(":")[0:2] | join(":"))\n"
-')
-
-echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
+# Let jq handle everything — pure JSON output, no bash interpolation
+echo "$OUTPUT" | jq -r '
+  if .count == 0 then
+    {"text": "󰃭 ", "tooltip": "No events today"}
+  else
+    (.events[0].start | split("T")[1] | split("+")[0] | split(":")[0:2] | join(":")) as $time |
+    (.events[0].summary // "No title") as $title |
+    {
+      text: ("󰃭 \($time) \($title)" | .[0:35]),
+      tooltip: (
+        "Today\u0027s events\n" + (
+          [.events[] | "• \(.summary // "Untitled")\n  \(.start | split("T")[1] | split("+")[0] | split(":")[0:2] | join(":")) – \(.end | split("T")[1] | split("+")[0] | split(":")[0:2] | join(":"))"] | join("\n")
+        )
+      )
+    }
+  end
+'

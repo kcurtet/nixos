@@ -8,7 +8,7 @@
   "margin-right": 10,
 
   "modules-left": ["custom/logo", "hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["clock", "custom/calendar"],
+  "modules-center": ["clock", "custom/spacer", "custom/calendar"],
   "modules-right": [
     "custom/media",
     "custom/separator",
@@ -98,6 +98,11 @@
     "tooltip": false
   },
 
+  "custom/spacer": {
+    "format": " ",
+    "tooltip": false
+  },
+
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-bluetooth": "󰂯  {volume}%",
@@ -156,8 +161,8 @@
   "custom/calendar": {
     "format": "{}",
     "return-type": "json",
-    "interval": 300,
-    "exec": "~/.config/hypr/scripts/gcal-waybar.sh",
+    "exec": "/home/kx/.config/hypr/scripts/gcal-waybar.sh",
+    "interval": 3600,
     "on-click": "foot -e sh -c 'gws calendar +agenda --week --format table; read -p \"\"'",
     "tooltip": true
   },

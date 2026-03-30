@@ -32,6 +32,9 @@ in
         ".config/hypr/hyprland.conf" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprland.conf";
         };
+        ".config/hypr/hyprpaper.conf" = {
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprpaper.conf";
+        };
 
         ".config/hypr/scripts/dunst-waybar.sh" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
@@ -58,7 +61,7 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
         };
         ".config/wallpaper.jpg" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/wallpapers/merry-hd.jpg";
+          source = ../../dotfiles/wallpapers/merry-hd.jpg;
         };
         ".config/waybar/config" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.json";
@@ -93,7 +96,7 @@ in
         hyprpicker
 
         # Wallpaper
-        swww
+        hyprpaper
 
         # Network manager GUI
         networkmanagerapplet

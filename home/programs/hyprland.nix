@@ -35,6 +35,12 @@ in
         ".config/hypr/hyprpaper.conf" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprpaper.conf";
         };
+        ".config/hypr/hyprlock.conf" = {
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hyprlock.conf";
+        };
+        ".config/hypr/hypridle.conf" = {
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hypridle.conf";
+        };
 
         ".config/hypr/scripts/dunst-waybar.sh" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
@@ -87,7 +93,10 @@ in
         playerctl
 
         # Screen locker
-        swaylock-effects
+        hyprlock
+
+        # Idle daemon
+        hypridle
 
         # Logout menu
         wlogout
@@ -113,6 +122,16 @@ in
 
     # Waybar — config managed via dotfiles (waybar/config.json + style.css)
     programs.waybar.enable = true;
+
+    # Hyprlock screen locker
+    programs.hyprlock = {
+      enable = true;
+    };
+
+    # Hypridle idle daemon
+    services.hypridle = {
+      enable = true;
+    };
 
     # Ensure screenshot directory exists
     xdg.userDirs.extraConfig = {

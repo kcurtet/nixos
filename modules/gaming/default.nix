@@ -57,7 +57,11 @@ in
 
     environment.systemPackages =
       with pkgs;
-      [ mangohud ]
+      [
+        mangohud
+        chess-tui
+        chessdb
+      ]
       ++ lib.optional cfg.steam lutris
       ++ lib.optional cfg.wine wineWow64Packages.waylandFull
       ++ lib.optional cfg.wine winetricks

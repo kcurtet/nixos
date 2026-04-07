@@ -33,9 +33,9 @@
         color-scheme = "prefer-dark";
         gtk-theme = "Nordic";
       };
-      # Use foot as default terminal in GNOME
+      # Use ghostty as default terminal in GNOME
       "org/gnome/desktop/default-applications/terminal" = {
-        exec = "foot";
+        exec = "ghostty";
         exec-arg = "";
       };
     };

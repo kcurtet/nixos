@@ -32,8 +32,8 @@
     ];
     sessionVariables = {
       EDITOR = "nvim";
-      VISUAL = "foot -e nvim";
-      TERMINAL = "foot";
+      VISUAL = "ghostty -e nvim";
+      TERMINAL = "ghostty";
     };
     stateVersion = "26.05";
   };

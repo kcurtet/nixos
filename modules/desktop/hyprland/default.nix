@@ -60,7 +60,7 @@ in
     };
 
     # System packages for Hyprland ecosystem
-    # Note: User-specific packages (waybar, foot, rofi, dunst, grim, slurp, etc.)
+    # Note: User-specific packages (waybar, ghostty, rofi, dunst, grim, slurp, etc.)
     # are managed by Home Manager in home/programs/hyprland.nix
     environment.systemPackages = with pkgs; [
       # Notifications (system integration)
@@ -86,6 +86,9 @@ in
       # XDG utilities
       xdg-utils
       xdg-user-dirs
+
+      # terminal
+      ghostty
     ];
   };
 }

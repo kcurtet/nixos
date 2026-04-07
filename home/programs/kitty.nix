@@ -12,7 +12,7 @@
     };
     settings = {
       # Shell — launch as login shell so ~/.profile (HM session vars) is sourced
-      "shell" = "/bin/bash --login";
+      "shell" = "${pkgs.bash}/bin/bash --login";
 
       # Performance
       "repaint_delay" = 10;

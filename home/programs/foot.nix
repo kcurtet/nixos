@@ -27,7 +27,6 @@ in
         };
 
         colors-dark = {
-          alpha = "0.75";
           background = "2e3440";
           foreground = "d8dee9";
           regular0 = "3b4252";

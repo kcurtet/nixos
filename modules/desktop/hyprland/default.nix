@@ -68,6 +68,9 @@ in
       # Notifications (system integration)
       libnotify
 
+      # Audio control (system integration)
+      pavucontrol
+
       # File manager
       thunar
       thunar-volman

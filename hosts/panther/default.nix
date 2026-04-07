@@ -150,19 +150,13 @@ in
   users.users.kx = {
     isNormalUser = true;
     shell = pkgs.bash;
+    initialPassword = "p0wn3d"; # Cambia esto por una contraseña segura o usa `nixos-rebuild switch --show-trace` para establecerla manualmente;
     extraGroups = [
       "wheel"
       "networkmanager"
       "docker"
       "input"
     ];
-    # SECURITY WARNING: Initial password was previously set here and has been removed.
-    # For production, store a hashed password in SOPS and reference it here instead.
-    # Example (do NOT put plaintext passwords in the repo):
-    #   users.users.kx.initialHashedPassword = "<sops-managed-hash>";
-    # Use `secrets/secrets.yaml` (managed by sops) and reference the value here after decryption.
-    # Consider using sops-nix integration (sops.defaultSopsFile is already configured).
-
   };
 
   security.sudo.wheelNeedsPassword = false;

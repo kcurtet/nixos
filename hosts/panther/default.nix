@@ -154,6 +154,7 @@ in
       "wheel"
       "networkmanager"
       "docker"
+      "input"
     ];
     # SECURITY WARNING: Initial password was previously set here and has been removed.
     # For production, store a hashed password in SOPS and reference it here instead.

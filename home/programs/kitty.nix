@@ -55,9 +55,6 @@
 
       # Terminal
       "term" = "xterm-256color";
-
-      # Background opacity (for compositor)
-      "background_opacity" = "0.95";
     };
 
     keybindings = {

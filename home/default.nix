@@ -23,7 +23,6 @@
     minimum-release-age=1440
     block-exotic-subdeps=true
     trus-policy=no-downgrade
-    node-options=--permission
   '';
 
   # Emacs config (symlinked directly to repo, editable without rebuild)

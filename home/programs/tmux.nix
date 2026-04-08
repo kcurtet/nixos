@@ -130,7 +130,7 @@
 
       # Right: command + date + time + host
       set -g status-right-length 80
-      set -g status-right "#[fg=#4c566a]│#[fg=#a3be8c] #{pane_current_command} #[fg=#4c566a]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg:#4c566a]│#[fg=#81a1c1,bold] #H "
+      set -g status-right "#[fg=#4c566a]│#[fg=#a3be8c] #{pane_current_command} #[fg=#4c566a]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg=#4c566a]│#[fg=#81a1c1,bold] #H "
 
       # Pane borders: thin lines, frost accent on active
       set -g pane-border-lines single

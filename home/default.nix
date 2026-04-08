@@ -58,7 +58,6 @@
   # Hyprland-related programs
   programs.rofi-config.enable = true;
   programs.foot-config.enable = true;
-  services.dunst-config.enable = true;
   gtk-config.enable = true;
 
   # User settings (can be overridden per-host)

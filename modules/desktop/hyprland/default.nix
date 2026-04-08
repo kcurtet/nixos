@@ -61,9 +61,6 @@ in
 
     services.hyprwhspr-rs.enable = true;
 
-    # System packages for Hyprland ecosystem
-    # Note: User-specific packages (waybar, ghostty, rofi, dunst, grim, slurp, etc.)
-    # are managed by Home Manager in home/programs/hyprland.nix
     environment.systemPackages = with pkgs; [
       # Notifications (system integration)
       libnotify

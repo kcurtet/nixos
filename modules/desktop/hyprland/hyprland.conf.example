@@ -9,7 +9,6 @@
 
 # Execute on startup
 exec-once = waybar
-exec-once = dunst
 exec-once = nm-applet --indicator
 
 # Input device configuration

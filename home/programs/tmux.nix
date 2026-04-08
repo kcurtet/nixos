@@ -19,7 +19,23 @@
     newSession = true;
 
     plugins = with pkgs.tmuxPlugins; [
-      copy-toolkit
+      {
+        plugin = copy-toolkit;
+        extraConfig = ''
+          set -g @copy-toolkit-clipboard "wl-copy"
+        '';
+      }
+      {
+        plugin = tmuxPlugins.resurrect;
+        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+      }
+      {
+        plugin = tmuxPlugins.continuum;
+        extraConfig = ''
+          set -g @continuum-restore 'on'
+          set -g @continuum-save-interval '60' # minutes
+        '';
+      }
       session-wizard
       vim-tmux-navigator
     ];

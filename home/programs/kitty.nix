@@ -59,22 +59,22 @@
 
     keybindings = {
       # Splits
-      "ctrl+shift+enter" = "launch --location=vsplit --cwd=current";
-      "ctrl+shift+backslash" = "launch --location=hsplit --cwd=current";
+      # "ctrl+shift+enter" = "launch --location=vsplit --cwd=current";
+      # "ctrl+shift+backslash" = "launch --location=hsplit --cwd=current";
 
       # Navigation
-      "ctrl+alt+left" = "neighboring_window left";
-      "ctrl+alt+right" = "neighboring_window right";
-      "ctrl+alt+up" = "neighboring_window up";
-      "ctrl+alt+down" = "neighboring_window down";
+      # "ctrl+alt+left" = "neighboring_window left";
+      # "ctrl+alt+right" = "neighboring_window right";
+      # "ctrl+alt+up" = "neighboring_window up";
+      # "ctrl+alt+down" = "neighboring_window down";
 
       # Tabs
-      "ctrl+shift+t" = "new_tab";
-      "ctrl+shift+q" = "close_tab";
-      "ctrl+tab" = "next_tab";
-      "ctrl+shift+tab" = "previous_tab";
-      "ctrl+shift+." = "move_tab_forward";
-      "ctrl+shift+," = "move_tab_backward";
+      # "ctrl+shift+t" = "new_tab";
+      # "ctrl+shift+q" = "close_tab";
+      # "ctrl+tab" = "next_tab";
+      # "ctrl+shift+tab" = "previous_tab";
+      # "ctrl+shift+." = "move_tab_forward";
+      # "ctrl+shift+," = "move_tab_backward";
 
       # Font size
       "ctrl+shift+equal" = "change_font_size all +2.0";
@@ -85,8 +85,6 @@
       "ctrl+shift+c" = "copy_to_clipboard";
       "ctrl+shift+v" = "paste_from_clipboard";
       "ctrl+shift+s" = "paste_from_selection";
-      "ctrl+shift+f" =
-        "launch --type=overlay --stdin-source=@screen_scrollback fzf --no-sort --no-mouse --exact -i tac +s -m --ansi --tiebreak=begin --bind=shift-tab:up,tab:down --cycle q";
     };
   };
 }

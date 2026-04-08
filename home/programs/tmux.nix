@@ -37,19 +37,44 @@
 
       # ─── Sessiones ─────────────────
       bind 0 choose-session
-      bind N new-session -c "#{pane_current_path}"
 
-      # ─── Navegación entre paneles (vim hjkl) ─────────────────
-      bind h select-pane -L
-      bind j select-pane -D
-      bind k select-pane -U
-      bind l select-pane -R
 
-      # Alt + hjkl sin prefix
-      bind -n M-H select-pane -L
-      bind -n M-J select-pane -D
-      bind -n M-K select-pane -U
-      bind -n M-L select-pane -R
+      # ─── Navegación entre paneles (Ctrl + hjkl, sin prefix) ─────────
+      # vim-tmux-navigator handles Ctrl+hjkl automatically
+
+      # ─── Mover paneles (Ctrl+Shift + hjkl, sin prefix) ─────────────
+      bind -n C-H swap-pane -s '{left-of}'
+      bind -n C-J swap-pane -D
+      bind -n C-K swap-pane -U
+      bind -n C-L swap-pane -s '{right-of}'
+
+      # ─── Navegación entre ventanas (Ctrl + 1-9 / n/p, sin prefix) ──
+      bind -n C-1 select-window -t 1
+      bind -n C-2 select-window -t 2
+      bind -n C-3 select-window -t 3
+      bind -n C-4 select-window -t 4
+      bind -n C-5 select-window -t 5
+      bind -n C-6 select-window -t 6
+      bind -n C-7 select-window -t 7
+      bind -n C-8 select-window -t 8
+      bind -n C-9 select-window -t 9
+      bind -n -r C-n next-window
+      bind -n -r C-p previous-window
+
+      # ─── Modo resize (prefix + R → hjkl → Esc) ─────────────────────
+      bind R switch-client -T resize
+      bind -T resize h resize-pane -L 5
+      bind -T resize j resize-pane -D 5
+      bind -T resize k resize-pane -U 5
+      bind -T resize l resize-pane -R 5
+      bind -T resize H resize-pane -L 10
+      bind -T resize J resize-pane -D 10
+      bind -T resize K resize-pane -U 10
+      bind -T resize L resize-pane -R 10
+      bind -T resize Escape switch-client -T root
+      bind -T resize q switch-client -T root
+
+
 
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'
@@ -61,40 +86,11 @@
 
       bind c new-window -c "#{pane_current_path}"
 
-      # ─── Redimensionar paneles (HJKL) ────────────────────────
-      bind -r H resize-pane -L 5
-      bind -r J resize-pane -D 5
-      bind -r K resize-pane -U 5
-      bind -r L resize-pane -R 5
 
-      bind -n M-H resize-pane -L 2
-      bind -n M-J resize-pane -D 2
-      bind -n M-K resize-pane -U 2
-      bind -n M-L resize-pane -R 2
 
-      # ─── Mover paneles (HJKL) ────────────────────────────────
-      # Note: swap-pane -L/-R require tmux 3.4+, using format specifiers for compatibility
-      bind -n C-M-h swap-pane -s '{left-of}'
-      bind -n C-M-j swap-pane -D
-      bind -n C-M-k swap-pane -U
-      bind -n C-M-l swap-pane -s '{right-of}'
+'
 
-      # ─── Navegación entre ventanas ───────────────────────────
-      bind -r 1 select-window -t 1
-      bind -r 2 select-window -t 2
-      bind -r 3 select-window -t 3
-      bind -r 4 select-window -t 4
-      bind -r 5 select-window -t 5
-      bind -r 6 select-window -t 6
-      bind -r 7 select-window -t 7
-      bind -r 8 select-window -t 8
-      bind -r 9 select-window -t 9
 
-      bind -r '<' select-window -p
-      bind -r '>' select-window -n
-      bind -n -r M-p previous-window
-      bind -n -r M-n next-window
-      bind C-0 choose-window
 
 
       # ─── Gestión de paneles ──────────────────────────────────

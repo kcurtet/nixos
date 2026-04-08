@@ -6,7 +6,6 @@
   programs.tmux = {
     enable = true;
     shell = "${pkgs.bash}/bin/bash"; # Cambia a tu shell (bash, fish, etc.)
-    terminal = "tmux-256color";
     prefix = "M-a";
     mouse = true;
     baseIndex = 1;
@@ -31,6 +30,8 @@
       set -g extended-keys-format csi-u
       set-option -g allow-passthrough on
 
+      # Clipboard integration (tmux + wl-clipboard)
+      set-option -g set-clipboard on
 
       # ─── Recargar config ─────────────────────────────────────
       bind r source-file ~/.config/tmux/tmux.conf \; display "Config recargada"
@@ -42,45 +43,27 @@
       # ─── Navegación entre paneles (Ctrl + hjkl, sin prefix) ─────────
       # vim-tmux-navigator handles Ctrl+hjkl automatically
 
-      # ─── Mover paneles (Ctrl+Shift + hjkl, sin prefix) ─────────────
-      bind -n C-H swap-pane -s '{left-of}'
-      bind -n C-J swap-pane -D
-      bind -n C-K swap-pane -U
-      bind -n C-L swap-pane -s '{right-of}'
-
-      # ─── Navegación entre ventanas (Ctrl + 1-9 / n/p, sin prefix) ──
-      bind -n C-1 select-window -t 1
-      bind -n C-2 select-window -t 2
-      bind -n C-3 select-window -t 3
-      bind -n C-4 select-window -t 4
-      bind -n C-5 select-window -t 5
-      bind -n C-6 select-window -t 6
-      bind -n C-7 select-window -t 7
-      bind -n C-8 select-window -t 8
-      bind -n C-9 select-window -t 9
-      bind -n -r C-n next-window
-      bind -n -r C-p previous-window
+      bind -n -r M-n next-window
+      bind -n -r M-p previous-window
 
       # ─── Modo resize (prefix + R → hjkl → Esc) ─────────────────────
       bind R switch-client -T resize
-      bind -r -T resize h resize-pane -L 5
-      bind -r -T resize j resize-pane -D 5
-      bind -r -T resize k resize-pane -U 5
-      bind -r -T resize l resize-pane -R 5
-      bind -r -T resize H resize-pane -L 10
-      bind -r -T resize J resize-pane -D 10
-      bind -r -T resize K resize-pane -U 10
-      bind -r -T resize L resize-pane -R 10
-      bind -r -T resize Escape switch-client -T root
-      bind -r -T resize q switch-client -T root
+      bind -n -T resize h resize-pane -L 5
+      bind -n -T resize j resize-pane -D 5
+      bind -n -T resize k resize-pane -U 5
+      bind -n -T resize l resize-pane -R 5
+      bind -n -T resize H resize-pane -L 10
+      bind -n -T resize J resize-pane -D 10
+      bind -n -T resize K resize-pane -U 10
+      bind -n -T resize L resize-pane -R 10
+      bind -n -T resize Escape switch-client -T root
+      bind -n -T resize q switch-client -T root
 
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'
       unbind %
       bind v   split-window -h -c "#{pane_current_path}"
       bind s   split-window -v -c "#{pane_current_path}"
-      bind '\' split-window -h -c "#{pane_current_path}"
-      bind '-' split-window -v -c "#{pane_current_path}"
 
       bind c new-window -c "#{pane_current_path}"
 

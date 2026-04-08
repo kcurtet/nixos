@@ -37,7 +37,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "code";
-    TERMINAL = "wezterm";
+    TERMINAL = "kitty";
   };
 
   # Default terminal for GNOME / XDG

@@ -6,8 +6,6 @@
   programs.ghostty = {
     enable = true;
     enableBashIntegration = true;
-    clearDefaultKeybinds = true;
-
     settings = {
       language = "es";
       command = "${pkgs.bash}/bin/bash -l";

@@ -66,14 +66,14 @@
 
       # ─── Modo resize (prefix + R → hjkl → Esc) ─────────────────────
       bind R switch-client -T resize
-      bind -n -T resize h resize-pane -L 5
-      bind -n -T resize j resize-pane -D 5
-      bind -n -T resize k resize-pane -U 5
-      bind -n -T resize l resize-pane -R 5
-      bind -n -T resize H resize-pane -L 10
-      bind -n -T resize J resize-pane -D 10
-      bind -n -T resize K resize-pane -U 10
-      bind -n -T resize L resize-pane -R 10
+      bind -r -n -T resize h resize-pane -L 5
+      bind -r -n -T resize j resize-pane -D 5
+      bind -r -n -T resize k resize-pane -U 5
+      bind -r -n -T resize l resize-pane -R 5
+      bind -r -n -T resize H resize-pane -L 10
+      bind -r -n -T resize J resize-pane -D 10
+      bind -r -n -T resize K resize-pane -U 10
+      bind -r -n -T resize L resize-pane -R 10
       bind -n -T resize Escape switch-client -T root
       bind -n -T resize q switch-client -T root
 

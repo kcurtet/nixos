@@ -29,7 +29,7 @@ awk '
     if (dispatcher == "exec") {
         # Derive description from the command
         cmd = arg
-        if (cmd ~ /kitty/)          desc = "Open terminal"
+        if (cmd ~ /alacritty/)      desc = "Open terminal"
         else if (cmd ~ /rofi/)      desc = "App launcher"
         else if (cmd ~ /thunar/)    desc = "File manager"
         else if (cmd ~ /brave/)     desc = "Web browser"

@@ -60,10 +60,9 @@
     "format": "  {}",
     "max-length": 40,
     "rewrite": {
-      "(.*) — Mozilla Firefox": "󰈹  $1",
+      "(.*) - Mozilla Firefox": "󰈹  $1",
       "(.*) - Visual Studio Code": "󰅴  $1",
-      "(.*)foot(.*)": "󰒉  $1foot$2",
-      "(.*)kitty(.*)": "󰒉  kitty"
+      "(.*)foot(.*)": "󰒉  $1foot$2"
     },
     "separate-outputs": true
   },
@@ -152,7 +151,7 @@
     "format": "{}",
     "return-type": "json",
     "max-length": 35,
-    "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} — {{title}}\", \"tooltip\": \"{{playerName}}: {{artist}} — {{title}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F 2>/dev/null",
+    "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} - {{title}}\", \"tooltip\": \"{{playerName}}: {{artist}} - {{title}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F 2>/dev/null",
     "on-click": "playerctl play-pause",
     "on-scroll-up": "playerctl next",
     "on-scroll-down": "playerctl previous"

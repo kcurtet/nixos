@@ -9,7 +9,6 @@
 
     # Terminal emulators
     ghostty
-    kitty
 
     # Browsers
     brave

@@ -65,8 +65,6 @@
     # Browsers
     nyxt # Keyboard-driven Emacs/Vim-style browser
 
-    # Kitty themes
-    kitty-themes
 
     # Benchmarking and analysis
     hyperfine

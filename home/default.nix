@@ -37,14 +37,14 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "code -w";
-    TERMINAL = "kitty";
+    TERMINAL = "ghostty";
   };
 
   # Default terminal for GNOME / XDG
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "x-scheme-handler/terminal" = [ "org.wezfurlong.wezterm.desktop" ];
+      "x-scheme-handler/terminal" = [ "com.mitchellh.ghostty" ];
     };
   };
 

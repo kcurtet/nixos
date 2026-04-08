@@ -36,7 +36,7 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
-    VISUAL = "code";
+    VISUAL = "code -w";
     TERMINAL = "kitty";
   };
 

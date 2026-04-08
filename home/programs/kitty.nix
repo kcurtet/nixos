@@ -55,30 +55,18 @@
 
       # Terminal
       "term" = "xterm-256color";
+
+      # Disable default layouts (splits)
+      "enabled_layouts" = "horizontal,vertical,stack";
+
+      # Kill ALL default keybinds — start from zero
+      "clear_all_shortcuts" = "yes";
     };
 
     keybindings = {
-      # Splits
-      # "ctrl+shift+enter" = "launch --location=vsplit --cwd=current";
-      # "ctrl+shift+backslash" = "launch --location=hsplit --cwd=current";
-
-      # Navigation
-      # "ctrl+alt+left" = "neighboring_window left";
-      # "ctrl+alt+right" = "neighboring_window right";
-      # "ctrl+alt+up" = "neighboring_window up";
-      # "ctrl+alt+down" = "neighboring_window down";
-
-      # Tabs
-      # "ctrl+shift+t" = "new_tab";
-      # "ctrl+shift+q" = "close_tab";
-      # "ctrl+tab" = "next_tab";
-      # "ctrl+shift+tab" = "previous_tab";
-      # "ctrl+shift+." = "move_tab_forward";
-      # "ctrl+shift+," = "move_tab_backward";
-
       # Font size
-      "ctrl+shift+equal" = "change_font_size all +2.0";
-      "ctrl+shift+minus" = "change_font_size all -2.0";
+      "ctrl+equal" = "change_font_size all +2.0";
+      "ctrl+minus" = "change_font_size all -2.0";
       "ctrl+shift+backspace" = "change_font_size all 0";
 
       # Misc

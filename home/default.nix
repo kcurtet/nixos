@@ -19,10 +19,6 @@
   home.file.".npmrc".text = ''
     prefix=${config.home.homeDirectory}/.npm-global
     ignore-scripts=true
-    save-exact=true
-    minimum-release-age=1440
-    block-exotic-subdeps=true
-    trus-policy=no-downgrade
   '';
 
   # Emacs config (symlinked directly to repo, editable without rebuild)
@@ -40,7 +36,7 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
-    VISUAL = "foot -e nvim";
+    VISUAL = "code";
     TERMINAL = "foot";
   };
 

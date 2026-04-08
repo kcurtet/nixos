@@ -14,7 +14,7 @@
     "custom/separator",
     "tray",
     "custom/separator",
-    "custom/dunst",
+    "custom/swaync",
     "custom/separator",
     "pulseaudio",
     "custom/separator",
@@ -167,13 +167,24 @@
     "tooltip": true
   },
 
-  "custom/dunst": {
-    "format": "{}",
+  "custom/swaync": {
+    "tooltip": false,
+    "format": "{icon}{}",
+    "format-icons": {
+      "notification": "󰂚",
+      "none": "󰂜",
+      "dnd-notification": "󰂛",
+      "dnd-none": "󰂛",
+      "inhibited-notification": "󰂚",
+      "inhibited-none": "󰂜",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰂛"
+    },
     "return-type": "json",
-    "exec": "~/.config/hypr/scripts/dunst-waybar.sh",
-    "interval": 3,
-    "on-click": "dunstctl history-pop",
-    "on-click-right": "dunstctl close-all"
+    "exec": "swaync-client -sw",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
   },
 
   "custom/power": {

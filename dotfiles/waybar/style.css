@@ -250,28 +250,31 @@ tooltip label {
   color: #88c0d0;
 }
 
-/* ── Dunst Notifications ─────────────────── */
-#custom-dunst {
+/* ── SwayNC Notifications ────────────────── */
+#custom-swaync {
   padding: 0 10px;
   margin: 4px 0;
   border-radius: 10px;
   transition: all 0.2s ease;
-}
-
-#custom-dunst:hover {
-  background: alpha(#d8dee9, 0.08);
-}
-
-#custom-dunst.empty {
   color: #4c566a;
 }
 
-#custom-dunst.has-notifs {
+#custom-swaync:hover {
+  background: alpha(#d8dee9, 0.08);
+}
+
+#custom-swaync.notification {
   color: #ebcb8b;
 }
 
-#custom-dunst.paused {
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification {
   color: #d08770;
+}
+
+#custom-swaync.inhibited-none,
+#custom-swaync.inhibited-notification {
+  color: #ebcb8b;
 }
 
 /* ── Power Button ────────────────────────── */

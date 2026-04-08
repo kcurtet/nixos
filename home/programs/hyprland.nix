@@ -42,9 +42,6 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/hypridle.conf";
         };
 
-        ".config/hypr/scripts/dunst-waybar.sh" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/dunst-waybar.sh";
-        };
         ".config/hypr/scripts/keybinds.sh" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/keybinds.sh";
         };

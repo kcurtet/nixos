@@ -26,7 +26,11 @@ in
       echo "Uncommitted changes detected in $FLAKE_DIR:"
       git -C "$FLAKE_DIR" --no-pager status --short
       echo "Diff:"
-      git -C "$FLAKE_DIR" --no-pager diff --no-color || true
+      if command -v delta &>/dev/null; then
+        git -C "$FLAKE_DIR" --no-pager diff | delta --navigate
+      else
+        git -C "$FLAKE_DIR" --no-pager diff --no-color || true
+      fi
 
       # Allow non-interactive auto-commit via environment variable or --yes flag
       if [ "''${NIX_APPLY_AUTO:-}" = "1" ] || [ "''${1:-}" = "--yes" ]; then

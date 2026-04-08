@@ -1,0 +1,362 @@
+/* ============================================
+   Nord SwayNC — Frost & Aurora
+   Palette:
+     bg:       #2e3440  (Nord0)
+     bg-alt:   #3b4252  (Nord1)
+     bg-dark:  #434c5e  (Nord2)
+     border:   #4c566a  (Nord3)
+     fg:       #d8dee9  (Nord4)
+     fg-bright:#eceff4  (Nord6)
+     teal:     #8fbcbb  (Nord7)
+     cyan:     #88c0d0  (Nord8)
+     blue:     #81a1c1  (Nord9)
+     dark-blue:#5e81ac  (Nord10)
+     red:      #bf616a  (Nord11)
+     orange:   #d08770  (Nord12)
+     yellow:   #ebcb8b  (Nord13)
+     green:    #a3be8c  (Nord14)
+     purple:   #b48ead  (Nord15)
+   ============================================ */
+
+/* ── Global ──────────────────────────────── */
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Notification Row ────────────────────── */
+.notification-row {
+  outline: none;
+  margin: 4px 8px;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+  background: transparent;
+}
+
+/* ── Notification ────────────────────────── */
+.notification {
+  background: #2e3440;
+  border: 1px solid #4c566a;
+  border-radius: 12px;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.notification.low {
+  border-color: alpha(#4c566a, 0.6);
+}
+
+.notification.normal {
+  border-color: #4c566a;
+}
+
+.notification.critical {
+  border-color: #bf616a;
+  background: alpha(#bf616a, 0.08);
+}
+
+/* ── Notification Content ────────────────── */
+.notification-content {
+  padding: 12px 16px;
+  background: transparent;
+}
+
+/* ── Default Action (clickable body) ─────── */
+.notification-default-action {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #2e3440;
+  border: none;
+  color: #d8dee9;
+  transition: background 0.2s ease;
+}
+
+.notification-default-action:hover {
+  background: #3b4252;
+}
+
+/* ── Action Buttons ──────────────────────── */
+.notification-action {
+  padding: 8px 16px;
+  border-radius: 0 0 12px 12px;
+  background: #3b4252;
+  border: none;
+  border-top: 1px solid alpha(#4c566a, 0.4);
+  color: #d8dee9;
+  transition: background 0.2s ease;
+}
+
+.notification-action:hover {
+  background: #434c5e;
+}
+
+.notification-action:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.notification-action:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* ── Summary & Body Text ─────────────────── */
+.summary {
+  color: #eceff4;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.body {
+  color: #d8dee9;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+/* ── Time ────────────────────────────────── */
+.time {
+  color: #4c566a;
+  font-size: 12px;
+}
+
+/* ── Image ───────────────────────────────── */
+.image {
+  margin: 8px;
+  border-radius: 8px;
+}
+
+/* ── Inline Reply ────────────────────────── */
+.inline-reply {
+  background: #3b4252;
+  border: 1px solid #4c566a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 4px;
+  color: #d8dee9;
+}
+
+.inline-reply:disabled {
+  color: #4c566a;
+}
+
+/* ── Close Button ────────────────────────── */
+.close-button {
+  background: alpha(#bf616a, 0.2);
+  color: #bf616a;
+  border-radius: 50%;
+  padding: 4px;
+  margin: 8px;
+  min-width: 20px;
+  min-height: 20px;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: #bf616a;
+  color: #eceff4;
+}
+
+/* ── Control Center ──────────────────────── */
+.control-center {
+  background: alpha(#2e3440, 0.95);
+  border: 1px solid #4c566a;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Control Center List ─────────────────── */
+.control-center-list {
+  background: transparent;
+  padding: 0;
+}
+
+.control-center-list-placeholder {
+  color: #4c566a;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ── Clear All Button ────────────────────── */
+.control-center-clear-all {
+  background: alpha(#bf616a, 0.15);
+  color: #bf616a;
+  border: 1px solid alpha(#bf616a, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 4px 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.control-center-clear-all:hover {
+  background: alpha(#bf616a, 0.25);
+  border-color: #bf616a;
+}
+
+/* ── DND Toggle ──────────────────────────── */
+.control-center-dnd {
+  background: #3b4252;
+  border: 1px solid #4c566a;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.control-center-dnd:checked {
+  background: alpha(#d08770, 0.2);
+  border-color: #d08770;
+  color: #d08770;
+}
+
+/* ── Control Center Header ───────────────── */
+.control-center-header {
+  color: #eceff4;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+
+/* ── Title Widget ────────────────────────── */
+.widget-title {
+  padding: 8px 12px;
+  color: #eceff4;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.widget-title > button {
+  background: transparent;
+  color: #4c566a;
+  border-radius: 8px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.widget-title > button:hover {
+  background: alpha(#d8dee9, 0.08);
+  color: #d8dee9;
+}
+
+/* ── DND Widget ──────────────────────────── */
+.widget-dnd {
+  padding: 4px 12px;
+  color: #d8dee9;
+  font-size: 13px;
+}
+
+.widget-dnd > switch {
+  background: #3b4252;
+  border: 1px solid #4c566a;
+  border-radius: 20px;
+  min-height: 20px;
+  min-width: 40px;
+  transition: all 0.2s ease;
+}
+
+.widget-dnd > switch:checked {
+  background: alpha(#d08770, 0.3);
+  border-color: #d08770;
+}
+
+.widget-dnd > switch slider {
+  background: #d8dee9;
+  border-radius: 50%;
+  min-height: 16px;
+  min-width: 16px;
+  margin: 2px;
+}
+
+/* ── Notifications Widget ────────────────── */
+.widget-notifications {
+  margin: 4px;
+}
+
+.widget-notifications .notification-row {
+  margin: 2px 0;
+}
+
+/* ── Scrollbar ───────────────────────────── */
+.control-center-list > scrollbar {
+  background: transparent;
+}
+
+.control-center-list > scrollbar > range > trough > slider {
+  background: #4c566a;
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+/* ── Animations ──────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes urgencyCritical {
+  0% {
+    border-color: #bf616a;
+    box-shadow: 0 0 0 0 alpha(#bf616a, 0.4);
+  }
+  50% {
+    border-color: alpha(#bf616a, 0.6);
+    box-shadow: 0 0 12px 2px alpha(#bf616a, 0.2);
+  }
+  100% {
+    border-color: #bf616a;
+    box-shadow: 0 0 0 0 alpha(#bf616a, 0.4);
+  }
+}
+
+.notification.critical {
+  animation: urgencyCritical 2s ease-in-out infinite;
+}
+
+.notification-group {
+  margin: 2px 8px;
+}
+
+.notification-group-header {
+  color: #88c0d0;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.notification-group-buttons {
+  margin: 4px;
+}
+
+.notification-group-buttons > button {
+  background: #3b4252;
+  border: 1px solid #4c566a;
+  border-radius: 8px;
+  color: #d8dee9;
+  padding: 4px 12px;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+.notification-group-buttons > button:hover {
+  background: #434c5e;
+}

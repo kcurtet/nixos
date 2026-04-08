@@ -6,7 +6,7 @@
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
-    ./dunst.nix
+    ./swaync.nix
     ./foot.nix
     ./ghostty.nix
     ./git.nix

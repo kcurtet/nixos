@@ -26,7 +26,7 @@
       {
         plugin = copy-toolkit;
         extraConfig = ''
-          set -g @copy-toolkit-clipboard "wl-copy"
+          set -g @copytk-copy-command "wl-copy"
         '';
       }
       {

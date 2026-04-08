@@ -63,16 +63,16 @@
 
       # ─── Modo resize (prefix + R → hjkl → Esc) ─────────────────────
       bind R switch-client -T resize
-      bind -T resize h resize-pane -L 5
-      bind -T resize j resize-pane -D 5
-      bind -T resize k resize-pane -U 5
-      bind -T resize l resize-pane -R 5
-      bind -T resize H resize-pane -L 10
-      bind -T resize J resize-pane -D 10
-      bind -T resize K resize-pane -U 10
-      bind -T resize L resize-pane -R 10
-      bind -T resize Escape switch-client -T root
-      bind -T resize q switch-client -T root
+      bind -r -T resize h resize-pane -L 5
+      bind -r -T resize j resize-pane -D 5
+      bind -r -T resize k resize-pane -U 5
+      bind -r -T resize l resize-pane -R 5
+      bind -r -T resize H resize-pane -L 10
+      bind -r -T resize J resize-pane -D 10
+      bind -r -T resize K resize-pane -U 10
+      bind -r -T resize L resize-pane -R 10
+      bind -r -T resize Escape switch-client -T root
+      bind -r -T resize q switch-client -T root
 
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'

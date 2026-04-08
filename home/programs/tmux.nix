@@ -37,7 +37,7 @@
 
       # ─── Sessiones ─────────────────
       bind 0 choose-session
-
+      bind N new-session -c "#{pane_current_path}"
 
       # ─── Navegación entre paneles (Ctrl + hjkl, sin prefix) ─────────
       # vim-tmux-navigator handles Ctrl+hjkl automatically
@@ -74,8 +74,6 @@
       bind -T resize Escape switch-client -T root
       bind -T resize q switch-client -T root
 
-
-
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'
       unbind %
@@ -85,13 +83,6 @@
       bind '-' split-window -v -c "#{pane_current_path}"
 
       bind c new-window -c "#{pane_current_path}"
-
-
-
-'
-
-
-
 
       # ─── Gestión de paneles ──────────────────────────────────
       bind x   kill-pane
@@ -139,7 +130,7 @@
 
       # Right: command + date + time + host
       set -g status-right-length 80
-      set -g status-right "#[fg=#4c566a]│#[fg=#a3be8c] #{pane_current_command} #[fg=#4c566a]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg=#4c566a]│#[fg=#81a1c1,bold] #H "
+      set -g status-right "#[fg=#4c566a]│#[fg=#a3be8c] #{pane_current_command} #[fg=#4c566a]│#[fg=#ebcb8b] 󰥔 %H:%M #[fg:#4c566a]│#[fg=#81a1c1,bold] #H "
 
       # Pane borders: thin lines, frost accent on active
       set -g pane-border-lines single

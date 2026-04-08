@@ -21,6 +21,7 @@
     ./starship.nix
     ./television.nix
     ./tmux.nix
+    ./wezterm.nix
     ./yazi.nix
     ./zellij.nix
   ];

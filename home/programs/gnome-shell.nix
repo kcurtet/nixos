@@ -33,9 +33,9 @@
         color-scheme = "prefer-dark";
         gtk-theme = "Nordic";
       };
-      # Use ghostty as default terminal in GNOME
+      # Use wezterm as default terminal in GNOME
       "org/gnome/desktop/default-applications/terminal" = {
-        exec = "ghostty";
+        exec = "wezterm";
         exec-arg = "";
       };
     };

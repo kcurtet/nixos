@@ -37,14 +37,14 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "code";
-    TERMINAL = "foot";
+    TERMINAL = "wezterm";
   };
 
   # Default terminal for GNOME / XDG
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "x-scheme-handler/terminal" = [ "foot.desktop" ];
+      "x-scheme-handler/terminal" = [ "org.wezfurlong.wezterm.desktop" ];
     };
   };
 
@@ -54,6 +54,7 @@
   # Hyprland-related programs
   programs.rofi-config.enable = true;
   programs.foot-config.enable = true;
+  programs.wezterm-config.enable = true;
   gtk-config.enable = true;
 
   # User settings (can be overridden per-host)

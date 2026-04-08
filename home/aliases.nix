@@ -20,11 +20,13 @@ _:
 
     # Git shortcuts
     gs = "git status";
-    gc = "git commit";
+    gc = "git checkout";
+    gp = "git pull";
+    gl = "git log --oneline --graph --decorate";
+    gx = "git stash push -m wip";
+    gsh = "git push";
     gcm = "git commit -m";
     wip = "git commit -am wip";
-    gp = "git push";
-    gl = "git log --oneline --graph --decorate";
 
     # Television channels
     f = "tv files";

@@ -46,10 +46,10 @@
       bind l select-pane -R
 
       # Alt + hjkl sin prefix
-      # bind -n M-h select-pane -L
-      # bind -n M-j select-pane -D
-      # bind -n M-k select-pane -U
-      # bind -n M-l select-pane -R
+      bind -n M-H select-pane -L
+      bind -n M-J select-pane -D
+      bind -n M-K select-pane -U
+      bind -n M-L select-pane -R
 
       # ─── Splits (cómodos en QWERTY ES) ───────────────────────
       unbind '"'

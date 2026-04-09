@@ -42,12 +42,6 @@ in
     emacs-with-packages
     vscode-fhs
 
-    # AI assistants
-    opencode
-    claude-code
-    copilot-cli
-    crush
-
     # nix
     deadnix
     statix
@@ -64,6 +58,10 @@ in
     python3
     pylint
     black
+    uv
+    python3Packages.pdf2image
+    python3Packages.easyocr
+    easyocr
 
     # Lua development
     lua

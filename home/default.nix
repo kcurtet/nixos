@@ -40,11 +40,10 @@
     TERMINAL = "ghostty";
   };
 
-  # Default terminal for GNOME / XDG
-  xdg.mimeApps = {
+  xdg.terminal-exec = {
     enable = true;
-    defaultApplications = {
-      "x-scheme-handler/terminal" = [ "com.mitchellh.ghostty" ];
+    settings = {
+      default = [ "com.mitchellh.ghostty.desktop" ];
     };
   };
 

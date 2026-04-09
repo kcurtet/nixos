@@ -5,14 +5,15 @@
 {
   home.packages = with pkgs; [
     # XDG utilities
-    xdg-terminal-exec # Default terminal for .desktop files with Terminal=true
+    xdg-terminal-exec
+
+    # Markdown
     glow
-    delta
+    treemd
 
     # File managers and tree viewers
     eza
     tree
-    treemd
 
     # Archive tools
     p7zip
@@ -64,7 +65,6 @@
 
     # Browsers
     nyxt # Keyboard-driven Emacs/Vim-style browser
-
 
     # Benchmarking and analysis
     hyperfine

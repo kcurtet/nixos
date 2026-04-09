@@ -27,6 +27,7 @@
     lm_sensors
     lsof
     procs
+    socat
 
     # Terminal utilities
     fd

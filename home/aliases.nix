@@ -10,6 +10,7 @@ _: {
     o = "xdg-open";
     l = "eza -l --icons --group-directories-first";
     ll = "eza -la --icons --group-directories-first";
+    t = "tree -L2 --dirsfirst --gitignore -h";
     x = "kill $(tv procs)";
 
     # Git shortcuts
@@ -25,6 +26,7 @@ _: {
     # Television channels
     f = "tv files";
     s = "tv text";
+    h = "tv tldr";
     m = "tv man-pages";
     r = "tv trash";
     u = "tv systemd-units";

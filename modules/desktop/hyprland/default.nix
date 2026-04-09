@@ -10,19 +10,33 @@
 
 let
   cfg = config.desktop.hyprland-wayland;
-  monitor-script = pkgs.writeShellScriptBin "check-monitor" ''
+  monitor-script = pkgs.writeShellScriptBin "monitor-daemon" ''
     INTERNAL="eDP-1"
 
-    # Detecta si hay monitor externo conectado
-    EXTERNAL=$(hyprctl monitors | grep -E "HDMI|DP" | grep -v "$INTERNAL")
+    handle() {
+      # Cuenta monitores conectados (excluyendo el interno)
+      EXTERNAL_COUNT=$(hyprctl monitors -j | jq '[.[] | select(.name != "'$INTERNAL'")] | length')
 
-    if [ -n "$EXTERNAL" ]; then
-      # Hay monitor externo → desactiva laptop
-      hyprctl keyword monitor "$INTERNAL,disable"
-    else
-      # No hay externo → activa laptop
-      hyprctl keyword monitor "$INTERNAL,1920x1080@60,0x0,1"
-    fi
+      if [ "$EXTERNAL_COUNT" -gt 0 ]; then
+        hyprctl keyword monitor "$INTERNAL,disable"
+      else
+        hyprctl keyword monitor "$INTERNAL,preferred,auto,1"
+      fi
+    }
+
+    # Ejecutar una vez al inicio
+    handle
+
+    # Escuchar eventos de hyprland
+    SOCKET="/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+
+    socat - UNIX-CONNECT:$SOCKET | while read -r event; do
+      case "$event" in
+        monitoradded*|monitorremoved*)
+          handle
+          ;;
+      esac
+    done
   '';
 in
 {

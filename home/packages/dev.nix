@@ -57,14 +57,18 @@ in
     # Python development
     (python3.withPackages (
       p: with p; [
+        easyocr
         pillow
         pdf2image
-        easyocr
+        imagemagick
+
       ]
     ))
     pylint
     black
     uv
+
+    cudatoolkit
 
     # Lua development
     lua
@@ -74,6 +78,9 @@ in
     # Fennel development
     luaPackages.fennel
     fennel-ls
+
+    # debug
+    xxd
   ];
 
 }

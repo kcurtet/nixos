@@ -55,11 +55,13 @@ in
     eslint
 
     # Python development
-    (python3.withPackages [
-      pillow
-      pdf2image
-      easyocr
-    ])
+    (python3.withPackages (
+      p: with p; [
+        pillow
+        pdf2image
+        easyocr
+      ]
+    ))
 
     pylint
     black

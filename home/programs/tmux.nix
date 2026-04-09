@@ -6,7 +6,7 @@
   programs.tmux = {
     enable = true;
     shell = "${pkgs.bash}/bin/bash"; # Cambia a tu shell (bash, fish, etc.)
-    prefix = "M-a";
+    prefix = "C-a";
     mouse = true;
     baseIndex = 1;
     keyMode = "vi";
@@ -52,7 +52,7 @@
       set-option -g set-clipboard on
 
       # ─── Recargar config ─────────────────────────────────────
-      bind r source-file ~/.config/tmux/tmux.conf \; display "Config recargada"
+      bind r source-file ~/.config/tmux/tmux.conf
 
       # ─── Sessiones ─────────────────
       bind 0 choose-session

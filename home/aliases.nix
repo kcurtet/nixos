@@ -4,14 +4,12 @@ _: {
     # Herramientas básicas
     g = "lazygit";
     y = "yazi";
-    z = "zi";
     n = "nvim";
     k = "bat";
     o = "xdg-open";
     l = "eza -l --icons --group-directories-first";
     ll = "eza -la --icons --group-directories-first";
     t = "tree -L2 --dirsfirst --gitignore -h";
-    x = "kill $(tv procs)";
 
     # Git shortcuts
     gs = "git status";

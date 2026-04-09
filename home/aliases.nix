@@ -1,22 +1,16 @@
-# ============================================================================
-# Shell Aliases
-# ============================================================================
-_:
-
-{
+_: {
   home.shellAliases = {
-    # Editores
-    e = "nvim";
-    v = "nvim";
 
     # Herramientas básicas
+    g = "lazygit";
+    y = "yazi";
+    z = "zi";
+    n = "nvim";
     k = "bat";
     o = "xdg-open";
     l = "eza -l --icons --group-directories-first";
     ll = "eza -la --icons --group-directories-first";
-    g = "lazygit";
-    y = "yazi";
-    z = "zi"; # zoxide interactive
+    x = "kill $(tv procs)";
 
     # Git shortcuts
     gs = "git status";
@@ -31,20 +25,12 @@ _:
     # Television channels
     f = "tv files";
     s = "tv text";
-    r = "tv trash";
-    p = "tv procs";
     m = "tv man-pages";
+    r = "tv trash";
     u = "tv systemd-units";
-    n = "tv env";
     G = "tv git-log";
     D = "tv docker-containers";
 
-    # pi-coding-agent shortcuts
-    haiku = "pi -p haiku --model";
-    sonnet = "pi -p sonnet --model";
-    opus = "pi -p claude-opus-4.6 --model";
-    gpt = "pi -p gpt-5.4 --model";
-    gpt-mini = "pi -p gpt-5.4-mini --model";
-    grok = "pi -p --model grok-code-fast-1";
+    p = "pi -p";
   };
 }

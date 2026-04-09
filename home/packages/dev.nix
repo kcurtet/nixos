@@ -62,11 +62,9 @@ in
         easyocr
       ]
     ))
-
     pylint
     black
     uv
-    easyocr
 
     # Lua development
     lua

@@ -36,6 +36,7 @@
     tldr
     trash-cli
     wl-clipboard
+    fzf
 
     # Network tools
     doggo

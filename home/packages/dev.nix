@@ -55,7 +55,7 @@ in
     eslint
 
     # Python development
-    (python3.withPackages with python3Packages; [
+    (python3.withPackages [
       pillow
       pdf2image
       easyocr

@@ -64,6 +64,11 @@
       bind -n -r M-n next-window
       bind -n -r M-p previous-window
 
+      bind h select-pane -U 
+      bind j select-pane -D 
+      bind k select-pane -R 
+      bind l select-pane -L 
+
       # ─── Modo resize (prefix + R → hjkl → Esc) ─────────────────────
       bind R switch-client -T resize
       bind -r -n -T resize h resize-pane -L 5

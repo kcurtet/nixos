@@ -50,6 +50,12 @@
       initExtra = ''
         # PATH managed by home.sessionPath
 
+        # Desvincular C-l de clear-screen dentro de tmux
+        # para que tmux lo capture y navegue paneles
+        if [ -n "$TMUX" ]; then
+          bind -r '\C-l'
+        fi
+
         # SOPS Secrets Environment Variables
         if [ -f /run/secrets/zai_api_key ]; then
           export ZAI_API_KEY="$(cat /run/secrets/zai_api_key)"

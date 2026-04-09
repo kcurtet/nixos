@@ -109,7 +109,9 @@
       bind b choose-buffer
 
       # ─── Unbind keys ──────────────────────────────────────────
-      unbind -n C-l
+      # C-l sin prefix → navegar al panel derecho
+      # C-a C-l → clear screen (preservado)
+      bind C-l send-keys 'C-l'
 
       # ─── Barra de estado (Nord + transparencia) ───────────────
       set -g status-position top

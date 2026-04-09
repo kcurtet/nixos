@@ -10,6 +10,20 @@
 
 let
   cfg = config.desktop.hyprland-wayland;
+  monitor-script = pkgs.writeShellScriptBin "check-monitor" ''
+    INTERNAL="eDP-1"
+
+    # Detecta si hay monitor externo conectado
+    EXTERNAL=$(hyprctl monitors | grep -E "HDMI|DP" | grep -v "$INTERNAL")
+
+    if [ -n "$EXTERNAL" ]; then
+      # Hay monitor externo → desactiva laptop
+      hyprctl keyword monitor "$INTERNAL,disable"
+    else
+      # No hay externo → activa laptop
+      hyprctl keyword monitor "$INTERNAL,1920x1080@60,0x0,1"
+    fi
+  '';
 in
 {
   options.desktop.hyprland-wayland = {
@@ -18,12 +32,12 @@ in
     xkb = {
       layout = lib.mkOption {
         type = lib.types.str;
-        default = "us";
+        default = "es";
         description = "Keyboard layout";
       };
       variant = lib.mkOption {
         type = lib.types.str;
-        default = "";
+        default = "cat";
         description = "Keyboard variant";
       };
     };
@@ -62,6 +76,8 @@ in
     services.hyprwhspr-rs.enable = true;
 
     environment.systemPackages = with pkgs; [
+      monitor-script
+
       # Notifications (system integration)
       libnotify
 

@@ -61,6 +61,7 @@ in
         pillow
         pdf2image
         imagemagick
+        pytesseract
 
       ]
     ))

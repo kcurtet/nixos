@@ -33,54 +33,6 @@
         ssh "$host"
       fi
     '')
-    (pkgs.writeShellScriptBin "cheat" ''
-      ${pkgs.gum}/bin/gum style \
-        --border rounded --border-foreground 4 --padding "0 2" \
-        --bold "⌨  Cheat Sheet"
-
-      printf "\n"
-      ${pkgs.gum}/bin/gum style --foreground 4 --bold "  Editores & Herramientas"
-      cat <<'EOF'
-        e / v   nvim                    k       bat
-        o       xdg-open                l       eza -la --icons
-        g       lazygit                 y       yazi
-        z       zoxide (cd rápido)
-      EOF
-
-      printf "\n"
-      ${pkgs.gum}/bin/gum style --foreground 5 --bold "  Television (fuzzy finder)"
-      cat <<'EOF'
-        f       archivos                s       buscar texto
-        h       historial               d       cd a directorio
-        w       cd a worktree           b       checkout branch
-        m       man pages               p       procesos
-        r       trash                   u       systemd units
-        n       variables de entorno    S       ssh a host
-        G       git log                 D       docker containers
-        E       nvim + picker
-      EOF
-
-      printf "\n"
-      ${pkgs.gum}/bin/gum style --foreground 3 --bold "  Clipboard & Archivos"
-      cat <<'EOF'
-        clip [archivo]   copiar al clipboard (sin arg → tv picker)
-      EOF
-
-      printf "\n"
-      ${pkgs.gum}/bin/gum style --foreground 2 --bold "  Git"
-      cat <<'EOF'
-        gs      git status              gc      git commit
-        gcm     git commit -m           gp      git push
-        gl      git log --oneline       wip     git commit -am wip
-      EOF
-
-      printf "\n"
-      ${pkgs.gum}/bin/gum style --foreground 6 --bold "  Pi Agent"
-      cat <<'EOF'
-        haiku     sonnet     opus     gpt     gpt-mini     grok
-      EOF
-      printf "\n"
-    '')
   ];
 
   programs = {
@@ -111,13 +63,6 @@
         fi
 
         if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
-
-        # tv: cd a directorio
-        d() { local dir; dir=$(tv dirs) && [ -n "$dir" ] && cd "$dir"; }
-        # tv: cd a worktree
-        w() { local dir; dir=$(tv git-worktrees) && [ -n "$dir" ] && cd "$dir"; }
-        # tv: historial
-        h() { tv bash-history; }
       '';
     };
 
@@ -138,21 +83,6 @@
         if command -v wt >/dev/null 2>&1
           eval (wt config shell init fish)
         end
-
-        # Notificar si un comando tardó más de 30s
-        function __notify_long_command --on-event fish_postexec
-          set -l duration (math $CMD_DURATION / 1000)
-          if test $duration -gt 30
-            notify-desktop "Terminal" "Comando terminado en {$duration}s: $argv" 2>/dev/null
-          end
-        end
-
-        # tv: cd a directorio
-        function d; set dir (tv dirs); test -n "$dir" && cd $dir; end
-        # tv: cd a worktree
-        function w; set dir (tv git-worktrees); test -n "$dir" && cd $dir; end
-        # tv: historial
-        function h; tv fish-history; end
       '';
     };
 
@@ -176,13 +106,6 @@
 
         # WT Integration
         if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
-
-        # tv: cd a directorio
-        d() { local dir; dir=$(tv dirs) && [ -n "$dir" ] && cd "$dir"; }
-        # tv: cd a worktree
-        w() { local dir; dir=$(tv git-worktrees) && [ -n "$dir" ] && cd "$dir"; }
-        # tv: historial
-        h() { tv zsh-history; }
       '';
     };
   };

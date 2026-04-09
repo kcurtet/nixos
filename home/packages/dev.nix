@@ -55,12 +55,15 @@ in
     eslint
 
     # Python development
-    python3
+    (python3.withPackages with python3Packages; [
+      pillow
+      pdf2image
+      easyocr
+    ])
+
     pylint
     black
     uv
-    python3Packages.pdf2image
-    python3Packages.easyocr
     easyocr
 
     # Lua development

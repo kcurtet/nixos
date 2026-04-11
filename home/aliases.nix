@@ -32,5 +32,6 @@ _: {
     D = "tv docker-containers";
 
     p = "pi -p";
+    pi = "VISUAL=\$EDITOR pi";
   };
 }

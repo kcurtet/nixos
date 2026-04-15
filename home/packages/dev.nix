@@ -50,6 +50,7 @@ in
     nodejs
     pnpm
     bun
+    tsx
     typescript-language-server
     prettier
     eslint

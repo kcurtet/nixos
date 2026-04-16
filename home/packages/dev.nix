@@ -78,6 +78,7 @@ in
     rust-analyzer
     bacon
     clippy
+    stdenv
 
     # Lua development
     lua

@@ -32,6 +32,7 @@
     "$HOME/.local/bin"
     "$HOME/.bun/bin"
     "$HOME/.npm-global/bin"
+    "$HOME/.cargo/bin"
   ];
 
   home.sessionVariables = {

@@ -72,6 +72,12 @@ in
 
     cudatoolkit
 
+    cargo
+    rustc
+    rust-analyzer
+    bacon
+    clippy
+
     # Lua development
     lua
     stylua

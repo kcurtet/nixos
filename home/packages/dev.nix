@@ -71,6 +71,7 @@ in
     uv
 
     cudatoolkit
+    openssl
 
     cargo
     rustc

@@ -51,6 +51,9 @@
   # Hyprland user configuration
   programs.hyprland-config.enable = true;
 
+  # Notifications
+  services.swaync-config.enable = true;
+
   # Hyprland-related programs
   programs.rofi-config.enable = true;
   programs.foot-config.enable = true;

@@ -4,6 +4,8 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    imagemagick
+
     # XDG utilities
     xdg-terminal-exec
 

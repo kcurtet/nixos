@@ -58,6 +58,7 @@ in
     environment.systemPackages =
       with pkgs;
       [
+        aseprite
         mangohud
         chess-tui
         chessdb

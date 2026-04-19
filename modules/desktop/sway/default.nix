@@ -36,7 +36,7 @@ in
       extraSessionCommands = ''
         export XDG_CURRENT_DESKTOP=sway
         export XDG_SESSION_TYPE=wayland
-        export QT_QPA_PLATFORM=wayland;xcb
+        export QT_QPA_PLATFORM="wayland;xcb"
         export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
         export SDL_VIDEODRIVER=wayland
         export CLUTTER_BACKEND=wayland

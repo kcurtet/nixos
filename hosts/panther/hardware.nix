@@ -13,6 +13,8 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
+  boot.kernelPackages = pkgs.linuxPackages_zen; # Kernel gaming-optimizado
+
   boot.initrd.availableKernelModules = [
     "xhci_pci"
     "ahci"
@@ -29,6 +31,8 @@
     "log-level=3"
     "quiet"
     "splash"
+    "mitigations=off"
+    "nowatchdog"
   ];
 
   fileSystems."/" = {
@@ -61,8 +65,18 @@
     { device = "/dev/disk/by-uuid/90a16834-fa20-4d5a-8469-106d97667b6f"; }
   ];
 
-  zramSwap.enable = true;
-  zramSwap.memoryPercent = 50; # Hasta 8 GB comprimidos si es necesario
+  # Reducir latencia de memoria
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+    "vm.vfs_cache_pressure" = 50;
+    "kernel.sched_autogroup_enabled" = 0;
+  };
+
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  }; # Hasta 8 GB comprimidos si es necesario
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

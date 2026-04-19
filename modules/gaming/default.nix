@@ -48,7 +48,25 @@ in
 
   config = lib.mkIf cfg.enable {
     programs.steam.enable = cfg.steam;
-    programs.gamemode.enable = cfg.gamemode;
+    programs.gamemode = {
+      enable = cfg.gamemode;
+      settings = {
+        general = {
+          renice = 10;
+        };
+        cpu = {
+          park_cores = "no";
+          pin_cores = "yes";
+        };
+        gpu = {
+          apply_gpu_optimisations = "accept-responsibility";
+          gpu_device = 0;
+        };
+      };
+    };
+
+    # mangohud - package installed below, no programs.mangohud option in this version
+    # programs.mangohud.enable = true;
 
     programs.gamescope = lib.mkIf cfg.gamescope {
       enable = true;
@@ -62,9 +80,11 @@ in
         mangohud
         chess-tui
         chessdb
+        protonup-qt # Gestor de versiones de Proton
+        protontricks # Instalar dependencias Windows en juegos Steam
       ]
       ++ lib.optional cfg.steam lutris
-      ++ lib.optional cfg.wine wineWow64Packages.waylandFull
+      ++ lib.optional cfg.wine wine64Packages.waylandFull
       ++ lib.optional cfg.wine winetricks
       ++ lib.optional (cfg.steam && cfg.gamemode) (
         writeShellScriptBin "game-run" ''

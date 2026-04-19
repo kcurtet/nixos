@@ -60,6 +60,13 @@ in
       enable32Bit = true;
     };
 
+    # Intel integrada
+    hardware.graphics.extraPackages = with pkgs; [
+      intel-media-driver
+      intel-vaapi-driver
+      libvdpau-va-gl
+    ];
+
     hardware.nvidia = {
       modesetting.enable = true;
       powerManagement.enable = cfg.powerManagement;

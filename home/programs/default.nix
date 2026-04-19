@@ -19,6 +19,7 @@
     ./shells.nix
     ./ssh.nix
     ./starship.nix
+    ./sway.nix
     ./television.nix
     ./tmux.nix
     ./wezterm.nix

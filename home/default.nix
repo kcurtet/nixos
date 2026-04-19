@@ -60,6 +60,9 @@
   programs.wezterm-config.enable = true;
   gtk-config.enable = true;
 
+  # Sway user configuration
+  programs.sway-config.enable = true;
+
   # User settings (can be overridden per-host)
   programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";

@@ -1,0 +1,213 @@
+# ============================================================================
+# Sway Configuration — Nord Theme
+# ============================================================================
+
+# ── Variables ──
+set $mod Mod4
+set $term ghostty
+set $menu rofi -show drun -show-icons -theme ~/.config/rofi/nord.rasi
+set $lock swaylock -f -c 2e3440
+set $wallpaper ~/.config/wallpaper.jpg
+
+# Nord colors
+set $nord0 #2e3440
+set $nord1 #3b4252
+set $nord2 #434c5e
+set $nord3 #4c566a
+set $nord4 #d8dee9
+set $nord5 #e5e9f0
+set $nord6 #eceff4
+set $nord7 #8fbcbb
+set $nord8 #88c0d0
+set $nord9 #81a1c1
+set $nord10 #5e81ac
+set $nord11 #bf616a
+set $nord12 #d08770
+set $nord13 #ebcb8b
+set $nord14 #a3be8c
+set $nord15 #b48ead
+
+# ── Output ──
+output eDP-1 resolution 1920x1080 position 0 0
+
+# ── Wallpaper ──
+exec swaybg -i $wallpaper -m fill
+
+# ── Autostart ──
+exec waybar -c ~/.config/waybar/config-sway.json
+exec swaync
+exec nm-applet --indicator
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
+
+# ── Input ──
+input type:keyboard {
+    xkb_layout es
+    xkb_variant cat
+}
+
+input type:touchpad {
+    natural_scroll enabled
+    tap enabled
+    dwt enabled
+}
+
+# ── Font ──
+font pango:JetBrainsMono Nerd Font 10
+
+# ============================================================================
+# Keybindings
+# ============================================================================
+
+# ── Apps ──
+bindsym $mod+Return exec $term -e tmux
+bindsym $mod+Shift+Return exec $term
+bindsym $mod+d exec $menu
+bindsym $mod+e exec $term -e yazi
+bindsym $mod+Shift+e exec thunar
+bindsym $mod+b exec brave
+bindsym $mod+Shift+b exec nyxt
+bindsym $mod+n exec $term -e nvim
+bindsym $mod+Shift+n exec emacs
+
+# ── Window management ──
+bindsym $mod+q kill
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+f fullscreen disable
+bindsym $mod+space floating toggle
+bindsym $mod+t layout toggle split tabbed
+
+# ── Screen lock ──
+bindsym $mod+Escape exec $lock
+
+# ── Focus (hjkl / arrows) ──
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# ── Move window ──
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# ── Resize mode ($mod+r) ──
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 20px
+    bindsym l resize grow width 20px
+    bindsym k resize shrink height 20px
+    bindsym j resize grow height 20px
+    bindsym Left resize shrink width 20px
+    bindsym Right resize grow width 20px
+    bindsym Up resize shrink height 20px
+    bindsym Down resize grow height 20px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# ── Workspaces ──
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+# ── Move to workspace ──
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+# ── Workspace navigation ──
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+
+# ── Scratchpad ──
+bindsym $mod+s scratchpad show
+bindsym $mod+Shift+s move scratchpad
+
+# ── Layout ──
+bindsym $mod+backslash split h
+bindsym $mod+minus split v
+
+# ── Screenshots ──
+bindsym $mod+p exec f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png && grim "$f" && wl-copy < "$f"
+bindsym $mod+Shift+p exec f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png && grim -g "$(slurp)" "$f" && wl-copy < "$f"
+bindsym Print exec grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
+
+# ── Clipboard ──
+bindsym $mod+v exec cliphist list | rofi -dmenu -theme ~/.config/rofi/nord.rasi | cliphist decode | wl-copy
+
+# ── Reload config ──
+bindsym $mod+Shift+c reload
+
+# ── Exit ──
+bindsym $mod+Shift+e exec wlogout
+
+# ── Media keys ──
+bindsym XF86AudioRaiseVolume exec pamixer --increase 5
+bindsym XF86AudioLowerVolume exec pamixer --decrease 5
+bindsym XF86AudioMute exec pamixer --toggle
+bindsym XF86AudioMicMute exec pamixer --default-source --toggle
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+# ============================================================================
+# Appearance — Nord Theme
+# ============================================================================
+
+# Window borders
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+
+# Gaps
+gaps inner 5
+gaps outer 10
+smart_gaps on
+
+# Colors                border    background text      indicator child_border
+client.focused          $nord9    $nord1    $nord6    $nord8    $nord9
+client.focused_inactive $nord3    $nord0    $nord4    $nord3    $nord3
+client.unfocused        $nord3    $nord0    $nord4    $nord3    $nord3
+client.urgent           $nord11   $nord11   $nord6    $nord11   $nord11
+
+# ============================================================================
+# Window Rules
+# ============================================================================
+
+for_window [app_id="pavucontrol"] floating enable, resize set 800 600
+for_window [app_id="nm-connection-editor"] floating enable
+for_window [app_id="blueman-manager"] floating enable
+for_window [app_id="org.gnome.Calculator"] floating enable
+for_window [title="Picture-in-Picture"] floating enable, sticky enable
+for_window [app_id="xdg-desktop-portal-gtk"] floating enable
+
+# ============================================================================
+# Bar — Handled by waybar
+# ============================================================================
+bar swaybar_command waybar

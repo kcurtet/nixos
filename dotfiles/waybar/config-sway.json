@@ -1,0 +1,195 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 38,
+  "spacing": 0,
+  "margin-top": 6,
+  "margin-left": 10,
+  "margin-right": 10,
+
+  "modules-left": ["custom/logo", "sway/workspaces", "sway/window"],
+  "modules-center": ["clock", "custom/spacer", "custom/calendar"],
+  "modules-right": [
+    "custom/media",
+    "custom/separator",
+    "tray",
+    "custom/separator",
+    "custom/swaync",
+    "custom/separator",
+    "pulseaudio",
+    "custom/separator",
+    "network",
+    "custom/separator",
+    "backlight",
+    "custom/separator",
+    "battery",
+    "custom/separator",
+    "custom/power"
+  ],
+
+  "custom/logo": {
+    "format": "󰜗 ",
+    "tooltip": true,
+    "tooltip-format": "App Launcher",
+    "on-click": "rofi -show drun -show-icons -theme ~/.config/rofi/nord.rasi"
+  },
+
+  "sway/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "1": "󰒉 term",
+      "2": "󰅴 code",
+      "3": "󰈹 web",
+      "4": "󰉋 files",
+      "5": "󰫂 misc",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+
+  "sway/window": {
+    "format": "  {}",
+    "max-length": 40,
+    "rewrite": {
+      "(.*) - Mozilla Firefox": "󰈹  $1",
+      "(.*) - Visual Studio Code": "󰅴  $1",
+      "(.*)foot(.*)": "󰒉  $1foot$2"
+    }
+  },
+
+  "clock": {
+    "format": "󰥔  {:%H:%M}",
+    "format-alt": "󰃭  {:%A, %d %B %Y  󰥔 %H:%M:%S}",
+    "interval": 1,
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#88C0D0'><b>{}</b></span>",
+        "days": "<span color='#D8DEE9'>{}</span>",
+        "weeks": "<span color='#8FBCBB'>W{}</span>",
+        "weekdays": "<span color='#EBCB8B'>{}</span>",
+        "today": "<span color='#BF616A'><b><u>{}</u></b></span>"
+      }
+    }
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "custom/separator": {
+    "format": "│",
+    "tooltip": false
+  },
+
+  "custom/spacer": {
+    "format": " ",
+    "tooltip": false
+  },
+
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-bluetooth": "󰂯  {volume}%",
+    "format-muted": "󰖁  muted",
+    "format-icons": {
+      "headphone": "󰟎",
+      "hands-free": "󰟎",
+      "headset": "󰟎",
+      "phone": "󰏲",
+      "portable": "󰏲",
+      "car": "󰄋",
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "pavucontrol"
+  },
+
+  "network": {
+    "format-wifi": "󰖩  {signalStrength}%",
+    "format-ethernet": "󰈀  {ifname}",
+    "format-disconnected": "󰖪  offline",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}/{cidr}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}/{cidr}",
+    "on-click": "nm-connection-editor"
+  },
+
+  "backlight": {
+    "format": "󰂢  {percent}%",
+    "scroll-step": 5
+  },
+
+  "battery": {
+    "states": {
+      "good": 80,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon}  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "tooltip-format": "{timeTo}\n{power:.1f}W"
+  },
+
+  "custom/media": {
+    "format": "{}",
+    "return-type": "json",
+    "max-length": 35,
+    "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} - {{title}}\", \"tooltip\": \"{{playerName}}: {{artist}} - {{title}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F 2>/dev/null",
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
+  },
+
+  "custom/calendar": {
+    "format": "{}",
+    "return-type": "json",
+    "exec": "/home/kx/.config/hypr/scripts/gcal-waybar.sh",
+    "interval": 3600,
+    "on-click": "foot -e sh -c 'gws calendar +agenda --week --format table; read -p \"\"'",
+    "tooltip": true
+  },
+
+  "custom/swaync": {
+    "tooltip": false,
+    "format": "{icon}{}",
+    "format-icons": {
+      "notification": "󰂚",
+      "none": "󰂜",
+      "dnd-notification": "󰂛",
+      "dnd-none": "󰂛",
+      "inhibited-notification": "󰂚",
+      "inhibited-none": "󰂜",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰂛"
+    },
+    "return-type": "json",
+    "exec": "swaync-client -sw",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+
+  "custom/power": {
+    "format": "󰐥 ",
+    "tooltip": true,
+    "tooltip-format": "Power Menu",
+    "on-click": "wlogout"
+  }
+}

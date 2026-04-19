@@ -146,7 +146,6 @@ in
       ids = [ "*" ];
       settings.main = {
         capslock = "overload(control, esc)";
-        esc = "capslock";
       };
     };
   };

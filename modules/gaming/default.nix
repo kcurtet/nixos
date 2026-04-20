@@ -65,7 +65,7 @@ in
           ];
       };
       gamescopeSession = {
-        enable = false;
+        enable = true;
         env = {
           WLR_RENDERER = "vulkan";
           DXVK_HDR = "1";

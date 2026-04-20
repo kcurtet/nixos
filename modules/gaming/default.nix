@@ -47,7 +47,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.steam.enable = cfg.steam;
+    programs.steam = {
+      enable = cfg.steam;
+      gamescopeSession.enable = true;
+    };
     programs.gamemode = {
       enable = cfg.gamemode;
       settings = {

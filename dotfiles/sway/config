@@ -29,6 +29,7 @@ set $nord15 #b48ead
 
 # ── Output ──
 output eDP-1 resolution 1920x1080 position 0 0
+output HDMI-A-2 resolution 1920x1080 position 1920 0
 
 # ── Wallpaper ──
 exec swaybg -i $wallpaper -m fill

@@ -54,24 +54,10 @@ in
         ".local/bin/alarm" = {
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/alarm.sh";
         };
-        ".config/hypr/scripts/gcal-waybar.sh" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/gcal-waybar.sh";
-        };
-        ".config/hypr/waybar.conf" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/waybar.conf";
-        };
-        ".config/rofi/nord.rasi" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
-        };
-        ".config/wallpaper.jpg" = {
+        # Wallpaper
           source = ../../dotfiles/wallpapers/merry-hd.jpg;
         };
-        ".config/waybar/config" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config.json";
-        };
-        ".config/waybar/style.css" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/style.css";
-        };
+    programs.hyprlock
       };
       packages = with pkgs; [
         # Screenshots
@@ -116,9 +102,6 @@ in
         size = 24;
       };
     };
-
-    # Waybar — config managed via dotfiles (waybar/config.json + style.css)
-    programs.waybar.enable = true;
 
     # Hyprlock screen locker
     programs.hyprlock = {

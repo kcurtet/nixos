@@ -54,6 +54,9 @@
   # Foot terminal
   programs.foot-config.enable = true;
 
+  # Rofi launcher
+  programs.rofi-config.enable = true;
+
   # User settings (can be overridden per-host)
   programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";

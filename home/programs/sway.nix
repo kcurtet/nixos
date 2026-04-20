@@ -26,11 +26,6 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/sway/config";
         };
 
-        # Waybar config for Sway (separate from Hyprland's)
-        ".config/waybar/config-sway.json" = {
-          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/waybar/config-sway.json";
-        };
-
         # Wallpaper
         ".config/wallpaper.jpg" = {
           source = ../../dotfiles/wallpapers/merry-hd.jpg;
@@ -81,9 +76,6 @@ in
         size = 24;
       };
     };
-
-    # Waybar — config managed via dotfiles
-    programs.waybar.enable = true;
 
     # Ensure screenshot directory exists
     xdg.userDirs.extraConfig = {

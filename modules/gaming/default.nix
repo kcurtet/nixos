@@ -59,7 +59,7 @@ in
             libpng
             libpulseaudio
             libvorbis
-            xorg.libxcb
+            libxcb
             stdenv.cc.cc.lib
             libkrb5
             keyutils

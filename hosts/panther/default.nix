@@ -24,6 +24,7 @@ in
     ../../modules/gaming
     ../../modules/virtualization
     ../../modules/desktop/sway
+    ../../modules/desktop/kde
     ../../modules/services
     ../../modules/laptop
   ];
@@ -107,16 +108,17 @@ in
   };
 
   # ============================================================================
-  # Desktop Environment - Sway
+  # Desktop Environment - Sway + KDE
   # ============================================================================
   desktop.sway.enable = true;
+  desktop.kde.enable = true;
 
-  # GDM display manager
-  services.xserver.enable = true;
-  services.displayManager.gdm = {
+  # SDDM display manager
+  services.displayManager.sddm = {
     enable = true;
-    wayland = true;
+    wayland.enable = true;
   };
+  services.xserver.enable = true;
   services.xserver.xkb.layout = "es";
   services.xserver.xkb.variant = "cat";
   services.gnome.gnome-keyring.enable = true;

@@ -52,10 +52,10 @@ in
       package = pkgs.steam.override {
         extraLibraries =
           p: with p; [
-            xorg.libXcursor
-            xorg.libXi
-            xorg.libXinerama
-            xorg.libXScrnSaver
+            libxcursor
+            libxi
+            libxinerama
+            libxscrnsaver
             libpng
             libpulseaudio
             libvorbis
@@ -76,6 +76,7 @@ in
           "--expose-wayland"
           "-e"
           "--steam"
+          "--force-composition"
           "--adaptive-sync"
           "--hdr-enabled"
         ];

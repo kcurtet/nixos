@@ -34,7 +34,8 @@ output eDP-1 resolution 1920x1080 position 0 0
 exec swaybg -i $wallpaper -m fill
 
 # ── Autostart ──
-exec waybar -c ~/.config/waybar/config-sway.json
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway SWAYSOCK DISPLAY
+exec waybar
 exec swaync
 exec nm-applet --indicator
 exec wl-paste --type text --watch cliphist store

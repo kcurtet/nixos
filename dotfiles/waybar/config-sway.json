@@ -3,9 +3,9 @@
   "position": "top",
   "height": 38,
   "spacing": 0,
-  "margin-top": 6,
-  "margin-left": 10,
-  "margin-right": 10,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
 
   "modules-left": ["custom/logo", "sway/workspaces", "sway/window"],
   "modules-center": ["clock", "custom/spacer", "custom/calendar"],

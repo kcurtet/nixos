@@ -30,9 +30,9 @@ window#waybar {
 
 window#waybar > box {
   background: alpha(#2e3440, 0.85);
-  border: 2px solid alpha(#4c566a, 0.6);
-  border-radius: 1%;
-  padding: 0 6px;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 tooltip {
@@ -51,13 +51,12 @@ tooltip label {
 #custom-logo {
   color: #88c0d0;
   font-size: 18px;
-  padding: 0 12px 0 8px;
-  margin: 4px 0;
+  padding: 0 8px;
 }
 
 /* ── Workspaces ──────────────────────────── */
 #workspaces {
-  margin: 4px 4px;
+  margin: 0;
   padding: 0;
 }
 
@@ -93,8 +92,8 @@ tooltip label {
 /* ── Window Title ────────────────────────── */
 #window {
   color: #8fbcbb;
-  padding: 0 12px;
-  margin: 4px 0;
+  padding: 0 8px;
+  margin: 0;
   font-style: italic;
   font-size: 12px;
 }
@@ -104,10 +103,9 @@ tooltip label {
   color: #eceff4;
   font-weight: 700;
   font-size: 13.5px;
-  padding: 0 16px;
-  margin: 4px 0;
+  padding: 0 12px;
+  margin: 0;
   background: alpha(#81a1c1, 0.15);
-  border-radius: 10px;
 }
 
 /* ── Separator ───────────────────────────── */
@@ -119,8 +117,8 @@ tooltip label {
 
 /* ── Tray ────────────────────────────────── */
 #tray {
-  margin: 4px 4px;
-  padding: 0 6px;
+  margin: 0;
+  padding: 0 4px;
 }
 
 #tray > .passive {
@@ -136,9 +134,8 @@ tooltip label {
 #network,
 #backlight,
 #battery {
-  padding: 0 10px;
-  margin: 4px 0;
-  border-radius: 10px;
+  padding: 0 8px;
+  margin: 0;
   transition: all 0.2s ease;
 }
 
@@ -206,9 +203,8 @@ tooltip label {
 /* ── Media Player ────────────────────────── */
 #custom-media {
   color: #a3be8c;
-  padding: 0 10px;
-  margin: 4px 0;
-  border-radius: 10px;
+  padding: 0 8px;
+  margin: 0;
   font-style: italic;
   font-size: 12px;
   transition: all 0.2s ease;
@@ -225,9 +221,8 @@ tooltip label {
 /* ── Google Calendar ─────────────────────── */
 #custom-gcal {
   color: #88c0d0;
-  padding: 0 10px;
-  margin: 4px 0;
-  border-radius: 10px;
+  padding: 0 8px;
+  margin: 0;
   transition: all 0.2s ease;
 }
 
@@ -252,9 +247,8 @@ tooltip label {
 
 /* ── SwayNC Notifications ────────────────── */
 #custom-swaync {
-  padding: 0 10px;
-  margin: 4px 0;
-  border-radius: 10px;
+  padding: 0 8px;
+  margin: 0;
   transition: all 0.2s ease;
   color: #4c566a;
 }
@@ -281,9 +275,8 @@ tooltip label {
 #custom-power {
   color: #bf616a;
   font-size: 16px;
-  padding: 0 12px 0 8px;
-  margin: 4px 0;
-  border-radius: 10px;
+  padding: 0 8px;
+  margin: 0;
   transition: all 0.2s ease;
 }
 

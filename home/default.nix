@@ -38,30 +38,21 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "code -w";
-    TERMINAL = "ghostty";
+    TERMINAL = "foot";
   };
 
   xdg.terminal-exec = {
     enable = true;
     settings = {
-      default = [ "com.mitchellh.ghostty.desktop" ];
+      default = [ "foot.desktop" ];
     };
   };
 
-  # Hyprland user configuration
-  programs.hyprland-config.enable = true;
-
-  # Notifications
-  services.swaync-config.enable = true;
-
-  # Hyprland-related programs
-  programs.rofi-config.enable = true;
-  programs.foot-config.enable = true;
-  programs.wezterm-config.enable = true;
-  gtk-config.enable = true;
-
   # Sway user configuration
   programs.sway-config.enable = true;
+
+  # Foot terminal
+  programs.foot-config.enable = true;
 
   # User settings (can be overridden per-host)
   programs.git.settings = {

@@ -66,6 +66,9 @@ in
         xdg-desktop-portal-wlr
         xdg-desktop-portal-gtk
       ];
+      config.sway = {
+        default = lib.mkForce [ "wlr" "gtk" ];
+      };
     };
 
     # Polkit authentication agent
@@ -103,7 +106,7 @@ in
       v4l-utils
 
       # Terminal
-      ghostty
+      foot
     ];
   };
 }

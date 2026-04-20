@@ -23,8 +23,6 @@ in
     ../../modules/nvidia/specialisations.nix
     ../../modules/gaming
     ../../modules/virtualization
-    ../../modules/desktop/hyprland
-    ../../modules/desktop/kde
     ../../modules/desktop/sway
     ../../modules/services
     ../../modules/laptop
@@ -109,22 +107,16 @@ in
   };
 
   # ============================================================================
-  # Desktop Environments - Hyprland + KDE Plasma 6 + Sway
+  # Desktop Environment - Sway
   # ============================================================================
-  desktop.hyprland-wayland = {
-    enable = true;
-    xkb.layout = "es";
-    xkb.variant = "cat";
-  };
-
-  desktop.kde.enable = true;
-
   desktop.sway.enable = true;
-  # SDDM display manager (for both Hyprland and KDE login)
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
-  services.displayManager.sessionPackages = [ pkgs.hyprland ];
+
+  # GDM display manager
   services.xserver.enable = true;
+  services.xserver.displayManager.gdm = {
+    enable = true;
+    wayland = true;
+  };
   services.xserver.xkb.layout = "es";
   services.xserver.xkb.variant = "cat";
   services.gnome.gnome-keyring.enable = true;
@@ -146,6 +138,7 @@ in
       ids = [ "*" ];
       settings.main = {
         capslock = "overload(control, esc)";
+        esc = "capslock";
       };
     };
   };

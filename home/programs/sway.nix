@@ -72,7 +72,14 @@ in
         wofi
       ];
 
-      # pointerCursor handled by hyprland.nix (both always enabled)
+      pointerCursor = {
+        gtk = {
+          enable = true;
+        };
+        name = "Bibata-Modern-Classic";
+        package = pkgs.bibata-cursors;
+        size = 24;
+      };
     };
 
     # Waybar — config managed via dotfiles

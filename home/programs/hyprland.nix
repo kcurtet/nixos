@@ -55,67 +55,65 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/hypr/scripts/alarm.sh";
         };
         # Wallpaper
-          source = ../../dotfiles/wallpapers/merry-hd.jpg;
-        };
-    programs.hyprlock
-      };
-      packages = with pkgs; [
-        # Screenshots
-        grim
-        slurp
-
-        # Clipboard
-        wl-clipboard
-        cliphist
-
-        # Audio/Brightness
-        pamixer
-        brightnessctl
-
-        # Media control
-        playerctl
-
-        # Screen locker
-        hyprlock
-
-        # Idle daemon
-        hypridle
-
-        # Logout menu
-        wlogout
-
-        # Color picker
-        hyprpicker
-
-        # Wallpaper
-        hyprpaper
-
-        # Network manager GUI
-        networkmanagerapplet
-      ];
-      pointerCursor = {
-        gtk = {
-          enable = true;
-        };
-        name = "Bibata-Modern-Classic";
-        package = pkgs.bibata-cursors;
-        size = 24;
+        source = ../../dotfiles/wallpapers/merry-hd.jpg;
       };
     };
+    packages = with pkgs; [
+      # Screenshots
+      grim
+      slurp
 
-    # Hyprlock screen locker
-    programs.hyprlock = {
-      enable = true;
-    };
+      # Clipboard
+      wl-clipboard
+      cliphist
 
-    # Hypridle idle daemon
-    services.hypridle = {
-      enable = true;
-    };
+      # Audio/Brightness
+      pamixer
+      brightnessctl
 
-    # Ensure screenshot directory exists
-    xdg.userDirs.extraConfig = {
-      XDG_SCREENSHOTS_DIR = "${config.home.homeDirectory}/Pictures/Screenshots";
+      # Media control
+      playerctl
+
+      # Screen locker
+      hyprlock
+
+      # Idle daemon
+      hypridle
+
+      # Logout menu
+      wlogout
+
+      # Color picker
+      hyprpicker
+
+      # Wallpaper
+      hyprpaper
+
+      # Network manager GUI
+      networkmanagerapplet
+    ];
+    pointerCursor = {
+      gtk = {
+        enable = true;
+      };
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+      size = 24;
     };
+  };
+
+  # Hyprlock screen locker
+  programs.hyprlock = {
+    enable = true;
+  };
+
+  # Hypridle idle daemon
+  services.hypridle = {
+    enable = true;
+  };
+
+  # Ensure screenshot directory exists
+  xdg.userDirs.extraConfig = {
+    XDG_SCREENSHOTS_DIR = "${config.home.homeDirectory}/Pictures/Screenshots";
   };
 }

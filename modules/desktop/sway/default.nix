@@ -36,11 +36,16 @@ in
       extraSessionCommands = ''
         export XDG_CURRENT_DESKTOP=sway
         export XDG_SESSION_TYPE=wayland
+        export XDG_SESSION_DESKTOP=sway
+        export GDK_BACKEND=wayland,x11,*
         export QT_QPA_PLATFORM="wayland;xcb"
+        export QT_AUTO_SCREEN_SCALE_FACTOR=1
         export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
         export SDL_VIDEODRIVER=wayland
         export CLUTTER_BACKEND=wayland
         export GTK_IM_MODULE=simple
+        export XCURSOR_SIZE=24
+        export XCURSOR_THEME=Bibata-Modern-Classic
       '';
     };
 

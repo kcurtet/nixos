@@ -163,7 +163,7 @@ bindsym $mod+v exec cliphist list | rofi -dmenu -theme ~/.config/rofi/nord.rasi 
 bindsym $mod+Shift+c reload
 
 # ── Exit ──
-bindsym $mod+Shift+e exec wlogout
+bindsym $mod+Shift+x exec wlogout
 
 # ── Media keys ──
 bindsym XF86AudioRaiseVolume exec pamixer --increase 5
@@ -208,6 +208,5 @@ for_window [title="Picture-in-Picture"] floating enable, sticky enable
 for_window [app_id="xdg-desktop-portal-gtk"] floating enable
 
 # ============================================================================
-# Bar — Handled by waybar
+# Bar — Handled by waybar (launched in Autostart section above)
 # ============================================================================
-bar swaybar_command waybar

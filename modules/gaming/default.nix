@@ -59,6 +59,7 @@ in
             libpng
             libpulseaudio
             libvorbis
+            xorg.libxcb
             stdenv.cc.cc.lib
             libkrb5
             keyutils
@@ -92,8 +93,6 @@ in
       enable = true;
       capSysNice = false; # broken on NixOS, causes capability inheritance failures
     };
-
-
 
     environment.systemPackages =
       with pkgs;

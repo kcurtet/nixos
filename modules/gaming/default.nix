@@ -110,6 +110,8 @@ in
     # Fix bwrap "Unexpected capabilities but not setuid" error in gamescope
     security.wrappers.bwrap = {
       source = "${pkgs.bubblewrap}/bin/bwrap";
+      setuid = false;
+      setgid = false;
       capabilities = "cap_sys_admin,cap_sys_ptrace+ep";
     };
 

@@ -73,7 +73,9 @@ in
       powerManagement.finegrained = false;
       open = cfg.open;
       nvidiaSettings = cfg.nvidiaSettings;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      # GTX 960M (Maxwell) requires legacy_580 branch
+      # Stable 595+ dropped Maxwell support
+      package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
     }
     // lib.optionalAttrs cfg.prime.enable {
       prime = {
@@ -85,6 +87,6 @@ in
     };
 
     # Add NVIDIA kernel module to extraModulePackages
-    boot.extraModulePackages = [ config.boot.kernelPackages.nvidiaPackages.stable ];
+    boot.extraModulePackages = [ config.boot.kernelPackages.nvidiaPackages.legacy_580 ];
   };
 }

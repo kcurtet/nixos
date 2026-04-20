@@ -73,7 +73,7 @@
     };
 
     fish = {
-      enable = true;
+      enable = false;
       interactiveShellInit = ''
         # PATH managed by home.sessionPath
 
@@ -93,7 +93,7 @@
     };
 
     zsh = {
-      enable = true;
+      enable = false;
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;

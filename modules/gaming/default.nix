@@ -77,7 +77,6 @@ in
       with pkgs;
       [
         aseprite
-        mangohud
         chess-tui
         chessdb
         protonup-qt # Gestor de versiones de Proton

@@ -234,9 +234,7 @@ in
     with pkgs;
     [
       psmisc
-      wl-clipboard
       proton-vpn-cli
-      neovim
       wine-staging
       winetricks
       nixfmt-tree

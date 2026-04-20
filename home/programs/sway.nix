@@ -30,6 +30,11 @@ in
         ".config/wallpaper.jpg" = {
           source = ../../dotfiles/wallpapers/merry-hd.jpg;
         };
+
+        # MangoHud
+        ".config/MangoHud/MangoHud.conf" = {
+          source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system/nixos-config/dotfiles/MangoHud/MangoHud.conf";
+        };
       };
 
       packages = with pkgs; [
@@ -62,9 +67,6 @@ in
 
         # Network manager GUI
         networkmanagerapplet
-
-        # App launcher (dmenu-style for sway)
-        wofi
       ];
 
       pointerCursor = {

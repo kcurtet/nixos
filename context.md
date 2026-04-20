@@ -1,223 +1,219 @@
-# NixOS Config Orphan/Unused Analysis
+# Code Context
 
-**Host:** panther | **Active desktop:** Sway + GDM | **Date:** 2026-04-20
+## Files Retrieved
 
----
+1. `flake.nix` — Flake entry: inputs (nixpkgs, nixvim, home-manager, sops-nix), outputs (mkHost helper, panther host, formatter, devShell)
+2. `hosts/panther/default.nix` — Main host config: imports modules, sets up user, NVIDIA, gaming, virtualization, services, Home Manager
+3. `hosts/panther/hardware.nix` — Hardware scan: zen kernel, Intel+NVIDIA, ext4+btrfs+swap, zram, sysctl tuning
+4. `hosts/panther/networking.nix` — Hostname, NetworkManager, firewall, extraHosts for arr stack
+5. `modules/desktop/gnome/default.nix` — GNOME module (option `desktop.gnome`, GDM, keyring, xkb)
+6. `modules/desktop/hyprland/default.nix` — Hyprland module (option `desktop.hyprland-wayland`, monitor daemon, portals, system pkgs)
+7. `modules/desktop/sway/default.nix` — **ACTIVE** Sway module (option `desktop.sway`, session env vars, wlr portal, foot terminal)
+8. `modules/desktop/kde/default.nix` — KDE Plasma 6 module (option `desktop.kde`, minimal)
+9. `modules/nvidia/default.nix` — NVIDIA module (option `hardware.nvidiaConfig`, PRIME offload, modesetting)
+10. `modules/nvidia/specialisations.nix` — Boot profiles: on-the-go (sync), disable-intel, disable-nvidia
+11. `modules/gaming/default.nix` — Gaming module: Steam, GameMode, Gamescope, Wine, mangohud
+12. `modules/virtualization/default.nix` — Docker + libvirtd module
+13. `modules/services/default.nix` — Services module: syncthing, tailscale, tor, flatpak, openssh, ollama, dnsmasq
+14. `modules/laptop/default.nix` — TLP power management module (disabled in host)
+15. `home/default.nix` — Home Manager entry: imports themes, programs, packages, services, aliases; sets up emacs symlinks, PATH, session vars
+16. `home/aliases.nix` — Shell aliases: git, eza, tv channels, pi shortcuts
+17. `home/packages/default.nix` — Package index: cli.nix, dev.nix, gui.nix
+18. `home/packages/cli.nix` — CLI tools: imagemagick, eza, btop, fd, jq, rg, gh, ffmpeg, nyxt, etc.
+19. `home/packages/dev.nix` — Dev tools: emacs-pgtk+vterm+treesitter, vscode-fhs, nodejs, python, rust, lua, fennel, CUDA
+20. `home/packages/gui.nix` — GUI apps: brave, librewolf, chromium, telegram, discord, spotify, obsidian, libreoffice
+21. `home/services/default.nix` — tailscale-systray only
+22. `home/themes/nord.nix` — Nord theme: dconf dark, lazygit colors, bat, zellij, tmux, ghostty themes
+23. `home/programs/default.nix` — Program index: 21 modules imported
+24. `home/programs/sway.nix` — Sway HM config: symlinks dotfiles/sway/config, installs grim/slurp/wl-clipboard/swaybg/wofi/wlogout etc
+25. `home/programs/hyprland.nix` — Hyprland HM config: symlinks dotfiles/hypr/*, installs hyprlock/hypridle/hyprpaper/hyprpicker etc
+26. `home/programs/foot.nix` — Foot terminal: JetBrainsMono 14, Nord colors, dpi-aware
+27. `home/programs/ghostty.nix` — Ghostty terminal: JetBrainsMono 14, bash login shell
+28. `home/programs/alacritty.nix` — Alacritty terminal: full Nord theme from lib/themes.nix, JetBrainsMono 14
+29. `home/programs/wezterm.nix` — WezTerm terminal: minimal no-chrome, Nord colors, no tabs
+30. `home/programs/rofi.nix` — Rofi launcher: uses dotfiles/rofi/nord.rasi theme
+31. `home/programs/gnome-shell.nix` — GNOME extensions + dconf settings (Nordic theme, wezterm default terminal)
+32. `home/programs/gtk.nix` — GTK theme: Nordic, Papirus-Dark icons (option `gtk-config`, NOT imported!)
+33. `home/programs/dunst.nix` — Dunst notifications: Nord colors (option `services.dunst-config`, NOT imported!)
+34. `home/programs/swaync.nix` — SwayNC notifications: symlinks dotfiles/swaync/* (option `services.swaync-config`, NOT explicitly imported but works via sway config autostart)
+35. `home/programs/git.nix` — Git + Delta: colorblind-friendly Nord theme, side-by-side diffs
+36. `home/programs/shells.nix` — Bash/Fish/Zsh: SOPS env vars, zoxide, helper scripts (clip, E, b, S)
+37. `home/programs/starship.nix` — Starship prompt: minimal config
+38. `home/programs/ssh.nix` — SSH: minimal config, TERM=xterm-256color
+39. `home/programs/tmux.nix` — Tmux: C-a prefix, vi mode, Nord status bar, plugins (resurrect, continuum, vim-tmux-navigator)
+40. `home/programs/yazi.nix` — Yazi file manager: bash/fish/zsh integration
+41. `home/programs/zellij.nix` — Zellij: Nord theme, dev layout, custom keybinds
+42. `home/programs/lazygit.nix` — LazyGit: enabled, theme in themes/nord.nix
+43. `home/programs/atuin.nix` — Atuin: **disabled** (enable = false)
+44. `home/programs/bat.nix` — Bat: Nord theme
+45. `home/programs/direnv.nix` — Direnv + nix-direnv
+46. `home/programs/television.nix` — Television fuzzy finder: extensive config with custom channels (nix-options, nix-store, nix-flake-inputs, ollama-models, hcloud-servers, syncthing-folders, nixos-config, nixos-generations)
+47. `lib/default.nix` — Library: exposes themes (colors, gtk, cursor, lazygit), username, userEmail, mkLazyGitTheme, mkHost helper
+48. `lib/themes.nix` — Nord color palette (n0-n15), GTK/cursor/lazygit theme definitions
+49. `scripts/default.nix` — Shell scripts: emacs-up, nboot, nix-apply, nix-up
+50. `overlays/default.nix` — Overlays: nixvim neovim replacement, custom pkgs
+51. `pkgs/default.nix` — Custom packages: empty `{}`
+52. `dotfiles/sway/config` — **ACTIVE** Sway config: Mod4, foot, rofi, swaybg, waybar (config-sway.json), swaync, cliphist, Nord colors, keybindings, window rules
+53. `dotfiles/waybar/config.json` — Waybar config for Hyprland: hyprland/workspaces, hyprland/window modules
+54. `dotfiles/waybar/config-sway.json` — Waybar config for Sway: sway/workspaces, sway/window modules
+55. `dotfiles/waybar/style.css` — Waybar Nord theme: transparent bg, frost accents
+56. `dotfiles/rofi/nord.rasi` — Rofi Nord theme
+57. `dotfiles/hypr/hyprland.conf` — Hyprland config (symlinked, not read but exists)
+58. `dotfiles/hypr/hypridle.conf` — Hypridle config (symlinked)
+59. `dotfiles/hypr/hyprlock.conf` — Hyprlock config (symlinked)
+60. `dotfiles/hypr/hyprpaper.conf` — Hyprpaper config (symlinked)
+61. `dotfiles/hypr/scripts/` — alarm.sh, gcal-waybar.sh, keybinds.sh, powermenu.sh
+62. `dotfiles/emacs/` — early-init.el, init.el (symlinked out-of-store)
+63. `dotfiles/swaync/config.json` + `style.css` — SwayNC config (symlinked)
+64. `.sops.yaml` — SOPS age key config for secrets encryption
+65. `secrets/secrets.yaml` — Encrypted secrets (zai_api_key, brave_api_key, npm-token)
+66. `.gitignore` — Ignores decrypted secrets, result, editor files, direnv, .beads
 
-## 1. Modules — Imported vs Orphaned
+## Key Code
 
-### Imported in `hosts/panther/default.nix` ✓
-| Module | Status |
-|--------|--------|
-| `modules/nvidia` | ✓ Active (prime offload) |
-| `modules/nvidia/specialisations` | ✓ Active |
-| `modules/gaming` | ✓ Active (`gaming.enable = true`) |
-| `modules/virtualization` | ✓ Active (docker + libvirtd) |
-| `modules/desktop/sway` | ✓ Active (`desktop.sway.enable = true`) |
-| `modules/services` | ✓ Active (syncthing, tailscale, tor, ollama, dnsmasq) |
-| `modules/laptop` | ✓ Active (power mgmt) |
+### Active Desktop: Sway
+```
+# hosts/panther/default.nix line ~112
+../../modules/desktop/sway     # ← ACTIVE
+desktop.sway.enable = true;    # ← ENABLED
+```
 
-### NOT imported — completely dead code
-| Module | Verdict |
-|--------|---------|
-| **`modules/desktop/gnome/`** | ❌ Dead. GDM/gnome-keyring configured directly in `hosts/panther/default.nix`, not via this module. The module is never imported. |
-| **`modules/desktop/hyprland/`** | ❌ Dead. Previously used, now replaced by Sway. Never imported. |
-| **`modules/desktop/kde/`** | ❌ Dead. Never imported. |
+### Home Manager Programs (all imported unconditionally)
+```nix
+# home/programs/default.nix
+imports = [
+  ./atuin.nix       # enable = false
+  ./bat.nix         # Nord theme
+  ./direnv.nix
+  ./swaync.nix      # services.swaync-config (needs explicit enable)
+  ./foot.nix        # programs.foot-config ← enabled in home/default.nix
+  ./ghostty.nix     # always enabled
+  ./git.nix
+  ./gnome-shell.nix # always enabled (gnome extensions)
+  ./gtk.nix         # gtk-config option (NOT enabled in home/default.nix)
+  ./hyprland.nix    # programs.hyprland-config (NOT enabled)
+  ./alacritty.nix   # always enabled
+  ./lazygit.nix
+  ./rofi.nix        # programs.rofi-config ← enabled in home/default.nix
+  ./shells.nix
+  ./ssh.nix
+  ./starship.nix
+  ./sway.nix        # programs.sway-config ← enabled in home/default.nix
+  ./television.nix
+  ./tmux.nix
+  ./wezterm.nix     # programs.wezterm-config (NOT enabled)
+  ./yazi.nix
+  ./zellij.nix
+];
+```
 
----
+### Home Default Enables
+```nix
+# home/default.nix
+programs.sway-config.enable = true;
+programs.foot-config.enable = true;
+programs.rofi-config.enable = true;
+# gnome-shell always active (no enable option)
+# ghostty always active (no enable option)
+# alacritty always active (no enable option)
+```
 
-## 2. Home Programs — Enabled vs Dead
+### Theme System
+```
+lib/themes.nix → Nord colors n0-n15, GTK name "Nordic", cursor "Nordzy-cursors"
+home/themes/nord.nix → duplicates colors, applies to lazygit/bat/zellij/tmux/ghostty
+```
 
-### Programs with custom `mkEnableOption` gates (require explicit `.enable = true`):
+### Terminal Emulators (5 configured!)
+1. **foot** — Sway default (`$term`), enabled
+2. **ghostty** — always installed+configured, listed in gui.nix too
+3. **alacritty** — always installed+configured
+4. **wezterm** — option exists but NOT enabled (gnome-shell dconf sets it as GNOME default terminal!)
+5. **foot** — set as xdg terminal-exec default
 
-| Program File | Option | Where Set | Status |
-|---|---|---|---|
-| `sway.nix` | `programs.sway-config` | `home/default.nix:52` | ✓ Active |
-| `foot.nix` | `programs.foot-config` | `home/default.nix:55` | ✓ Active |
-| `rofi.nix` | `programs.rofi-config` | `home/default.nix:58` | ✓ Active |
-| **`hyprland.nix`** | `programs.hyprland-config` | **Nowhere** | ❌ **DEAD — never enabled** |
-| **`wezterm.nix`** | `programs.wezterm-config` | **Nowhere** | ❌ **DEAD — never enabled** |
-| **`dunst.nix`** | `services.dunst-config` | **Nowhere** | ❌ **DEAD — never enabled** |
-| **`swaync.nix`** | `services.swaync-config` | **Nowhere** | ❌ **DEAD — never enabled** |
-| **`gtk.nix`** | `gtk-config` | **Nowhere** | ❌ **DEAD — never enabled** |
+### Sway Config (dotfiles/sway/config)
+- Mod4 (Super), foot terminal, rofi launcher
+- waybar with config-sway.json, swaync autostart
+- cliphist for clipboard, grim/slurp for screenshots
+- Nord colors, gaps 5/10, pixel borders
 
-### Programs that ALWAYS enable (no gate — unconditional):
+## Architecture
 
-| Program File | Verdict |
-|---|---|
-| `alacritty.nix` | ⚠️ Always installs alacritty. Foot is configured as default terminal. **Unnecessary** — consider gating or removing. |
-| `atuin.nix` | Explicitly `enable = false`. **Dead weight file** — imports for nothing. |
-| `bat.nix` | ✓ Used (aliased to `k`) |
-| `direnv.nix` | ✓ Used |
-| `ghostty.nix` | ⚠️ Always installs ghostty. Not the default terminal. Also installed in `gui.nix` packages. |
-| `git.nix` | ✓ Used |
-| `gnome-shell.nix` | ⚠️ **Always enables** GNOME shell extensions + dconf. GNOME desktop is NOT active. Extensions like caffeine, gamemode-shell-extension, colorblind-filters — all dead. References wezterm as default terminal (which is also dead). |
-| `lazygit.nix` | ✓ Used (aliased to `g`) |
-| `shells.nix` | ✓ bash/fish/zsh all active |
-| `ssh.nix` | ✓ Used |
-| `starship.nix` | ✓ Active prompt |
-| `television.nix` | ✓ Used (heavily via aliases) |
-| `tmux.nix` | ✓ Used (sway keybind `$mod+Return` opens tmux) |
-| `yazi.nix` | ✓ Used (aliased to `y`) |
-| `zellij.nix` | ⚠️ Always installs. Not referenced in any keybind or alias. **Potentially unused** — tmux is the multiplexer. |
+```
+flake.nix
+├── inputs: nixpkgs, nixvim, home-manager, sops-nix
+├── outputs
+│   ├── nixosConfigurations.panther = mkHost "panther"
+│   │   └── hosts/panther/default.nix
+│   │       ├── hardware.nix (zen kernel, NVIDIA, zram)
+│   │       ├── networking.nix (NetworkManager, firewall)
+│   │       ├── modules/nvidia (PRIME offload)
+│   │       ├── modules/nvidia/specialisations (3 boot profiles)
+│   │       ├── modules/gaming (Steam, GameMode)
+│   │       ├── modules/virtualization (Docker, libvirtd)
+│   │       ├── modules/desktop/sway ← ACTIVE
+│   │       ├── modules/services (syncthing, tailscale, tor, ollama, dnsmasq)
+│   │       ├── modules/laptop (TLP, disabled)
+│   │       ├── home-manager.users.kx → home/default.nix
+│   │       │   ├── themes/nord.nix
+│   │       │   ├── programs/ (21 modules)
+│   │       │   │   ├── sway.nix → dotfiles/sway/config
+│   │       │   │   ├── foot.nix, ghostty.nix, alacritty.nix, wezterm.nix
+│   │       │   │   ├── git.nix (delta), shells.nix (bash/fish/zsh)
+│   │       │   │   ├── tmux.nix, zellij.nix, starship.nix
+│   │       │   │   ├── television.nix (massive custom channels)
+│   │       │   │   └── ... more
+│   │       │   ├── packages/ (cli, dev, gui)
+│   │       │   ├── services/ (tailscale-systray)
+│   │       │   └── aliases.nix
+│   │       └── sops secrets (zai_api_key, brave_api_key)
+│   ├── formatter (nixfmt-tree)
+│   └── devShells (nixd, nixfmt-tree, statix, deadnix, sops, nixvim)
+├── lib/ (themes, mkHost, user constants)
+├── scripts/ (emacs-up, nboot, nix-apply, nix-up)
+├── overlays/ (nixvim neovim, custom pkgs)
+├── pkgs/ (empty)
+└── dotfiles/ (NOT managed by Nix, symlinked out-of-store)
+    ├── sway/config
+    ├── hypr/ (hyprland.conf, hypridle, hyprlock, hyprpaper, scripts/)
+    ├── waybar/ (config.json, config-sway.json, style.css)
+    ├── rofi/nord.rasi
+    ├── swaync/ (config.json, style.css)
+    ├── emacs/ (early-init.el, init.el)
+    └── wallpapers/merry-hd.jpg
+```
 
----
+## Simplification Opportunities
 
-## 3. Package Review
+### Dead/Unused Code
+- `modules/desktop/gnome/` — not imported by any host
+- `modules/desktop/hyprland/` — not imported by any host (was previous desktop)
+- `modules/desktop/kde/` — not imported by any host
+- `home/programs/hyprland.nix` — `programs.hyprland-config` never enabled
+- `home/programs/wezterm.nix` — `programs.wezterm-config` never enabled
+- `home/programs/gnome-shell.nix` — gnome extensions always active, but running Sway not GNOME
+- `home/programs/dunst.nix` — `services.dunst-config` never enabled (swaync used instead)
+- `home/programs/gtk.nix` — `gtk-config` never enabled
+- `dotfiles/hypr/` — entire directory unused
+- `dotfiles/waybar/config.json` — Hyprland waybar config, unused
+- `home/programs/atuin.nix` — explicitly disabled
+- `lib/themes.nix` lazygit/cursor functions — imported but theme also duplicated in `home/themes/nord.nix`
 
-### Duplicate packages (installed in multiple places):
-| Package | Where | Notes |
-|---|---|---|
-| `ghostty` | `home/programs/ghostty.nix` + `home/packages/gui.nix` | Double-installed |
-| `p7zip` | `modules/desktop/sway`, `home/packages/cli.nix` | System + user |
-| `unzip` | `modules/desktop/sway`, `home/packages/cli.nix` | System + user |
-| `zip` | `modules/desktop/sway`, `home/packages/cli.nix` | System + user |
-| `wl-clipboard` | `hosts/panther/default.nix`, `home/programs/sway.nix`, `home/packages/cli.nix` | Triple-installed |
-| `neovim` | `hosts/panther/default.nix` (system), `home/packages/dev.nix` (home) | Double-installed (overlay replaces system one with nixvim) |
-| `nixfmt-tree` | `hosts/panther/default.nix` (system), `home/packages/cli.nix` (home) | Double-installed |
-| `socat` | `home/packages/cli.nix` | Also used by hyprland monitor script (dead) |
+### Duplicated/Redundant
+- Nord colors defined in 3 places: `lib/themes.nix`, `home/themes/nord.nix`, `dotfiles/sway/config`
+- 5 terminal emulators configured (foot, ghostty, alacritty, wezterm, + foot in system pkgs)
+- ghostty installed both in system packages (hyprland module) AND home packages
+- `gtk.nix` option `gtk-config` exists but gnome-shell.nix also sets GTK theme via dconf
+- `home/themes/nord.nix` duplicates `lib/themes.nix` colors inline
 
-### Questionable packages:
-| Package | Location | Notes |
-|---|---|---|
-| `nyxt` | `home/packages/cli.nix` | Keyboard-driven browser. Has sway keybind (`$mod+Shift+b`). Niche. |
-| `worktrunk` | `home/packages/cli.nix` | Work trunk tool. Shell integration exists. Low risk. |
-| `castero` | `home/packages/cli.nix` | Podcast client. Not referenced anywhere else. |
-| `cudatoolkit` | `home/packages/dev.nix` | CUDA toolkit. Machine has NVIDIA GPU — possibly needed for ollama, but ollama uses its own runtime. |
-| `hmcl` | `home/packages/gui.nix` | Minecraft launcher. Gaming module active, so reasonable. |
-| `google-cloud-sdk` | `home/packages/cli.nix` | Not referenced by any config. Dev tool — likely manual use. |
+### Structural Issues
+- Programs imported unconditionally in `home/programs/default.nix` — should be conditional on enable flags
+- `home/default.nix` only enables 3 of 21+ program modules; rest are either always-on (no option) or dead
+- `lib/default.nix` mkHost helper unused (flake.nix has its own)
+- `pkgs/default.nix` empty
 
----
+## Start Here
 
-## 4. Dotfiles — Orphaned Entries
+**`hosts/panther/default.nix`** — Single source of truth for what's active. Currently imports `modules/desktop/sway`, enables `desktop.sway`, and wires everything together. Read this first to understand what modules are active, then trace imports.
 
-| Dotfile Dir | Symlinked From | Status |
-|---|---|---|
-| `emacs/` | `home/default.nix` | ✓ Active |
-| `rofi/` | `home/programs/rofi.nix` (theme path) | ✓ Active |
-| `sway/` | `home/programs/sway.nix` | ✓ Active |
-| `wallpapers/` | `home/programs/sway.nix` | ✓ Active |
-| **`hypr/`** | `home/programs/hyprland.nix` | ❌ **ORPHANED** — hyprland-config never enabled. All files dead: `hyprland.conf`, `hyprpaper.conf`, `hyprlock.conf`, `hypridle.conf`, `scripts/*` |
-| **`swaync/`** | `home/programs/swaync.nix` | ❌ **ORPHANED** — swaync-config never enabled |
-| **`waybar/`** | Not managed by Nix | ⚠️ **NO NIX MODULE** manages waybar. Sway config launches `waybar -c ~/.config/waybar/config-sway.json`. Waybar package is NOT installed by any nix config. Either installed outside nix or BROKEN. |
-
-### Waybar config details:
-- `waybar/config.json` — Uses **hyprland** modules (`hyprland/workspaces`, `hyprland/window`). Leftover from hyprland era. Dead.
-- `waybar/config-sway.json` — Uses **sway** modules. Active. References rofi for app launcher ✓
-- `waybar/style.css` — Shared theme. Likely still used.
-
-### `hypr/scripts/gcal-waybar.sh`:
-- Referenced in both waybar configs as calendar exec. This script lives in the hypr dotfiles dir but is used by sway's waybar too. **Should be moved** out of `hypr/` if hyprland is removed.
-
----
-
-## 5. Rofi Usage
-
-**Rofi IS actively used** despite being gated:
-- `programs.rofi-config.enable = true` is set in `home/default.nix:58`
-- Sway config: `$menu = rofi -show drun -show-icons -theme ~/.config/rofi/nord.rasi` (bound to `$mod+d`)
-- Sway config: clipboard picker uses `rofi -dmenu`
-- Waybar sway config: logo click launches rofi
-- `gtk-icon-picker` script also uses rofi
-- ✓ Fully active and wired in.
-
-**However:** `wofi` is installed by `home/programs/sway.nix` but **never used**. Sway config uses rofi exclusively. **Remove wofi from sway.nix packages.**
-
----
-
-## 6. Desktop Modules Status
-
-| Desktop | Imported | Enabled | Active |
-|---|---|---|---|
-| **Sway** | ✓ | ✓ `desktop.sway.enable = true` | ✓ Primary |
-| GNOME | ❌ | ❌ | ❌ Only GDM + gnome-keyring set directly in host config |
-| Hyprland | ❌ | ❌ | ❌ Completely dead |
-| KDE | ❌ | ❌ | ❌ Completely dead |
-
-The GNOME module's functionality (GDM, keyring) is replicated directly in `hosts/panther/default.nix` rather than using the module. The gnome module is redundant for this host.
-
----
-
-## 7. Dead Imports / References to Removed Things
-
-| Issue | Location | Details |
-|---|---|---|
-| `waybar/config.json` references `hyprland/workspaces` | `dotfiles/waybar/config.json` | Dead — hyprland not active |
-| `waybar/config.json` references `hyprland/window` | `dotfiles/waybar/config.json` | Dead |
-| Waybar calendar calls `~/.config/hypr/scripts/gcal-waybar.sh` | Both waybar configs | Path depends on hypr dotfiles being symlinked, but hyprland-config is disabled so **this symlink is never created**. Calendar in waybar is likely **broken**. |
-| `gnome-shell.nix` sets default terminal to `wezterm` | `home/programs/gnome-shell.nix:39` | Wezterm is never enabled. Dead reference. |
-| `gnome-shell.nix` enables GNOME extensions | `home/programs/gnome-shell.nix` | GNOME desktop not active. Extensions dead. |
-| `atuin.nix` imported but `enable = false` | `home/programs/default.nix` + `home/programs/atuin.nix` | Dead import — file does nothing. |
-
----
-
-## 8. Scripts Usage
-
-| Script | Installed | Used | Status |
-|---|---|---|---|
-| `emacs-up` | ✓ (via `scripts/default.nix`) | Manual CLI tool for emacs straight.el | ✓ Keep |
-| `nboot` | ✓ | `sudo nixos-rebuild boot` wrapper | ✓ Keep |
-| `nix-apply` | ✓ | Commit + rebuild wrapper | ✓ Keep (primary workflow) |
-| `nix-up` | ✓ | `nix flake update` wrapper | ✓ Keep |
-| **`gtk-icon-picker`** | ❌ NOT in `scripts/default.nix` | File exists in `scripts/` dir but **not exported** | ❌ **ORPHANED FILE** — not installed, not referenced |
-
----
-
-## 9. Overlays
-
-| Overlay | What | Status |
-|---|---|---|
-| neovim → nixvim | Replaces system neovim with nixvim flake build | ✓ Active and used |
-| `pkgs.custom` | Imports `pkgs/default.nix` | ⚠️ **Empty** — `pkgs/default.nix` returns `{}` (empty attribute set). Dead overlay that does nothing. |
-
----
-
-## 10. Flake Inputs Usage
-
-| Input | Used Where | Status |
-|---|---|---|
-| `nixpkgs` | Everywhere | ✓ |
-| `home-manager` | `flake.nix` outputs, imported as module | ✓ |
-| `sops-nix` | `flake.nix` outputs, secrets in host config | ✓ |
-| `nixvim` | Overlay (neovim replacement), devshell | ✓ |
-
-**All flake inputs are used.** No dead inputs.
-
----
-
-## Summary: Action Items by Priority
-
-### 🔴 Broken (things that should work but don't)
-1. **Waybar is NOT installed** — sway config launches it but no nix package provides it. Install `waybar` in `home/programs/sway.nix` or create a waybar module.
-2. **Waybar calendar is broken** — calls `~/.config/hypr/scripts/gcal-waybar.sh` but that symlink is never created (hyprland-config disabled).
-3. **SwayNC config symlinked but service not enabled** — `swaync` is launched in sway autostart but `services.swaync-config` is never set to true, so the config files are never symlinked.
-
-### 🟡 Dead Code (remove to clean up)
-4. **`modules/desktop/gnome/`** — never imported
-5. **`modules/desktop/hyprland/`** — never imported
-6. **`modules/desktop/kde/`** — never imported
-7. **`home/programs/hyprland.nix`** — option never enabled
-8. **`home/programs/wezterm.nix`** — option never enabled
-9. **`home/programs/dunst.nix`** — option never enabled
-10. **`home/programs/atuin.nix`** — explicitly disabled, dead import
-11. **`dotfiles/hypr/`** — entire directory orphaned
-12. **`dotfiles/waybar/config.json`** — hyprland-specific, dead
-13. **`scripts/gtk-icon-picker`** — file not exported in default.nix
-14. **`pkgs/default.nix`** — empty, overlay does nothing
-
-### 🟠 Questionable (review and decide)
-15. **`home/programs/alacritty.nix`** — always installs alacritty, but foot is default terminal
-16. **`home/programs/gnome-shell.nix`** — always enables GNOME extensions, GNOME desktop not active
-17. **`home/programs/gtk.nix`** — option never enabled (no GTK theming applied)
-18. **`home/programs/zellij.nix`** — always installs, tmux is the configured multiplexer
-19. **`home/programs/ghostty.nix`** — always installs + duplicated in gui.nix, not default terminal
-20. **`wofi` in sway.nix** — installed but never used (rofi is used instead)
-21. **`home/programs/swaync.nix`** — option never enabled, but sway launches swaync
-22. **`gnome-shell.nix` references wezterm** as terminal — both dead
-
-### 🔵 Duplicate Packages (consolidate)
-23. `ghostty` — programs/ghostty.nix + packages/gui.nix
-24. `wl-clipboard` — host config + sway.nix + cli.nix
-25. `neovim` — host systemPackages + dev.nix
-26. `nixfmt-tree` — host systemPackages + cli.nix
-27. `p7zip`, `unzip`, `zip` — sway module + cli.nix
+**`home/default.nix`** — Second priority. Shows which HM programs are enabled vs just imported.

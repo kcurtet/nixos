@@ -18,9 +18,7 @@
     tree
 
     # Archive tools
-    p7zip
-    unzip
-    zip
+    # p7zip, unzip, zip installed via sway module
 
     # System utilities
     btop
@@ -37,8 +35,8 @@
     ripgrep
     tldr
     trash-cli
-    wl-clipboard
     fzf
+    # wl-clipboard installed via sway module
 
     # Network tools
     doggo
@@ -56,7 +54,7 @@
 
     # Nix tools
     nixd
-    nixfmt-tree
+    # nixfmt-tree installed as system package
 
     # Media tools
     ffmpeg

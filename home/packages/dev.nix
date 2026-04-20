@@ -38,7 +38,7 @@ in
     just
 
     # Editors
-    neovim
+    # neovim installed via nixvim overlay at system level
     emacs-with-packages
     vscode-fhs
 

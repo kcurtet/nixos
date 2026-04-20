@@ -8,7 +8,7 @@
     gnome-tweaks
 
     # Terminal emulators
-    ghostty
+    # ghostty removed - not default terminal
 
     # Browsers
     brave
@@ -25,6 +25,7 @@
     # Gaming
     hmcl
     mgba
+    mangohud
 
     # Internet
     google-chrome

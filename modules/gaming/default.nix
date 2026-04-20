@@ -49,7 +49,37 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = cfg.steam;
-      gamescopeSession.enable = true;
+      package = pkgs.steam.override {
+        extraLibraries =
+          p: with p; [
+            xorg.libXcursor
+            xorg.libXi
+            xorg.libXinerama
+            xorg.libXScrnSaver
+            libpng
+            libpulseaudio
+            libvorbis
+            stdenv.cc.cc.lib
+            libkrb5
+            keyutils
+          ];
+      };
+      gamescopeSession = {
+        enable = true;
+        env = {
+          WLR_RENDERER = "vulkan";
+          DXVK_HDR = "1";
+          ENABLE_GAMESCOPE_WSI = "1";
+          WINE_FULLSCREEN_FSR = "1";
+        };
+        args = [
+          "--expose-wayland"
+          "-e"
+          "--steam"
+          "--adaptive-sync"
+          "--hdr-enabled"
+        ];
+      };
     };
     programs.gamemode = {
       enable = cfg.gamemode;

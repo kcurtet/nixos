@@ -57,6 +57,9 @@
   # Rofi launcher
   programs.rofi-config.enable = true;
 
+  # Waybar status bar
+  programs.waybar-config.enable = true;
+
   # User settings (can be overridden per-host)
   programs.git.settings = {
     user.name = lib.mkDefault "Kevin Curtet";

@@ -15,6 +15,7 @@
     ./sway.nix
     ./television.nix
     ./tmux.nix
+    ./waybar.nix
     ./yazi.nix
   ];
 }

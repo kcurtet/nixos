@@ -18,11 +18,16 @@ in
   config = lib.mkIf cfg.enable {
     programs.rofi = {
       enable = true;
+      theme = "nord";
       pass = {
         enable = true;
         stores = [ "password-store" ];
       };
-      theme = "${config.home.homeDirectory}/.config/rofi/nord.rasi";
+    };
+
+    home.file.".config/rofi/nord.rasi" = {
+      source = config.lib.file.mkOutOfStoreSymlink
+        "${config.home.homeDirectory}/system/nixos-config/dotfiles/rofi/nord.rasi";
     };
   };
 }

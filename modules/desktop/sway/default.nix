@@ -46,10 +46,10 @@ in
         export XCURSOR_SIZE=24
         export XCURSOR_THEME=Bibata-Modern-Classic
         export WLR_NO_HARDWARE_CURSORS = "1";
-        export WLR_RENDERER = "vulkan";
-        export DXVK_HDR = "1";
-        export ENABLE_GAMESCOPE_WSI = "1";
-        export WINE_FULLSCREEN_FSR = "1";
+        # export WLR_RENDERER = "vulkan";
+        # export DXVK_HDR = "1";
+        # export ENABLE_GAMESCOPE_WSI = "1";
+        # export WINE_FULLSCREEN_FSR = "1";
       '';
     };
 

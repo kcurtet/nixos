@@ -66,20 +66,6 @@ in
       };
       gamescopeSession = {
         enable = true;
-        env = {
-          WLR_RENDERER = "vulkan";
-          DXVK_HDR = "1";
-          ENABLE_GAMESCOPE_WSI = "1";
-          WINE_FULLSCREEN_FSR = "1";
-        };
-        args = [
-          "--expose-wayland"
-          "-e"
-          "--steam"
-          "--force-composition"
-          "--adaptive-sync"
-          "--hdr-enabled"
-        ];
       };
     };
     programs.gamemode = {
@@ -106,15 +92,6 @@ in
       enable = true;
       capSysNice = true;
     };
-
-    # Fix bwrap "Unexpected capabilities but not setuid" error in gamescope
-    security.wrappers.bwrap = {
-      source = "${pkgs.bubblewrap}/bin/bwrap";
-      setuid = lib.mkForce false;
-      setgid = lib.mkForce false;
-      capabilities = "cap_sys_admin,cap_sys_ptrace+ep";
-    };
-
 
     environment.systemPackages =
       with pkgs;

@@ -91,7 +91,7 @@ in
 
     programs.gamescope = lib.mkIf cfg.gamescope {
       enable = true;
-      capSysNice = false; # broken on NixOS, causes capability inheritance failures
+      capSysNice = true; # broken on NixOS, causes capability inheritance failures
     };
 
     environment.systemPackages =

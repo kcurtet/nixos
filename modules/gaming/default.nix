@@ -85,6 +85,13 @@ in
         };
       };
     };
+    # Aplicar cap_sys_nice manualmente al binario real de gamescope
+    security.wrappers.gamescope = {
+      owner = "root";
+      group = "root";
+      capabilities = "cap_sys_nice+eip";
+      source = "${pkgs.gamescope}/bin/gamescope";
+    };
 
     # mangohud - package installed below, no programs.mangohud option in this version
     # programs.mangohud.enable = true;

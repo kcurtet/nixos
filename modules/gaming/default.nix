@@ -85,25 +85,6 @@ in
         };
       };
     };
-    # Aplicar cap_sys_nice manualmente al binario real de gamescope
-    security.wrappers = {
-      gamescope = {
-        owner = "root";
-        group = "root";
-        capabilities = "cap_sys_nice+eip";
-        source = "${pkgs.gamescope}/bin/gamescope";
-      };
-
-    };
-    # Aplicar cap_sys_nice a bwrap directamente via setcap en la activación
-    system.activationScripts.bwrapCaps = {
-      text = ''
-        ${pkgs.libcap}/bin/setcap cap_sys_nice+eip ${pkgs.bubblewrap}/bin/bwrap
-      '';
-      deps = [ ];
-    };
-    # mangohud - package installed below, no programs.mangohud option in this version
-    # programs.mangohud.enable = true;
 
     programs.gamescope = lib.mkIf cfg.gamescope {
       enable = true;

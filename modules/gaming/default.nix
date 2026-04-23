@@ -93,6 +93,15 @@ in
       source = "${pkgs.gamescope}/bin/gamescope";
     };
 
+    # bwrap necesita SUID para namespaces Y cap_sys_nice
+    # para poder pasársela a procesos hijo (el juego)
+    bwrap = {
+      owner = "root";
+      group = "root";
+      source = "${pkgs.bubblewrap}/bin/bwrap";
+      setuid = true;
+      capabilities = "cap_sys_nice+eip";
+    };
     # mangohud - package installed below, no programs.mangohud option in this version
     # programs.mangohud.enable = true;
 

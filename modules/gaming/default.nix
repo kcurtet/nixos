@@ -10,6 +10,13 @@
 
 let
   cfg = config.gaming;
+
+  # Patched bubblewrap that removes the capability check that kills processes
+  # with ambient capabilities inside the sandbox. Needed for gamescope's
+  # cap_sys_nice to survive Steam's FHS bubblewrap environment.
+  patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
+    patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
+  });
 in
 {
   options.gaming = {
@@ -64,6 +71,16 @@ in
             libkrb5
             keyutils
           ];
+        buildFHSEnv =
+          args:
+          ((pkgs.buildFHSEnv.override {
+            bubblewrap = patchedBwrap;
+          }) (
+            args
+            // {
+              extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [ "--cap-add ALL" ];
+            }
+          ));
       };
       gamescopeSession = {
         enable = true;
@@ -88,7 +105,20 @@ in
 
     programs.gamescope = lib.mkIf cfg.gamescope {
       enable = true;
-      capSysNice = false; # broken on NixOS, causes capability inheritance failures
+      capSysNice = true;
+    };
+
+    # Auto-symlink Steam's internal bwrap to patched version.
+    # Re-applied on every activation; survives Steam runtime updates.
+    system.activationScripts.steamBwrapSymlink = {
+      text = ''
+        steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
+
+        if [ -d "$(dirname "$steam_bwrap")" ]; then
+          ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
+        fi
+      '';
+      deps = [ ];
     };
 
     environment.systemPackages =

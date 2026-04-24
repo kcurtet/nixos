@@ -67,6 +67,8 @@
     user.signingKey = lib.mkDefault "kcurtet@gmail.com";
   };
 
+  home.packages = [ pkgs.neovim ];
+
   # State version
   home.stateVersion = "26.05";
 }

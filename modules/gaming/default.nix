@@ -68,10 +68,10 @@ in
         enable = true;
         capSysNice = true;
       };
-    };
-    appimage = {
-      enable = true;
-      binfmt = true;
+      appimage = {
+        enable = true;
+        binfmt = true;
+      };
     };
 
     system.activationScripts.steamBwrapSymlink =

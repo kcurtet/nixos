@@ -10,10 +10,6 @@
 
 let
   cfg = config.gaming;
-
-  patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
-    patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
-  });
 in
 {
   options.gaming = {
@@ -51,68 +47,68 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.steam = {
-      enable = cfg.steam;
-      package = pkgs.steam.override {
-        extraLibraries =
-          p: with p; [
-            libxcursor
-            libxi
-            libxinerama
-            libxscrnsaver
-            libpng
-            libpulseaudio
-            libvorbis
-            libxcb
-            stdenv.cc.cc.lib
-            libkrb5
-            keyutils
-          ];
-        buildFHSEnv = (args: ((pkgs.buildFHSEnv.override {
-          bubblewrap = patchedBwrap;
-        }) (args // {
-          extraBwrapArgs = (args.extraBwrapArgs or []) ++ [ "--cap-add ALL" ];
-        })));
+    programs = {
+      programs = {
+        steam = {
+          enable = cfg.steam;
+          package = pkgs.steam.override {
+            withPrimus = true;
+            extraPkgs =
+              pkgs: with pkgs; [
+                bumblebee
+                glxinfo
+              ];
+            extraEnv = {
+              PROTON_ENABLE_WAYLAND = 1;
+            };
+          };
+          extraCompatPackages = with pkgs; [ proton-ge-bin ];
+          gamescopeSession = {
+            enable = true;
+          };
+        };
+        gamemode = {
+          enable = cfg.gamemode;
+          settings = {
+            general = {
+              renice = 10;
+            };
+            cpu = {
+              park_cores = "no";
+              pin_cores = "yes";
+            };
+            gpu = {
+              apply_gpu_optimisations = "accept-responsibility";
+              gpu_device = 0;
+            };
+          };
+        };
+        gamescope = lib.mkIf cfg.gamescope {
+          enable = true;
+          capSysNice = true;
+        };
       };
-      gamescopeSession = {
+      appimage = {
         enable = true;
-      };
-    };
-    programs.gamemode = {
-      enable = cfg.gamemode;
-      settings = {
-        general = {
-          renice = 10;
-        };
-        cpu = {
-          park_cores = "no";
-          pin_cores = "yes";
-        };
-        gpu = {
-          apply_gpu_optimisations = "accept-responsibility";
-          gpu_device = 0;
-        };
+        binfmt = true;
       };
     };
 
-    programs.gamescope = lib.mkIf cfg.gamescope {
-      enable = true;
-      capSysNice = true;
-    };
-
-    system.activationScripts.steamBwrapSymlink = let
-      patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
-        patches = (o.patches or []) ++ [ ./bwrap.patch ];
-      });
-    in {
-      text = ''
-        steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
-        if [ -d "$(dirname "$steam_bwrap")" ]; then
-          ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
-        fi
-      '';
-      deps = [];
-    };
+    system.activationScripts.steamBwrapSymlink =
+      let
+        patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
+          patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
+        });
+      in
+      {
+        text = ''
+          steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
+          if [ -d "$(dirname "$steam_bwrap")" ]; then
+            ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
+          fi
+        '';
+        deps = [ ];
+      };
 
     environment.systemPackages =
       with pkgs;

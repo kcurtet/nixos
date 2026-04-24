@@ -73,41 +73,41 @@ in
       enable = true;
       binfmt = true;
     };
+
+    system.activationScripts.steamBwrapSymlink =
+      let
+        patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
+          patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
+        });
+      in
+      {
+        text = ''
+          steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
+          if [ -d "$(dirname "$steam_bwrap")" ]; then
+            ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
+          fi
+        '';
+        deps = [ ];
+      };
+
+    environment.systemPackages =
+      with pkgs;
+      [
+        gamescope-wsi
+        aseprite
+        chess-tui
+        chessdb
+        protonup-qt # Gestor de versiones de Proton
+        protontricks # Instalar dependencias Windows en juegos Steam
+      ]
+      ++ lib.optional cfg.steam lutris
+      ++ lib.optional cfg.wine wine64Packages.waylandFull
+      ++ lib.optional cfg.wine winetricks
+      ++ lib.optional (cfg.steam && cfg.gamemode) (
+        writeShellScriptBin "game-run" ''
+          nvidia-offload gamemoderun steam-run $@
+        ''
+      )
+      ++ cfg.extraPackages;
   };
-
-  system.activationScripts.steamBwrapSymlink =
-    let
-      patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
-        patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
-      });
-    in
-    {
-      text = ''
-        steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
-        if [ -d "$(dirname "$steam_bwrap")" ]; then
-          ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
-        fi
-      '';
-      deps = [ ];
-    };
-
-  environment.systemPackages =
-    with pkgs;
-    [
-      gamescope-wsi
-      aseprite
-      chess-tui
-      chessdb
-      protonup-qt # Gestor de versiones de Proton
-      protontricks # Instalar dependencias Windows en juegos Steam
-    ]
-    ++ lib.optional cfg.steam lutris
-    ++ lib.optional cfg.wine wine64Packages.waylandFull
-    ++ lib.optional cfg.wine winetricks
-    ++ lib.optional (cfg.steam && cfg.gamemode) (
-      writeShellScriptBin "game-run" ''
-        nvidia-offload gamemoderun steam-run $@
-      ''
-    )
-    ++ cfg.extraPackages;
 }

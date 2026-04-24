@@ -55,10 +55,6 @@ in
   config = lib.mkIf cfg.enable {
     services.xserver.videoDrivers = [ "nvidia" ];
 
-    environment.sessionVariables = {
-      DXVK_ASYNC = "1"; # Opinable, pero algunos lo ponen aquí para que aplique también fuera de Steam (ej: Lutris, Heroic)
-    };
-
     hardware.graphics = {
       enable = true;
       enable32Bit = true;

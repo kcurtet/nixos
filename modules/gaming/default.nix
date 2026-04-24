@@ -51,21 +51,6 @@ in
       programs = {
         steam = {
           enable = cfg.steam;
-          package = pkgs.steam.override {
-            withPrimus = true;
-            extraPkgs =
-              pkgs: with pkgs; [
-                bumblebee
-                glxinfo
-              ];
-            extraEnv = {
-              PROTON_ENABLE_WAYLAND = 1;
-            };
-          };
-          extraCompatPackages = with pkgs; [ proton-ge-bin ];
-          gamescopeSession = {
-            enable = true;
-          };
         };
         gamemode = {
           enable = cfg.gamemode;

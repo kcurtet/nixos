@@ -93,6 +93,7 @@ in
     environment.systemPackages =
       with pkgs;
       [
+        bottles
         gamescope-wsi
         aseprite
         chess-tui

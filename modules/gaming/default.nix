@@ -100,10 +100,11 @@ in
         chessdb
         protonup-qt # Gestor de versiones de Proton
         protontricks # Instalar dependencias Windows en juegos Steam
+        wine
+        wine64
+        winetricks
+        lutris
       ]
-      ++ lib.optional cfg.steam lutris
-      ++ lib.optional cfg.wine wine64Packages.waylandFull
-      ++ lib.optional cfg.wine winetricks
       ++ lib.optional (cfg.steam && cfg.gamemode) (
         writeShellScriptBin "game-run" ''
           nvidia-offload gamemoderun steam-run $@

@@ -32,6 +32,7 @@
     "splash"
     "mitigations=off"
     "nowatchdog"
+    "preempt=full"
   ];
 
   fileSystems."/" = {

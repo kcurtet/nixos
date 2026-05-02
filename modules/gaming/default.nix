@@ -47,6 +47,7 @@ in
     programs = {
       steam = {
         enable = cfg.steam;
+        remotePlay.openFirewall = true;
       };
       gamemode = {
         enable = cfg.gamemode;
@@ -73,22 +74,6 @@ in
         binfmt = true;
       };
     };
-
-    system.activationScripts.steamBwrapSymlink =
-      let
-        patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
-          patches = (o.patches or [ ]) ++ [ ./bwrap.patch ];
-        });
-      in
-      {
-        text = ''
-          steam_bwrap="/home/kx/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap"
-          if [ -d "$(dirname "$steam_bwrap")" ]; then
-            ln -sf "${patchedBwrap}/bin/bwrap" "$steam_bwrap"
-          fi
-        '';
-        deps = [ ];
-      };
 
     environment.systemPackages =
       with pkgs;

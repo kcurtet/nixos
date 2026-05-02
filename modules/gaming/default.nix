@@ -75,6 +75,13 @@ in
       };
     };
 
+    security.wrappers.bwrap = {
+      owner = "root";
+      group = "root";
+      source = "${pkgs.bubblewrap}/bin/bwrap";
+      setuid = true;
+    };
+
     environment.systemPackages =
       with pkgs;
       [

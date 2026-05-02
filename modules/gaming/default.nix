@@ -67,7 +67,7 @@ in
       };
       gamescope = lib.mkIf cfg.gamescope {
         enable = true;
-        capSysNice = true;
+        #capSysNice = true;
       };
       appimage = {
         enable = true;

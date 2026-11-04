@@ -148,10 +148,16 @@ in
   # ============================================================================
   # User Management
   # ============================================================================
+  # Los usuarios siguen siendo mutables: la contraseña se cambia con `passwd`
+  # y NixOS no la sobrescribe en cada rebuild.
+  users.mutableUsers = true;
+
   users.users.kx = {
     isNormalUser = true;
     shell = pkgs.bash;
-    initialPassword = "p0wn3d"; # Cambia esto por una contraseña segura o usa `nixos-rebuild switch --show-trace` para establecerla manualmente;
+    # Contraseña temporal solo para el primer arranque tras instalar.
+    # Se cambia con `passwd` nada más entrar; no es la contraseña real.
+    initialPassword = "p0wn3d";
     extraGroups = [
       "wheel"
       "networkmanager"
@@ -160,6 +166,8 @@ in
     ];
   };
 
+  # Portátil personal de un solo usuario: sudo sin contraseña por comodidad.
+  # En un servidor o en equipos de otros usuarios iría a `true`.
   security.sudo.wheelNeedsPassword = false;
 
   # ============================================================================
